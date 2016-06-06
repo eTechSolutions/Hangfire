@@ -165,7 +165,7 @@ WriteLiteral(@"""
                         Delete selected
                     </button>
                     
-                    <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear""/>
+                    <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear fltr-txtbx btn-sm""/>
                     <button class=""js-jobs-filter-command btn btn-sm btn-default""
                             data-url=""");
 

@@ -217,6 +217,12 @@ a:hover .label-hover {
     margin-bottom: 10px;
 }
 
+.fltr-txtbx{
+    margin-left: 12px;
+    font-size:15px;
+    line-height:1    
+}
+
 .paginator .btn {
     color: #428bca;
 }
