@@ -29,10 +29,24 @@ namespace Hangfire.Dashboard
 
         public Pager(int from, int perPage, long total)
         {
+            FailedJobsFilterText = "";
             FromRecord = from >= 0 ? from : 0;
             RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
-            TotalRecordCount = total;
             CurrentPage = FromRecord / RecordsPerPage + 1;
+            TotalRecordCount = total;           
+            TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);            
+
+            PagerItems = GenerateItems();
+        }
+
+
+        public Pager(int from, int perPage, long total, string filterString)
+        {
+            FailedJobsFilterText = filterString;
+            FromRecord = from >= 0 ? from : 0;
+            RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
+            CurrentPage = FromRecord / RecordsPerPage + 1;
+            TotalRecordCount = total;            
             TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
 
             PagerItems = GenerateItems();
@@ -47,19 +61,41 @@ namespace Hangfire.Dashboard
         public int TotalPageCount { get; private set; }
         public long TotalRecordCount { get; private set; }
 
+        public string FailedJobsFilterText { get; private set; }
+
         internal ICollection<Item> PagerItems { get; private set; }
 
         public string PageUrl(int page)
         {
+            /*
+            if (page < 1 || page > TotalPageCount) return "#";
+                        
+            return BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
+
+            */
             if (page < 1 || page > TotalPageCount) return "#";
 
-            return BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
+            string newUrl = BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
+
+            if ( !string.IsNullOrEmpty(FailedJobsFilterText) ) newUrl += "&filterString=" + FailedJobsFilterText;
+            //if (0 > BasePageUrl.IndexOf("FailedJobs") && !string.IsNullOrEmpty(FailedJobsFilterText) ) newUrl += "&filterString=" + FailedJobsFilterText;
+
+            return newUrl;
+            
         }
+
 
         public string RecordsPerPageUrl(int perPage)
         {
             if (perPage <= 0) return "#";
-            return BasePageUrl + "?from=0&count=" + perPage;
+
+
+            string newUrl = BasePageUrl + "?from=0&count=" + perPage;
+
+            if (!string.IsNullOrEmpty(FailedJobsFilterText)) newUrl += "&filterString=" + FailedJobsFilterText;
+
+            //return BasePageUrl + "?from=0&count=" + perPage;
+            return newUrl;
         }
 
         private ICollection<Item> GenerateItems()

@@ -457,6 +457,45 @@
                     e.preventDefault();
                 });
 
+                $(this).on('click', '.js-jobs-filter-command', function (e) {
+                    
+                    var value = $("#filterValueString").val();
+                    //value = encodeURIComponent(key);
+                    var key = "filterString";
+                    //key = encodeURIComponent(value);
+
+                    if (value == '') { document.location.search = ''}
+                    else if (document.location.search == '') {
+                        document.location.search = '?' + [key, value].join('=');
+                    }
+                    else {
+                        var parameters = document.location.search.substr(1).split('&');
+
+                        var len = parameters.length;
+                        var x;
+                        for (var i = 0; i < len; i++) {
+                            x = parameters[i].split('=');
+
+                            if (x[0] == key) {
+                                x[1] = value;
+                                parameters[i] = x.join('=');
+                                break;
+                            }
+                        }
+
+                        if (len == i) { parameters[len] = [key, value].join('='); }
+
+                        document.location.search = parameters.join('&');
+                        
+                    }
+                    
+                                        
+                })
+
+                $(this).on('click', '.js-jobs-filtertext-clear', function (e) {                    
+                    $("#filterValueString").val('');
+                })
+
                 updateListState();
             });
         };

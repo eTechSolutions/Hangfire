@@ -101,6 +101,8 @@ namespace Hangfire
             _storage = storage;
             _stateChanger = stateChanger;
             _factory = factory;
+
+            System.Diagnostics.Debug.WriteLine("/n Created Job client /n");
         }
 
         /// <inheritdoc />

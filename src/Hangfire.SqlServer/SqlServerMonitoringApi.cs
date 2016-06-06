@@ -26,6 +26,7 @@ using Hangfire.SqlServer.Entities;
 using Hangfire.States;
 using Hangfire.Storage;
 using Hangfire.Storage.Monitoring;
+using System.Diagnostics;
 
 namespace Hangfire.SqlServer
 {
@@ -64,9 +65,15 @@ namespace Hangfire.SqlServer
             return counters.FetchedCount ?? 0;
         }
 
-        public long FailedCount()
+        public long FailedCount(string filterString)
         {
             return UseConnection(connection => 
+                GetNumberOfJobsByStateName(connection, FailedState.StateName, filterString));
+        }
+
+        public long FailedCount()
+        {
+            return UseConnection(connection =>
                 GetNumberOfJobsByStateName(connection, FailedState.StateName));
         }
 
@@ -150,6 +157,25 @@ namespace Hangfire.SqlServer
                 from,
                 count,
                 FailedState.StateName,
+                (sqlJob, job, stateData) => new FailedJobDto
+                {
+                    Job = job,
+                    Reason = sqlJob.StateReason,
+                    ExceptionDetails = stateData["ExceptionDetails"],
+                    ExceptionMessage = stateData["ExceptionMessage"],
+                    ExceptionType = stateData["ExceptionType"],
+                    FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
+                }));
+        }
+
+        public JobList<FailedJobDto> FailedJobs(int @from, int count, string filterString)
+        {
+            return UseConnection(connection => GetJobs(
+                connection,
+                from,
+                count,
+                FailedState.StateName,
+                filterString,
                 (sqlJob, job, stateData) => new FailedJobDto
                 {
                     Job = job,
@@ -453,11 +479,25 @@ where j.Id in @jobIds", _storage.GetSchemaName());
                 });
         }
 
+        private long GetNumberOfJobsByStateName(SqlConnection connection, string stateName, string filterString)
+        {
+            var sqlQuery = _jobListLimit.HasValue
+                ? string.Format(@"select count(j.Id) from (select top (@limit) Id from [{0}].Job where StateName = @state AND Arguments LIKE '%'+@filterString+'%') as j", _storage.GetSchemaName())
+                : string.Format(@"select count(Id) from [{0}].Job where StateName = @state AND Arguments LIKE '%'+@filterString+'%'", _storage.GetSchemaName());
+            
+            var count = connection.Query<int>(
+                 sqlQuery,
+                 new { state = stateName, limit = _jobListLimit, filterString = filterString })
+                 .Single();
+
+            return count;
+        }
         private long GetNumberOfJobsByStateName(SqlConnection connection, string stateName)
         {
             var sqlQuery = _jobListLimit.HasValue
                 ? string.Format(@"select count(j.Id) from (select top (@limit) Id from [{0}].Job where StateName = @state) as j", _storage.GetSchemaName())
                 : string.Format(@"select count(Id) from [{0}].Job where StateName = @state", _storage.GetSchemaName());
+            
 
             var count = connection.Query<int>(
                  sqlQuery,
@@ -505,6 +545,36 @@ select * from (
 
             return DeserializeJobs(jobs, selector);
         }
+
+
+        private JobList<TDto> GetJobs<TDto>(
+            SqlConnection connection,
+            int from,
+            int count,
+            string stateName,
+            string filterString,
+            Func<SqlJob, Job, Dictionary<string, string>, TDto> selector)
+        {
+            Debug.WriteLine(filterString);
+            string jobsSql = string.Format(@"
+select * from (
+  select j.*, s.Reason as StateReason, s.Data as StateData, row_number() over (order by j.Id desc) as row_num
+  from [{0}].Job j with (forceseek)
+  left join [{0}].State s on j.StateId = s.Id
+  where j.StateName = @stateName and j.Arguments LIKE '%' + @filterString + '%'
+) as j where j.row_num between @start and @end
+", _storage.GetSchemaName());
+
+            var jobs = connection.Query<SqlJob>(
+                        jobsSql,
+                        new { stateName = stateName, start = @from + 1, end = @from + count, filterString = filterString })
+                        .ToList();
+
+            Debug.WriteLine(string.Join(", ", jobs.Select(x=>x.Arguments)));
+            return DeserializeJobs(jobs, selector);
+        }
+
+
 
         private static JobList<TDto> DeserializeJobs<TDto>(
             ICollection<SqlJob> jobs,
@@ -558,5 +628,7 @@ where j.Id in @jobIds", _storage.GetSchemaName());
 
             return new JobList<FetchedJobDto>(result);
         }
+
+        
     }
 }
