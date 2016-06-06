@@ -101,9 +101,7 @@ and Queue in @queues", _storage.GetSchemaName());
         {
             string enqueueJobSql = string.Format(@"
 insert into [{0}].JobQueue (JobId, Queue) values (@jobId, @queue)", _storage.GetSchemaName());
-
-
-            System.Diagnostics.Debug.WriteLine("Inside Server Enque: "+ queue+" /n");
+            
 
             connection.Execute(enqueueJobSql, new { jobId = jobId, queue = queue });
         }

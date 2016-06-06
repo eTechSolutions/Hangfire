@@ -555,7 +555,7 @@ select * from (
             string filterString,
             Func<SqlJob, Job, Dictionary<string, string>, TDto> selector)
         {
-            Debug.WriteLine(filterString);
+           
             string jobsSql = string.Format(@"
 select * from (
   select j.*, s.Reason as StateReason, s.Data as StateData, row_number() over (order by j.Id desc) as row_num
@@ -570,7 +570,7 @@ select * from (
                         new { stateName = stateName, start = @from + 1, end = @from + count, filterString = filterString })
                         .ToList();
 
-            Debug.WriteLine(string.Join(", ", jobs.Select(x=>x.Arguments)));
+           
             return DeserializeJobs(jobs, selector);
         }
 

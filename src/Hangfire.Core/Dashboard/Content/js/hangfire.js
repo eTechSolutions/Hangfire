@@ -460,33 +460,47 @@
                 $(this).on('click', '.js-jobs-filter-command', function (e) {
                     
                     var value = $("#filterValueString").val();
-                    //value = encodeURIComponent(key);
                     var key = "filterString";
-                    //key = encodeURIComponent(value);
+                    var redirect = false;
 
-                    if (value == '') { document.location.search = ''}
-                    else if (document.location.search == '') {
+                    if (document.location.search == '') {
                         document.location.search = '?' + [key, value].join('=');
+                        redirect = true;
                     }
                     else {
                         var parameters = document.location.search.substr(1).split('&');
 
                         var len = parameters.length;
                         var x;
+                        var fromIndex = -1;
                         for (var i = 0; i < len; i++) {
                             x = parameters[i].split('=');
 
                             if (x[0] == key) {
-                                x[1] = value;
-                                parameters[i] = x.join('=');
-                                break;
+                                if(value != ''){
+                                    x[1] = value;
+                                    parameters[i] = x.join('=');
+                                    redirect = true;
+                                }
+                                else{
+                                    parameters.splice(i,1);
+                                }
+                            }
+                            else if (x[0] == "from") {
+                                fromIndex = i;
                             }
                         }
 
-                        if (len == i) { parameters[len] = [key, value].join('='); }
+                        if (!redirect && value != '') {
+                            parameters[len] = [key, value].join('=');
+                            redirect = true;                            
+                        }
 
-                        document.location.search = parameters.join('&');
+                        if (redirect && fromIndex > -1) {
+                            parameters[fromIndex] = ["from", "0"].join('=');
+                        }
                         
+                        document.location.search = parameters.join('&');
                     }
                     
                                         

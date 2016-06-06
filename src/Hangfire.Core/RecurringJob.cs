@@ -33,8 +33,7 @@ namespace Hangfire
             string queue = EnqueuedState.DefaultQueue)
         {
             AddOrUpdate(methodCall, cronExpression(), timeZone, queue);
-
-            System.Diagnostics.Debug.WriteLine("INSIDE AddOrUpdate\n");
+                        
         }
 
         public static void AddOrUpdate<T>(
