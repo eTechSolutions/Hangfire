@@ -33,6 +33,7 @@ namespace Hangfire
             string queue = EnqueuedState.DefaultQueue)
         {
             AddOrUpdate(methodCall, cronExpression(), timeZone, queue);
+                        
         }
 
         public static void AddOrUpdate<T>(
@@ -65,7 +66,11 @@ namespace Hangfire
             var job = Job.FromExpression(methodCall);
             var id = GetRecurringJobId(job);
 
+            
+
             Instance.Value.AddOrUpdate(id, job, cronExpression, timeZone ?? TimeZoneInfo.Utc, queue);
+
+            
         }
 
         public static void AddOrUpdate(

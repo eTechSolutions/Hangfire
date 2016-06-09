@@ -34,11 +34,17 @@ namespace Hangfire.Storage
         JobList<ScheduledJobDto> ScheduledJobs(int from, int count);
         JobList<SucceededJobDto> SucceededJobs(int from, int count);
         JobList<FailedJobDto> FailedJobs(int from, int count);
+        JobList<FailedJobDto> FailedJobs(int from, int count, string filterString);
+        JobList<FailedJobDto> FailedJobs(int from, int count, string startDate, string endDate);
+        JobList<FailedJobDto> FailedJobs(int from, int count, string filterString, string startDate, string endDate);
         JobList<DeletedJobDto> DeletedJobs(int from, int count);
 
         long ScheduledCount();
         long EnqueuedCount(string queue);
         long FetchedCount(string queue);
+        long FailedCount(string filterString, string startDate, string endDate);
+        long FailedCount(string filterString);
+        long FailedCount(string startDate, string endDate);
         long FailedCount();
         long ProcessingCount();
 

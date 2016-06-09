@@ -101,6 +101,7 @@ namespace Hangfire
             _storage = storage;
             _stateChanger = stateChanger;
             _factory = factory;
+                        
         }
 
         /// <inheritdoc />

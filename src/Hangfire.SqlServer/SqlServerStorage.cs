@@ -225,7 +225,7 @@ namespace Hangfire.SqlServer
             var connection = new SqlConnection(_connectionString);
             connection.Open();
 
-            return connection;
+             return connection;
         }
 
         internal bool IsExistingConnection(IDbConnection connection)
