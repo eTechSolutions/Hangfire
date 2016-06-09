@@ -30,6 +30,8 @@ namespace Hangfire.Dashboard
         public Pager(int from, int perPage, long total)
         {
             FailedJobsFilterText = "";
+            FailedJobsFilterStartDate = "";
+            FailedJobsFilterEndDate = "";
             FromRecord = from >= 0 ? from : 0;
             RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
             CurrentPage = FromRecord / RecordsPerPage + 1;
@@ -43,6 +45,8 @@ namespace Hangfire.Dashboard
         public Pager(int from, int perPage, long total, string filterString)
         {
             FailedJobsFilterText = filterString;
+            FailedJobsFilterStartDate = "";
+            FailedJobsFilterEndDate = "";
             FromRecord = from >= 0 ? from : 0;
             RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
             CurrentPage = FromRecord / RecordsPerPage + 1;
@@ -52,6 +56,37 @@ namespace Hangfire.Dashboard
             PagerItems = GenerateItems();
         }
 
+        public Pager(int from, int perPage, long total, string startDate, string endDate)
+        {
+            FailedJobsFilterText = "";
+            FailedJobsFilterStartDate = startDate;
+            FailedJobsFilterEndDate = endDate;
+            FromRecord = from >= 0 ? from : 0;
+            RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
+            CurrentPage = FromRecord / RecordsPerPage + 1;
+            TotalRecordCount = total;
+            TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
+
+            PagerItems = GenerateItems();
+        }
+
+        public Pager(int from, int perPage, long total, string filterString, string startDate, string endDate)
+        {
+            FailedJobsFilterText = filterString;
+            FailedJobsFilterStartDate = startDate;
+            FailedJobsFilterEndDate = endDate;
+            FromRecord = from >= 0 ? from : 0;
+            RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
+            CurrentPage = FromRecord / RecordsPerPage + 1;
+            TotalRecordCount = total;
+            TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
+
+            PagerItems = GenerateItems();
+        }
+
+        
+
+       
         public string BasePageUrl { get; set; }
 
         public int FromRecord { get; private set; }
@@ -60,9 +95,9 @@ namespace Hangfire.Dashboard
 
         public int TotalPageCount { get; private set; }
         public long TotalRecordCount { get; private set; }
-
         public string FailedJobsFilterText { get; private set; }
-
+        public string FailedJobsFilterStartDate { get; private set; }
+        public string FailedJobsFilterEndDate { get; private set; }
         internal ICollection<Item> PagerItems { get; private set; }
 
         public string PageUrl(int page)
@@ -78,6 +113,10 @@ namespace Hangfire.Dashboard
             string newUrl = BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
 
             if ( !string.IsNullOrEmpty(FailedJobsFilterText) ) newUrl += "&filterString=" + FailedJobsFilterText;
+
+            if ( !string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate) )
+                newUrl += "&startDate=" + FailedJobsFilterStartDate+ "&endDate=" + FailedJobsFilterEndDate;
+             
             //if (0 > BasePageUrl.IndexOf("FailedJobs") && !string.IsNullOrEmpty(FailedJobsFilterText) ) newUrl += "&filterString=" + FailedJobsFilterText;
 
             return newUrl;
@@ -88,11 +127,13 @@ namespace Hangfire.Dashboard
         public string RecordsPerPageUrl(int perPage)
         {
             if (perPage <= 0) return "#";
-
-
+            
             string newUrl = BasePageUrl + "?from=0&count=" + perPage;
 
-            if (!string.IsNullOrEmpty(FailedJobsFilterText)) newUrl += "&filterString=" + FailedJobsFilterText;
+            if (!string.IsNullOrEmpty(FailedJobsFilterText)) newUrl += "&filterString=" + FailedJobsFilterText;            
+
+            if (!string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate))
+                newUrl += "&startDate=" + FailedJobsFilterStartDate + "&endDate=" + FailedJobsFilterEndDate;
 
             //return BasePageUrl + "?from=0&count=" + perPage;
             return newUrl;

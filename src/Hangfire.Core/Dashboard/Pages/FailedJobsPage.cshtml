@@ -8,6 +8,8 @@
 
     int from, perPage;
     string filterString = Query("filterString");
+    string startDate = Query("startDate");
+    string endDate = Query("endDate");
 
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
@@ -16,9 +18,18 @@
     Hangfire.Dashboard.Pager pager;
     Hangfire.Storage.Monitoring.JobList<Hangfire.Storage.Monitoring.FailedJobDto> failedJobs;
 
-    if (!string.IsNullOrEmpty(filterString)){        
+    if (!string.IsNullOrEmpty(filterString) && !string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate) ) {
+        pager = new Pager(from, perPage, monitor.FailedCount(filterString, startDate, endDate), filterString, startDate, endDate);
+        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, filterString, startDate, endDate);
+    }
+    else if (!string.IsNullOrEmpty(filterString) ){
         pager = new Pager(from, perPage, monitor.FailedCount(filterString), filterString);
-        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, filterString);        
+        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, filterString);
+    }
+    else if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
+    {
+        pager = new Pager(from, perPage, monitor.FailedCount(startDate, endDate), startDate, endDate);
+        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, startDate, endDate);
     }
     else{
         pager = new Pager(from, perPage, monitor.FailedCount());
@@ -65,19 +76,25 @@
                         <span class="glyphicon glyphicon-remove"></span>
                         Delete selected
                     </button>
-                    
-                    <input type="text" value="" id="filterValueString" class="js-jobs-filtertext-clear fltr-txtbx btn-sm"/>
+                    <br>
+                    <br>                
                     <button class="js-jobs-filter-command btn btn-sm btn-default"
                             data-url="@Url.To("/jobs/failed")">
                         <span class="glyphicon glyphicon-repeat"></span>
                         Filter jobs
                     </button>
+                    <input type="text" value="" id="filterValueString" class="js-jobs-filtertext-clear fltr-txtbx btn-sm" />
+                    <input id="filterOnDate" type="checkbox" class="js-jobs-filterOnDate-checked">Filter on date</input>
+                    @{ 
+                        var todaysDate = System.DateTime.Now.ToShortDateString();
+                    }
+                    <br />
+                    <br />                    
+                    <input value="@todaysDate" style="width: 100px; margin:0px 0px 0px 110px;" readonly=""  class="dateselector-start" id="startDate" hidden="hidden" />                        
+                    <input value="@todaysDate" style="width: 100px;" readonly=""  class="dateselector-end" id="endDate" hidden="hidden" />
                     
-                                      
 
-                    @Html.PerPageSelector(pager)
-
-                    
+                    @Html.PerPageSelector(pager)                    
                 </div>
                     
                                

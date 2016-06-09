@@ -82,7 +82,7 @@
     <Compile Include="BackgroundJobServer.cs" />
     <Compile Include="BackgroundJobServerOptions.cs" />
     <Compile Include="Client\CoreBackgroundJobFactory.cs" />
-    <Compile Include="Dashboard\Pages\FailedJobsPage.generated.cs">
+    <Compile Include="Dashboard\Pages\FailedJobsPage1.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FailedJobsPage.cshtml</DependentUpon>
@@ -436,7 +436,7 @@
     </None>
     <None Include="Dashboard\Pages\FailedJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FailedJobsPage.generated.cs</LastGenOutput>
+      <LastGenOutput>FailedJobsPage1.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\FetchedJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -542,6 +542,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dashboard\Content\js\rickshaw.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\css\jquery.datepick.css" />
+    <EmbeddedResource Include="Dashboard\Content\js\jquery.datepick.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\js\jquery.plugin.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

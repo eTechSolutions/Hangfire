@@ -31,14 +31,17 @@ namespace Hangfire.Dashboard
             "d3.min.js", 
             "d3.layout.min.js", 
             "rickshaw.min.js", 
-            "hangfire.js"
+            "hangfire.js",
+            "jquery.plugin.min.js",
+            "jquery.datepick.min.js"
         };
 
         private static readonly string[] Stylesheets =
         {
             "bootstrap.min.css", 
             "rickshaw.min.css", 
-            "hangfire.css"
+            "hangfire.css",
+            "jquery.datepick.css"
         };
 
         static DashboardRoutes()
