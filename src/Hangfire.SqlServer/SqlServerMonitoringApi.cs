@@ -161,7 +161,6 @@ namespace Hangfire.SqlServer
                 return result;
             });
         }
-
         public JobList<FailedJobDto> FailedJobs(int @from, int count)
         {
             return UseConnection(connection => GetJobs(
@@ -179,7 +178,6 @@ namespace Hangfire.SqlServer
                     FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
                 }));
         }
-
         public JobList<FailedJobDto> FailedJobs(int @from, int count, string filterString)
         {
             return UseConnection(connection => GetJobs(
@@ -197,9 +195,7 @@ namespace Hangfire.SqlServer
                     ExceptionType = stateData["ExceptionType"],
                     FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
                 }));
-        }
-
-
+        }        
         public JobList<FailedJobDto> FailedJobs(int @from, int count, string filterString, string startDate, string endDate)
         {
             return UseConnection(connection => GetJobs(
@@ -220,7 +216,6 @@ namespace Hangfire.SqlServer
                     FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
                 }));
         }
-
         public JobList<FailedJobDto> FailedJobs(int @from, int count, string startDate, string endDate)
         {
             return UseConnection(connection => GetJobs(
@@ -534,31 +529,15 @@ where j.Id in @jobIds", _storage.GetSchemaName());
         }
 
         private long GetNumberOfJobsByStateName(SqlConnection connection, string stateName, string filterString, string startDate, string endDate)
-        {
-            var startDateData = startDate.Split('-');
-            var endDateData = endDate.Split('-');
-            string start;
-            string end;
-                           
-            if (startDate == endDate)
-            {                
-                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 0, 0, 0).ToString("yyyy-MM-dd HH:mm:ss");
-                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-            }
-            else
-            {
-                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-            }
-
-
+        {            
+            var sqlFilterDates = prepareSqlFilterDates(startDate, endDate);
             var sqlQuery = _jobListLimit.HasValue
                 ? string.Format(@"select count(j.Id) from (select top (@limit) Id from [{0}].Job where StateName = @state AND Arguments LIKE '%'+@filterString+'%' AND @start <= CreatedAt AND CreatedAt <= @end) as j", _storage.GetSchemaName())
                 : string.Format(@"select count(Id) from [{0}].Job where StateName = @state AND Arguments LIKE '%'+@filterString+'%' AND @start <= CreatedAt AND CreatedAt <= @end", _storage.GetSchemaName());
 
             var count = connection.Query<int>(
                  sqlQuery,
-                 new { state = stateName, limit = _jobListLimit, filterString = filterString, start = start, end = end })
+                 new { state = stateName, limit = _jobListLimit, filterString = filterString, start = sqlFilterDates[0], end = sqlFilterDates[1] })
                  .Single();
 
             return count;
@@ -567,30 +546,13 @@ where j.Id in @jobIds", _storage.GetSchemaName());
 
         private long GetNumberOfJobsByStateName(SqlConnection connection, string stateName, string startDate, string endDate)
         {
-            var startDateData = startDate.Split('-');
-            var endDateData = endDate.Split('-');
-            string start;
-            string end;
-
-            if (startDate == endDate)
-            {
-                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 0, 0, 0).ToString("yyyy-MM-dd HH:mm:ss");
-                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-            }
-            else
-            {
-                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-            }
-
-
+            var sqlFilterDates = prepareSqlFilterDates(startDate, endDate);            
             var sqlQuery = _jobListLimit.HasValue
                 ? string.Format(@"select count(j.Id) from (select top (@limit) Id from [{0}].Job where StateName = @state AND @start <= CreatedAt AND CreatedAt <= @end) as j", _storage.GetSchemaName())
                 : string.Format(@"select count(Id) from [{0}].Job where StateName = @state AND @start <= CreatedAt AND CreatedAt <= @end", _storage.GetSchemaName());
-
             var count = connection.Query<int>(
                  sqlQuery,
-                 new { state = stateName, limit = _jobListLimit, start = start, end = end })
+                 new { state = stateName, limit = _jobListLimit, start = sqlFilterDates[0], end = sqlFilterDates[1] })
                  .Single();
 
             return count;
@@ -623,7 +585,24 @@ where j.Id in @jobIds", _storage.GetSchemaName());
 
             return count;
         }
-
+        private string[] prepareSqlFilterDates([NotNull]string startDate, [NotNull]string endDate)
+        {
+            string start, end;
+            var startDateData = startDate.Split('-');
+            var endDateData = endDate.Split('-');
+           
+            if (startDate == endDate)
+            {
+                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 0, 0, 0).ToString("yyyy-MM-dd HH:mm:ss");
+                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            else
+            {
+                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
+                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            return new string[]{ start,end };
+        }
         private static Job DeserializeJob(string invocationData, string arguments)
         {
             var data = JobHelper.FromJson<InvocationData>(invocationData);
@@ -686,8 +665,7 @@ select * from (
                         jobsSql,
                         new { stateName = stateName, start = @from + 1, end = @from + count, filterString = filterString })
                         .ToList();
-
-           
+                       
             return DeserializeJobs(jobs, selector);
         }
 
@@ -701,12 +679,10 @@ select * from (
            string endDate,
            Func<SqlJob, Job, Dictionary<string, string>, TDto> selector)
         {
-
             var startDateData = startDate.Split('-');
             var endDateData = endDate.Split('-');
             string start;
             string end;
-
             if (startDate == endDate)
             {
                 start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 0, 0, 0).ToString("yyyy-MM-dd HH:mm:ss");
@@ -717,7 +693,6 @@ select * from (
                 start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
                 end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
             }
-
             string jobsSql = string.Format(@"
 select * from (
   select j.*, s.Reason as StateReason, s.Data as StateData, row_number() over (order by j.Id desc) as row_num
@@ -732,8 +707,7 @@ select * from (
                         jobsSql,
                         new { stateName = stateName, start = @from + 1, end = @from + count, filterString = filterString, startDate = start, endDate = end })
                         .ToList();
-
-
+            
             return DeserializeJobs(jobs, selector);
         }
 
@@ -752,7 +726,6 @@ select * from (
             var endDateData = endDate.Split('-');
             string start;
             string end;
-
             if (startDate == endDate)
             {
                 start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 0, 0, 0).ToString("yyyy-MM-dd HH:mm:ss");
@@ -763,7 +736,6 @@ select * from (
                 start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
                 end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
             }
-
             string jobsSql = string.Format(@"
 select * from (
   select j.*, s.Reason as StateReason, s.Data as StateData, row_number() over (order by j.Id desc) as row_num
@@ -778,8 +750,7 @@ select * from (
                         jobsSql,
                         new { stateName = stateName, start = @from + 1, end = @from + count, startDate = start, endDate = end })
                         .ToList();
-
-
+            
             return DeserializeJobs(jobs, selector);
         }
 
@@ -801,10 +772,8 @@ select * from (
                 result.Add(new KeyValuePair<string, TDto>(
                     job.Id.ToString(), dto));
             }
-
             return new JobList<TDto>(result);
         }
-
         private JobList<FetchedJobDto> FetchedJobs(
             SqlConnection connection,
             IEnumerable<int> jobIds)

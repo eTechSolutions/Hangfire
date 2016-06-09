@@ -589,7 +589,7 @@
                         document.getElementById("endDate").hidden = "hidden";                                               
                     }
                 })
-                                
+
                 $(".dateselector-start").datepick();
                 $(".dateselector-end").datepick();
                 updateListState();
