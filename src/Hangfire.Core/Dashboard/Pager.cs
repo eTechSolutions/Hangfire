@@ -83,31 +83,19 @@ namespace Hangfire.Dashboard
 
             PagerItems = GenerateItems();
         }
-
-        
-
-       
+               
         public string BasePageUrl { get; set; }
-
         public int FromRecord { get; private set; }
         public int RecordsPerPage { get; private set; }
         public int CurrentPage { get; private set; }
-
         public int TotalPageCount { get; private set; }
         public long TotalRecordCount { get; private set; }
         public string FailedJobsFilterText { get; private set; }
         public string FailedJobsFilterStartDate { get; private set; }
         public string FailedJobsFilterEndDate { get; private set; }
         internal ICollection<Item> PagerItems { get; private set; }
-
         public string PageUrl(int page)
-        {
-            /*
-            if (page < 1 || page > TotalPageCount) return "#";
-                        
-            return BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
-
-            */
+        {           
             if (page < 1 || page > TotalPageCount) return "#";
 
             string newUrl = BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
@@ -116,13 +104,9 @@ namespace Hangfire.Dashboard
 
             if ( !string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate) )
                 newUrl += "&startDate=" + FailedJobsFilterStartDate+ "&endDate=" + FailedJobsFilterEndDate;
-             
-            //if (0 > BasePageUrl.IndexOf("FailedJobs") && !string.IsNullOrEmpty(FailedJobsFilterText) ) newUrl += "&filterString=" + FailedJobsFilterText;
-
-            return newUrl;
-            
+                     
+            return newUrl;            
         }
-
 
         public string RecordsPerPageUrl(int perPage)
         {
@@ -134,8 +118,7 @@ namespace Hangfire.Dashboard
 
             if (!string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate))
                 newUrl += "&startDate=" + FailedJobsFilterStartDate + "&endDate=" + FailedJobsFilterEndDate;
-
-            //return BasePageUrl + "?from=0&count=" + perPage;
+                      
             return newUrl;
         }
 
