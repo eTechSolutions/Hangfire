@@ -31,18 +31,14 @@ namespace Hangfire.Dashboard
             : this(from, perPage, total, string.Empty)
         {
         }
-
-
         public Pager(int from, int perPage, long total, string filterString)
             :this(from,perPage,total,filterString,string.Empty,string.Empty)
         {
         }
-
         public Pager(int from, int perPage, long total, string startDate, string endDate)
             :this(from,perPage,total, string.Empty, startDate,endDate)
         {
         }
-
         public Pager(int from, int perPage, long total, string filterString, string startDate, string endDate)
         {
             FailedJobsFilterText = filterString;
@@ -54,8 +50,7 @@ namespace Hangfire.Dashboard
             TotalRecordCount = total;
             TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
             PagerItems = GenerateItems();
-        }
-               
+        }               
         public string BasePageUrl { get; set; }
         public int FromRecord { get; private set; }
         public int RecordsPerPage { get; private set; }
@@ -79,7 +74,6 @@ namespace Hangfire.Dashboard
             
             return newUrl;
         }
-
         public string RecordsPerPageUrl(int perPage)
         {
             if (perPage <= 0) return "#";
@@ -93,7 +87,6 @@ namespace Hangfire.Dashboard
                       
             return newUrl;
         }
-
         private ICollection<Item> GenerateItems()
         {
             // start page index
@@ -135,13 +128,11 @@ namespace Hangfire.Dashboard
 
             return pagerItems;
         }
-
         private void AddPrevious(ICollection<Item> results)
         {
             var item = new Item(CurrentPage - 1, CurrentPage == 1, ItemType.PrevPage);
             results.Add(item);
         }
-
         private void AddMoreBefore(ICollection<Item> results)
         {
             if (_startPageIndex > 2)
@@ -152,7 +143,6 @@ namespace Hangfire.Dashboard
                 results.Add(item);
             }
         }
-
         private void AddMoreAfter(ICollection<Item> results)
         {
             if (_endPageIndex < TotalPageCount - 1)
@@ -163,7 +153,6 @@ namespace Hangfire.Dashboard
                 results.Add(item);
             }
         }
-
         private void AddPageNumbers(ICollection<Item> results)
         {
             for (var pageIndex = _startPageIndex; pageIndex <= _endPageIndex; pageIndex++)
@@ -172,13 +161,11 @@ namespace Hangfire.Dashboard
                 results.Add(item);
             }
         }
-
         private void AddNext(ICollection<Item> results)
         {
             var item = new Item(CurrentPage + 1, CurrentPage >= TotalPageCount, ItemType.NextPage);
             results.Add(item);
         }
-
         internal class Item
         {
             public Item(int pageIndex, bool disabled, ItemType type)
@@ -192,7 +179,6 @@ namespace Hangfire.Dashboard
             public bool Disabled { get; private set; }
             public ItemType Type { get; private set; }
         }
-
         internal enum ItemType
         {
             Page,
