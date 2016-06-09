@@ -28,46 +28,19 @@ namespace Hangfire.Dashboard
         private int _endPageIndex = 1;
 
         public Pager(int from, int perPage, long total)
+            : this(from, perPage, total, string.Empty)
         {
-            FailedJobsFilterText = "";
-            FailedJobsFilterStartDate = "";
-            FailedJobsFilterEndDate = "";
-            FromRecord = from >= 0 ? from : 0;
-            RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
-            CurrentPage = FromRecord / RecordsPerPage + 1;
-            TotalRecordCount = total;           
-            TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);            
-
-            PagerItems = GenerateItems();
         }
 
 
         public Pager(int from, int perPage, long total, string filterString)
+            :this(from,perPage,total,filterString,string.Empty,string.Empty)
         {
-            FailedJobsFilterText = filterString;
-            FailedJobsFilterStartDate = "";
-            FailedJobsFilterEndDate = "";
-            FromRecord = from >= 0 ? from : 0;
-            RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
-            CurrentPage = FromRecord / RecordsPerPage + 1;
-            TotalRecordCount = total;            
-            TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
-
-            PagerItems = GenerateItems();
         }
 
         public Pager(int from, int perPage, long total, string startDate, string endDate)
+            :this(from,perPage,total, string.Empty, startDate,endDate)
         {
-            FailedJobsFilterText = "";
-            FailedJobsFilterStartDate = startDate;
-            FailedJobsFilterEndDate = endDate;
-            FromRecord = from >= 0 ? from : 0;
-            RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
-            CurrentPage = FromRecord / RecordsPerPage + 1;
-            TotalRecordCount = total;
-            TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
-
-            PagerItems = GenerateItems();
         }
 
         public Pager(int from, int perPage, long total, string filterString, string startDate, string endDate)
@@ -80,7 +53,6 @@ namespace Hangfire.Dashboard
             CurrentPage = FromRecord / RecordsPerPage + 1;
             TotalRecordCount = total;
             TotalPageCount = (int)Math.Ceiling((double)TotalRecordCount / RecordsPerPage);
-
             PagerItems = GenerateItems();
         }
                
@@ -95,7 +67,7 @@ namespace Hangfire.Dashboard
         public string FailedJobsFilterEndDate { get; private set; }
         internal ICollection<Item> PagerItems { get; private set; }
         public string PageUrl(int page)
-        {           
+        {
             if (page < 1 || page > TotalPageCount) return "#";
 
             string newUrl = BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
@@ -104,14 +76,14 @@ namespace Hangfire.Dashboard
 
             if ( !string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate) )
                 newUrl += "&startDate=" + FailedJobsFilterStartDate+ "&endDate=" + FailedJobsFilterEndDate;
-                     
-            return newUrl;            
+            
+            return newUrl;
         }
 
         public string RecordsPerPageUrl(int perPage)
         {
             if (perPage <= 0) return "#";
-            
+                        
             string newUrl = BasePageUrl + "?from=0&count=" + perPage;
 
             if (!string.IsNullOrEmpty(FailedJobsFilterText)) newUrl += "&filterString=" + FailedJobsFilterText;            
