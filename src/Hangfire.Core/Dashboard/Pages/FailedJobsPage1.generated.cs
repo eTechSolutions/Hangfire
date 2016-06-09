@@ -74,8 +74,7 @@ WriteLiteral("\r\n");
         pager = new Pager(from, perPage, monitor.FailedCount(filterString), filterString);
         failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, filterString);
     }
-    else if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
-    {
+    else if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))    {
         pager = new Pager(from, perPage, monitor.FailedCount(startDate, endDate), startDate, endDate);
         failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, startDate, endDate);
     }
