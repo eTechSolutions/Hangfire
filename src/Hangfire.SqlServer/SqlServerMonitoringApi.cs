@@ -80,7 +80,7 @@ namespace Hangfire.SqlServer
         public long FailedCount(string startDate, string endDate)
         {
             return UseConnection(connection =>
-                GetNumberOfJobsByStateName(connection, FailedState.StateName, startDate,endDate));
+                GetNumberOfJobsByStateName(connection, FailedState.StateName, startDate, endDate));
         }
 
         public long FailedCount()
@@ -161,6 +161,7 @@ namespace Hangfire.SqlServer
                 return result;
             });
         }
+
         public JobList<FailedJobDto> FailedJobs(int @from, int count)
         {
             return UseConnection(connection => GetJobs(
@@ -178,6 +179,7 @@ namespace Hangfire.SqlServer
                     FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
                 }));
         }
+
         public JobList<FailedJobDto> FailedJobs(int @from, int count, string filterString)
         {
             return UseConnection(connection => GetJobs(
@@ -195,7 +197,8 @@ namespace Hangfire.SqlServer
                     ExceptionType = stateData["ExceptionType"],
                     FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
                 }));
-        }        
+        }
+
         public JobList<FailedJobDto> FailedJobs(int @from, int count, string filterString, string startDate, string endDate)
         {
             return UseConnection(connection => GetJobs(
@@ -216,6 +219,7 @@ namespace Hangfire.SqlServer
                     FailedAt = JobHelper.DeserializeNullableDateTime(stateData["FailedAt"])
                 }));
         }
+
         public JobList<FailedJobDto> FailedJobs(int @from, int count, string startDate, string endDate)
         {
             return UseConnection(connection => GetJobs(
@@ -601,7 +605,8 @@ where j.Id in @jobIds", _storage.GetSchemaName());
                 start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
                 end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
             }
-            return new string[]{ start,end };
+
+            return new string[]{ start, end };
         }
         private static Job DeserializeJob(string invocationData, string arguments)
         {
@@ -804,7 +809,5 @@ where j.Id in @jobIds", _storage.GetSchemaName());
 
             return new JobList<FetchedJobDto>(result);
         }
-
-        
     }
 }
