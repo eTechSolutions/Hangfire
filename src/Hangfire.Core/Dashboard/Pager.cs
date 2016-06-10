@@ -60,7 +60,9 @@ namespace Hangfire.Dashboard
         public string FailedJobsFilterText { get; private set; }
         public string FailedJobsFilterStartDate { get; private set; }
         public string FailedJobsFilterEndDate { get; private set; }
+
         internal ICollection<Item> PagerItems { get; private set; }
+
         public string PageUrl(int page)
         {
             if (page < 1 || page > TotalPageCount) return "#";
