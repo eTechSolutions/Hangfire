@@ -30,8 +30,12 @@ namespace Hangfire.Dashboard
             "moment.min.js",
             "d3.min.js", 
             "d3.layout.min.js", 
-            "rickshaw.min.js", 
-            "hangfire.js",
+            "rickshaw.min.js",
+            "Metrics.js",
+            "RealTimeGraph.js",
+            "HistoryGraph.js",
+            "StatisticsPoller.js",
+            "Page.js",
             "jquery.plugin.min.js",
             "jquery.datepick.min.js"
         };
