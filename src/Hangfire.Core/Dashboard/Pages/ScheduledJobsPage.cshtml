@@ -1,6 +1,7 @@
 ﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: True *@
 @using Hangfire.Dashboard
 @using Hangfire.Dashboard.Pages
+@using Hangfire.States;
 @inherits RazorPage
 @{
     Layout = new LayoutPage("Scheduled Jobs");
@@ -9,10 +10,13 @@
 
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
+    string filterString = Query("filterString");
+    string startDate = Query("startDate");
+    string endDate = Query("endDate");
 
     var monitor = Storage.GetMonitoringApi();
-    var pager = new Pager(from, perPage, monitor.ScheduledCount());
-    var scheduledJobs = monitor.ScheduledJobs(pager.FromRecord, pager.RecordsPerPage);
+    var pager = new Pager(from, perPage, monitor.JobCountByStateName(ScheduledState.StateName, filterString,startDate,endDate), filterString, startDate, endDate);
+    var scheduledJobs = monitor.ScheduledJobs(pager);
 }
 
 <div class="row">
@@ -48,7 +52,22 @@
                         <span class="glyphicon glyphicon-remove"></span>
                         Delete selected
                     </button>
-
+                    <br>
+                    <br>
+                    <button class="js-jobs-filter-command btn btn-sm btn-default"
+                            data-url="@Url.To("/jobs/failed")">
+                        <span class="glyphicon glyphicon-repeat"></span>
+                        Filter jobs
+                    </button>
+                    <input type="text" value="" id="filterValueString" class="js-jobs-filtertext-clear fltr-txtbx btn-sm" />
+                    <input id="filterOnDate" type="checkbox" class="js-jobs-filterOnDate-checked">Filter on date</input>
+                    @{
+                        var todaysDate = System.DateTime.Now.ToShortDateString();
+                    }
+                    <br />
+                    <br />
+                    <input value="@todaysDate" style="width: 100px; margin:0px 0px 0px 110px;" readonly="" class="dateselector-start" id="startDate" hidden="hidden" />
+                    <input value="@todaysDate" style="width: 100px;" readonly="" class="dateselector-end" id="endDate" hidden="hidden" />
                     @Html.PerPageSelector(pager)
                 </div>
 

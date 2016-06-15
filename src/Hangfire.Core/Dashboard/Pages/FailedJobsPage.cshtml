@@ -2,6 +2,7 @@
 @using System
 @using Hangfire.Dashboard
 @using Hangfire.Dashboard.Pages
+@using Hangfire.States;
 @inherits RazorPage
 @{
     Layout = new LayoutPage("Failed Jobs");
@@ -15,30 +16,8 @@
     int.TryParse(Query("count"), out perPage);
 
     var monitor = Storage.GetMonitoringApi();
-    Hangfire.Dashboard.Pager pager;
-    Hangfire.Storage.Monitoring.JobList<Hangfire.Storage.Monitoring.FailedJobDto> failedJobs;
-
-    if (!string.IsNullOrEmpty(filterString) && !string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate) )
-    {
-        pager = new Pager(from, perPage, monitor.FailedCount(filterString, startDate, endDate), filterString, startDate, endDate);
-        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, filterString, startDate, endDate);
-    }
-    else if (!string.IsNullOrEmpty(filterString) )
-    {
-        pager = new Pager(from, perPage, monitor.FailedCount(filterString), filterString);
-        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, filterString);
-    }
-    else if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
-    {
-        pager = new Pager(from, perPage, monitor.FailedCount(startDate, endDate), startDate, endDate);
-        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage, startDate, endDate);
-    }
-    else
-    {
-        pager = new Pager(from, perPage, monitor.FailedCount());
-        failedJobs = monitor.FailedJobs(pager.FromRecord, pager.RecordsPerPage);
-    }
-
+    var pager = new Pager(from, perPage, monitor.JobCountByStateName(FailedState.StateName,filterString, startDate, endDate), filterString, startDate, endDate);
+    var failedJobs = monitor.FailedJobs(pager);   
 }
 
 <div class="row">
@@ -94,8 +73,7 @@
                     <br />
                     <br />                    
                     <input value="@todaysDate" style="width: 100px; margin:0px 0px 0px 110px;" readonly=""  class="dateselector-start" id="startDate" hidden="hidden" />                        
-                    <input value="@todaysDate" style="width: 100px;" readonly=""  class="dateselector-end" id="endDate" hidden="hidden" />
-                    
+                    <input value="@todaysDate" style="width: 100px;" readonly=""  class="dateselector-end" id="endDate" hidden="hidden" />                    
 
                     @Html.PerPageSelector(pager)                    
                 </div>

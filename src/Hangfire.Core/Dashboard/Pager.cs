@@ -41,9 +41,9 @@ namespace Hangfire.Dashboard
         }
         public Pager(int from, int perPage, long total, string filterString, string startDate, string endDate)
         {
-            FailedJobsFilterText = filterString;
-            FailedJobsFilterStartDate = startDate;
-            FailedJobsFilterEndDate = endDate;
+            JobsFilterText = string.IsNullOrEmpty(filterString) ? null : filterString;
+            JobsFilterStartDate = string.IsNullOrEmpty(startDate) ? null : startDate;
+            JobsFilterEndDate = string.IsNullOrEmpty(endDate) ? null : endDate;
             FromRecord = from >= 0 ? from : 0;
             RecordsPerPage = perPage > 0 ? perPage : DefaultRecordsPerPage;
             CurrentPage = FromRecord / RecordsPerPage + 1;
@@ -57,9 +57,9 @@ namespace Hangfire.Dashboard
         public int CurrentPage { get; private set; }
         public int TotalPageCount { get; private set; }
         public long TotalRecordCount { get; private set; }
-        public string FailedJobsFilterText { get; private set; }
-        public string FailedJobsFilterStartDate { get; private set; }
-        public string FailedJobsFilterEndDate { get; private set; }
+        public string JobsFilterText { get; private set; }
+        public string JobsFilterStartDate { get; private set; }
+        public string JobsFilterEndDate { get; private set; }
 
         internal ICollection<Item> PagerItems { get; private set; }
 
@@ -69,10 +69,10 @@ namespace Hangfire.Dashboard
 
             string newUrl = BasePageUrl + "?from=" + ((page - 1) * RecordsPerPage) + "&count=" + RecordsPerPage;
 
-            if ( !string.IsNullOrEmpty(FailedJobsFilterText) ) newUrl += "&filterString=" + FailedJobsFilterText;
+            if ( !string.IsNullOrEmpty(JobsFilterText) ) newUrl += "&filterString=" + JobsFilterText;
 
-            if ( !string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate) )
-                newUrl += "&startDate=" + FailedJobsFilterStartDate+ "&endDate=" + FailedJobsFilterEndDate;
+            if ( !string.IsNullOrEmpty(JobsFilterStartDate) && !string.IsNullOrEmpty(JobsFilterEndDate) )
+                newUrl += "&startDate=" + JobsFilterStartDate+ "&endDate=" + JobsFilterEndDate;
             
             return newUrl;
         }
@@ -82,10 +82,10 @@ namespace Hangfire.Dashboard
                         
             string newUrl = BasePageUrl + "?from=0&count=" + perPage;
 
-            if (!string.IsNullOrEmpty(FailedJobsFilterText)) newUrl += "&filterString=" + FailedJobsFilterText;            
+            if (!string.IsNullOrEmpty(JobsFilterText)) newUrl += "&filterString=" + JobsFilterText;            
 
-            if (!string.IsNullOrEmpty(FailedJobsFilterStartDate) && !string.IsNullOrEmpty(FailedJobsFilterEndDate))
-                newUrl += "&startDate=" + FailedJobsFilterStartDate + "&endDate=" + FailedJobsFilterEndDate;
+            if (!string.IsNullOrEmpty(JobsFilterStartDate) && !string.IsNullOrEmpty(JobsFilterEndDate))
+                newUrl += "&startDate=" + JobsFilterStartDate + "&endDate=" + JobsFilterEndDate;
                       
             return newUrl;
         }
