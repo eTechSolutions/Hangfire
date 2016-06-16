@@ -26,20 +26,8 @@ namespace Hangfire.Dashboard
 
         private int _startPageIndex = 1;
         private int _endPageIndex = 1;
-
-        public Pager(int from, int perPage, long total)
-            : this(from, perPage, total, string.Empty)
-        {
-        }
-        public Pager(int from, int perPage, long total, string filterString)
-            :this(from,perPage,total,filterString,string.Empty,string.Empty)
-        {
-        }
-        public Pager(int from, int perPage, long total, string startDate, string endDate)
-            :this(from,perPage,total, string.Empty, startDate,endDate)
-        {
-        }
-        public Pager(int from, int perPage, long total, string filterString, string startDate, string endDate)
+                
+        public Pager(int from, int perPage, long total, string filterString = null, string startDate = null, string endDate = null)
         {
             JobsFilterText = string.IsNullOrEmpty(filterString) ? null : filterString;
             JobsFilterStartDate = string.IsNullOrEmpty(startDate) ? null : startDate;
