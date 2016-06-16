@@ -21,6 +21,7 @@ using System.Linq;
 using System.Transactions;
 using Dapper;
 using Hangfire.Annotations;
+using Hangfire.Dashboard;
 
 namespace Hangfire.SqlServer
 {
@@ -61,21 +62,30 @@ namespace Hangfire.SqlServer
             }  
         }
 
-        public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage)
+        public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, string filterString = null, string startDate = null, string endDate = null)
         {
+            string[] sqlFilterDates = prepareSqlFilterDates(startDate, endDate);
+
+            string[] queryParams = new string[]
+            {
+                  _storage.GetSchemaName(),
+                  string.IsNullOrEmpty(filterString) ? string.Empty : " and j.Arguments LIKE '%'+@filterString+'%' ",
+                  string.IsNullOrEmpty(startDate) || string.IsNullOrEmpty(endDate) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
+            };
+           
             string sqlQuery = string.Format(@"
-select r.JobId from (
+select distinct r.JobId from (
   select jq.JobId, row_number() over (order by jq.Id) as row_num 
-  from [{0}].JobQueue jq
-  where jq.Queue = @queue
+  from [{0}].JobQueue as jq, [{0}].Job as j 
+  where jq.Queue = @queue AND jq.JobId = j.Id {1} {2}  
 ) as r
-where r.row_num between @start and @end", _storage.GetSchemaName());
+where r.row_num between @start and @end", queryParams);
 
             return UseTransaction(connection =>
             {
                 return connection.Query<JobIdDto>(
                     sqlQuery,
-                    new { queue = queue, start = from + 1, end = @from + perPage })
+                    new { queue = queue, start = from + 1, end = @from + perPage, filterString = filterString, startDate = sqlFilterDates[0], endDate =sqlFilterDates[1] })
                     .ToList()
                     .Select(x => x.JobId)
                     .ToList();
@@ -87,14 +97,27 @@ where r.row_num between @start and @end", _storage.GetSchemaName());
             return Enumerable.Empty<int>();
         }
 
-        public EnqueuedAndFetchedCountDto GetEnqueuedAndFetchedCount(string queue)
+        public EnqueuedAndFetchedCountDto GetEnqueuedAndFetchedCount(string queue, string filterString = null, string startDate = null, string endDate = null)
         {
-            string sqlQuery = string.Format(@"
-select count(Id) from [{0}].JobQueue where [Queue] = @queue", _storage.GetSchemaName());
+            string[] sqlFilterDates = prepareSqlFilterDates(startDate, endDate);
 
+            bool hasFilterValues = string.IsNullOrEmpty(filterString) && string.IsNullOrEmpty(startDate) && string.IsNullOrEmpty(endDate);
+
+            string[] queryParams = queryParams = new string[]
+            {
+                  _storage.GetSchemaName(),
+                  string.IsNullOrEmpty(filterString) ? string.Empty : " and j.Arguments LIKE '%'+@filterString+'%' ",
+                  string.IsNullOrEmpty(startDate) || string.IsNullOrEmpty(endDate) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
+            };
+            
+            string sqlQuery = string.Format(@"
+    select count(jq.Id) 
+    from [{0}].JobQueue as jq, [{0}].Job as j 
+    where jq.Queue = @queue and jq.JobId = j.Id {1} {2} ", queryParams);
+                        
             return UseTransaction(connection =>
             {
-                var result = connection.Query<int>(sqlQuery, new { queue = queue }).Single();
+                var result = connection.Query<int>(sqlQuery, new { queue = queue, filterString = filterString, startDate = sqlFilterDates[0], endDate = sqlFilterDates[1] }).Single();
 
                 return new EnqueuedAndFetchedCountDto
                 {
@@ -113,5 +136,27 @@ select count(Id) from [{0}].JobQueue where [Queue] = @queue", _storage.GetSchema
             [UsedImplicitly]
             public int JobId { get; set; }
         }
+
+        private string[] prepareSqlFilterDates([NotNull]string startDate, [NotNull]string endDate)
+        {
+            if (string.IsNullOrEmpty(startDate) || string.IsNullOrEmpty(endDate)) return new string[] { string.Empty, string.Empty };
+
+            string start, end;
+            var startDateData = startDate.Split('-');
+            var endDateData = endDate.Split('-');
+
+            if (startDate == endDate)
+            {
+                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 0, 0, 0).ToString("yyyy-MM-dd HH:mm:ss");
+                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            else
+            {
+                start = new DateTime(int.Parse(startDateData[2]), int.Parse(startDateData[1]), int.Parse(startDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
+                end = new DateTime(int.Parse(endDateData[2]), int.Parse(endDateData[1]), int.Parse(endDateData[0]), 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            return new string[] { start, end };
+        }        
     }
 }

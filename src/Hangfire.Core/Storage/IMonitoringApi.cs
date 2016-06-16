@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using Hangfire.Storage.Monitoring;
+using Hangfire.Dashboard;
 
 namespace Hangfire.Storage
 {
@@ -27,30 +28,19 @@ namespace Hangfire.Storage
         JobDetailsDto JobDetails(string jobId);
         StatisticsDto GetStatistics();
 
-        JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int from, int perPage);
+        JobList<EnqueuedJobDto> EnqueuedJobs(string queue, Pager pager);
         JobList<FetchedJobDto> FetchedJobs(string queue, int from, int perPage);
+                
+        JobList<ProcessingJobDto> ProcessingJobs(Pager pager);
+        JobList<ScheduledJobDto> ScheduledJobs(Pager pager);
+        JobList<SucceededJobDto> SucceededJobs(Pager pager);
+        JobList<FailedJobDto> FailedJobs(Pager pager);
+        JobList<DeletedJobDto> DeletedJobs(Pager pager);
 
-        JobList<ProcessingJobDto> ProcessingJobs(int from, int count);
-        JobList<ScheduledJobDto> ScheduledJobs(int from, int count);
-        JobList<SucceededJobDto> SucceededJobs(int from, int count);
-        JobList<FailedJobDto> FailedJobs(int from, int count);
-        JobList<FailedJobDto> FailedJobs(int from, int count, string filterString);
-        JobList<FailedJobDto> FailedJobs(int from, int count, string startDate, string endDate);
-        JobList<FailedJobDto> FailedJobs(int from, int count, string filterString, string startDate, string endDate);
-        JobList<DeletedJobDto> DeletedJobs(int from, int count);
+        long JobCountByStateName(string stateName, string filterString = null, string startDate = null, string endDate = null);        
+        long EnqueuedCount(string queue, String filterString = null, string StartDate = null, string endDate = null);
+        long FetchedCount(string queue);        
 
-        long ScheduledCount();
-        long EnqueuedCount(string queue);
-        long FetchedCount(string queue);
-        long FailedCount(string filterString, string startDate, string endDate);
-        long FailedCount(string filterString);
-        long FailedCount(string startDate, string endDate);
-        long FailedCount();
-        long ProcessingCount();
-
-        long SucceededListCount();
-        long DeletedListCount();
-        
         IDictionary<DateTime, long> SucceededByDatesCount();
         IDictionary<DateTime, long> FailedByDatesCount();
         IDictionary<DateTime, long> HourlySucceededJobs();

@@ -21,8 +21,8 @@ namespace Hangfire.SqlServer
     public interface IPersistentJobQueueMonitoringApi
     {
         IEnumerable<string> GetQueues();
-        IEnumerable<int> GetEnqueuedJobIds(string queue, int from, int perPage);
+        IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, string filterString = null, string startDate = null, string endDate = null);
         IEnumerable<int> GetFetchedJobIds(string queue, int from, int perPage);
-        EnqueuedAndFetchedCountDto GetEnqueuedAndFetchedCount(string queue);
+        EnqueuedAndFetchedCountDto GetEnqueuedAndFetchedCount(string queue, string filterString = null, string startDate = null, string endDate = null);
     }
 }
