@@ -50,17 +50,11 @@ namespace Hangfire.SqlServer
                  GetNumberOfJobsByStateName(connection, stateName, filterString, startDate, endDate));
         }
  
-         /*Replaced by JobCountByStateName() method */
-        public long ScheduledCount()
-        {
-            return UseConnection(connection => 
-                GetNumberOfJobsByStateName(connection, ScheduledState.StateName));
-        }
-
-        public long EnqueuedCount(string queue)
+        /* 4 parameter option has only been implemented on SqlServer database version! See code in file: "SqlServerJobQueueMonitoringApi.cs" */
+        public long EnqueuedCount(string queue, string filterString = null, string startDate = null, string endDate = null)
         {
             var queueApi = GetQueueApi(queue);
-            var counters = queueApi.GetEnqueuedAndFetchedCount(queue);
+            var counters = queueApi.GetEnqueuedAndFetchedCount(queue, filterString, startDate, endDate);
 
             return counters.EnqueuedCount ?? 0;
         }
@@ -72,21 +66,7 @@ namespace Hangfire.SqlServer
 
             return counters.FetchedCount ?? 0;
         }
-
-        /*Replaced by JobCountByStateName() method */ 
-        public long FailedCount()
-        {
-            return UseConnection(connection =>
-                GetNumberOfJobsByStateName(connection, FailedState.StateName));
-        }
-
-        /*Replaced by JobCountByStateName() method */
-        public long ProcessingCount()
-        {
-            return UseConnection(connection => 
-                GetNumberOfJobsByStateName(connection, ProcessingState.StateName));
-        }
-
+            
         public JobList<ProcessingJobDto> ProcessingJobs(Pager pager)
         {
             return UseConnection(connection => GetJobs(
@@ -230,10 +210,10 @@ namespace Hangfire.SqlServer
             return result;
         }
 
-        public JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int @from, int perPage)
+        public JobList<EnqueuedJobDto> EnqueuedJobs(string queue, Pager pager)
         {
             var queueApi = GetQueueApi(queue);
-            var enqueuedJobIds = queueApi.GetEnqueuedJobIds(queue, from, perPage);
+            var enqueuedJobIds = queueApi.GetEnqueuedJobIds(queue, @pager.FromRecord, pager.RecordsPerPage, pager.JobsFilterText, pager.JobsFilterStartDate, pager.JobsFilterEndDate);
 
             return UseConnection(connection => EnqueuedJobs(connection, enqueuedJobIds));
         }
@@ -299,19 +279,7 @@ select * from [{0}].State where JobId = @id order by Id desc", _storage.GetSchem
                 }
             });
         }
-
-        public long SucceededListCount()
-        {
-            return UseConnection(connection => 
-                GetNumberOfJobsByStateName(connection, SucceededState.StateName));
-        }
-
-        public long DeletedListCount()
-        {
-            return UseConnection(connection => 
-                GetNumberOfJobsByStateName(connection, DeletedState.StateName));
-        }
-
+        
         public StatisticsDto GetStatistics()
         {
             string sql = string.Format(@"
@@ -422,7 +390,7 @@ where [Key] in @keys", _storage.GetSchemaName());
         }
 
         private IPersistentJobQueueMonitoringApi GetQueueApi(string queueName)
-        {
+         {
             var provider = _storage.QueueProviders.GetProvider(queueName);
             var monitoringApi = provider.GetJobQueueMonitoringApi();
 

@@ -28,7 +28,7 @@ namespace Hangfire.Storage
         JobDetailsDto JobDetails(string jobId);
         StatisticsDto GetStatistics();
 
-        JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int from, int perPage);
+        JobList<EnqueuedJobDto> EnqueuedJobs(string queue, Pager pager);
         JobList<FetchedJobDto> FetchedJobs(string queue, int from, int perPage);
                 
         JobList<ProcessingJobDto> ProcessingJobs(Pager pager);
@@ -37,15 +37,9 @@ namespace Hangfire.Storage
         JobList<FailedJobDto> FailedJobs(Pager pager);
         JobList<DeletedJobDto> DeletedJobs(Pager pager);
 
-        long JobCountByStateName(string stateName, string filterString = null, string startDate = null, string endDate = null);
-        long ScheduledCount(); /*Replaced by JobCountByStateName() method */
-        long EnqueuedCount(string queue);
-        long FetchedCount(string queue);
-        long FailedCount(); /*Replaced by JobCountByStateName() method */
-        long ProcessingCount(); /*Replaced by JobCountByStateName() method */
-
-        long SucceededListCount(); /*Replaced by JobCountByStateName() method */
-        long DeletedListCount(); /*Replaced by JobCountByStateName() method */
+        long JobCountByStateName(string stateName, string filterString = null, string startDate = null, string endDate = null);        
+        long EnqueuedCount(string queue, String filterString = null, string StartDate = null, string endDate = null);
+        long FetchedCount(string queue);        
 
         IDictionary<DateTime, long> SucceededByDatesCount();
         IDictionary<DateTime, long> FailedByDatesCount();

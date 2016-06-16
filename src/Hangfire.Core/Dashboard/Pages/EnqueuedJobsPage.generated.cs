@@ -70,8 +70,8 @@ WriteLiteral("\r\n");
     string endDate = Query("endDate");
 
     var monitor = Storage.GetMonitoringApi();
-    var pager = new Pager(from, perPage, monitor.EnqueuedCount(Queue));
-    var enqueuedJobs = monitor.EnqueuedJobs(Queue, pager.FromRecord, pager.RecordsPerPage);
+    var pager = new Pager(from, perPage, monitor.EnqueuedCount(Queue, filterString, startDate, endDate), filterString, startDate, endDate);
+    var enqueuedJobs = monitor.EnqueuedJobs(Queue, pager);
 
 
             
