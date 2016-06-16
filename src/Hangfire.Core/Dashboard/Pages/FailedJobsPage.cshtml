@@ -17,7 +17,7 @@
 
     var monitor = Storage.GetMonitoringApi();
     var pager = new Pager(from, perPage, monitor.JobCountByStateName(FailedState.StateName,filterString, startDate, endDate), filterString, startDate, endDate);
-    var failedJobs = monitor.FailedJobs(pager);   
+    var failedJobs = monitor.FailedJobs(pager);
 }
 
 <div class="row">
@@ -73,9 +73,8 @@
                     <br />
                     <br />                    
                     <input value="@todaysDate" style="width: 100px; margin:0px 0px 0px 110px;" readonly=""  class="dateselector-start" id="startDate" hidden="hidden" />                        
-                    <input value="@todaysDate" style="width: 100px;" readonly=""  class="dateselector-end" id="endDate" hidden="hidden" />                    
-
-                    @Html.PerPageSelector(pager)                    
+                    <input value="@todaysDate" style="width: 100px;" readonly=""  class="dateselector-end" id="endDate" hidden="hidden" />
+                    @Html.PerPageSelector(pager)
                 </div>
                     
                                

@@ -80,7 +80,7 @@ namespace Hangfire.Dashboard
         {
             if (perPage <= 0) return "#";
                         
-            string newUrl = BasePageUrl + "?from=0&count=" + perPage;
+            var newUrl = BasePageUrl + "?from=0&count=" + perPage;
 
             if (!string.IsNullOrEmpty(JobsFilterText)) newUrl += "&filterString=" + JobsFilterText;            
 
