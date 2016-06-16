@@ -81,7 +81,7 @@ select distinct r.JobId from (
 ) as r
 where r.row_num between @start and @end", queryParams);
 
-            var temp = UseTransaction(connection =>
+            return UseTransaction(connection =>
             {
                 return connection.Query<JobIdDto>(
                     sqlQuery,
@@ -90,8 +90,6 @@ where r.row_num between @start and @end", queryParams);
                     .Select(x => x.JobId)
                     .ToList();
             });
-
-            return temp;
         }
 
         public IEnumerable<int> GetFetchedJobIds(string queue, int @from, int perPage)
