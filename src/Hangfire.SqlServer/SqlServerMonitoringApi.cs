@@ -46,7 +46,16 @@ namespace Hangfire.SqlServer
                
         public long JobCountByStateName(string stateName, string filterString = null, string startDate = null, string endDate = null)
         {
-             return UseConnection(connection =>
+            var allowedStates = new String[]{
+                FailedState.StateName,
+                SucceededState.StateName,
+                ScheduledState.StateName,
+                ProcessingState.StateName,
+                DeletedState.StateName };
+
+            if(!allowedStates.Contains(stateName)) throw new Exception("JobCountByStateName() method does not support the jobstate: " + stateName);
+
+            return UseConnection(connection =>
                  GetNumberOfJobsByStateName(connection, stateName, filterString, startDate, endDate));
         }
  
@@ -66,13 +75,13 @@ namespace Hangfire.SqlServer
 
             return counters.FetchedCount ?? 0;
         }
-            
+                
         public JobList<ProcessingJobDto> ProcessingJobs(Pager pager)
         {
             return UseConnection(connection => GetJobs(
-                connection,                
-                ProcessingState.StateName,
+                connection,
                 pager,
+                ProcessingState.StateName,                
                 (sqlJob, job, stateData) => new ProcessingJobDto
                 {
                     Job = job,
@@ -84,9 +93,9 @@ namespace Hangfire.SqlServer
         public JobList<ScheduledJobDto> ScheduledJobs(Pager pager)
         {
             return UseConnection(connection => GetJobs(
-                connection,                
-                ScheduledState.StateName,
+                connection,
                 pager,
+                ScheduledState.StateName,                
                 (sqlJob, job, stateData) => new ScheduledJobDto
                 {
                     Job = job,
@@ -137,9 +146,9 @@ namespace Hangfire.SqlServer
         public JobList<FailedJobDto> FailedJobs(Pager pager)
         {
             return UseConnection(connection => GetJobs(
-                connection,               
-                FailedState.StateName,
-                 pager,
+                connection,
+                pager,
+                FailedState.StateName,                
                 (sqlJob, job, stateData) => new FailedJobDto
                 {
                     Job = job,
@@ -154,9 +163,9 @@ namespace Hangfire.SqlServer
         public JobList<SucceededJobDto> SucceededJobs(Pager pager)
         {
             return UseConnection(connection => GetJobs(
-                connection,                
-                SucceededState.StateName,
+                connection,
                 pager,
+                SucceededState.StateName,                
                 (sqlJob, job, stateData) => new SucceededJobDto
                 {
                     Job = job,
@@ -171,9 +180,9 @@ namespace Hangfire.SqlServer
         public JobList<DeletedJobDto> DeletedJobs(Pager pager)
         {
             return UseConnection(connection => GetJobs(
-                connection,                
-                DeletedState.StateName,
+                connection,
                 pager,
+                DeletedState.StateName,                
                 (sqlJob, job, stateData) => new DeletedJobDto
                 {
                     Job = job,
@@ -486,11 +495,11 @@ where j.Id in @jobIds", _storage.GetSchemaName());
                 return null;
             }
         }
-                
+        
         private JobList<TDto> GetJobs<TDto>(
-           SqlConnection connection,           
-           string stateName,
+           SqlConnection connection,
            Pager pager,
+           string stateName,           
            Func<SqlJob, Job, Dictionary<string, string>, TDto> selector)
         {
             string[] queryParams = new string[]
