@@ -38,7 +38,7 @@ namespace Hangfire.Storage
         JobList<DeletedJobDto> DeletedJobs(Pager pager);
 
         long JobCountByStateName(string stateName, string filterString = null, string startDate = null, string endDate = null);        
-        long EnqueuedCount(string queue, String filterString = null, string StartDate = null, string endDate = null);
+        long EnqueuedCount(string queue, string filterString = null, string StartDate = null, string endDate = null);
         long FetchedCount(string queue);        
 
         IDictionary<DateTime, long> SucceededByDatesCount();

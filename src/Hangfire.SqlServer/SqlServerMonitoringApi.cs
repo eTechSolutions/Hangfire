@@ -399,7 +399,7 @@ where [Key] in @keys", _storage.GetSchemaName());
         }
 
         private IPersistentJobQueueMonitoringApi GetQueueApi(string queueName)
-         {
+        {
             var provider = _storage.QueueProviders.GetProvider(queueName);
             var monitoringApi = provider.GetJobQueueMonitoringApi();
 
@@ -548,6 +548,7 @@ select * from (
             }
             return new JobList<TDto>(result);
         }
+
         private JobList<FetchedJobDto> FetchedJobs(
             SqlConnection connection,
             IEnumerable<int> jobIds)

@@ -118,11 +118,13 @@ namespace Hangfire.Dashboard
 
             return pagerItems;
         }
+
         private void AddPrevious(ICollection<Item> results)
         {
             var item = new Item(CurrentPage - 1, CurrentPage == 1, ItemType.PrevPage);
             results.Add(item);
         }
+
         private void AddMoreBefore(ICollection<Item> results)
         {
             if (_startPageIndex > 2)
@@ -133,6 +135,7 @@ namespace Hangfire.Dashboard
                 results.Add(item);
             }
         }
+
         private void AddMoreAfter(ICollection<Item> results)
         {
             if (_endPageIndex < TotalPageCount - 1)
@@ -143,6 +146,7 @@ namespace Hangfire.Dashboard
                 results.Add(item);
             }
         }
+
         private void AddPageNumbers(ICollection<Item> results)
         {
             for (var pageIndex = _startPageIndex; pageIndex <= _endPageIndex; pageIndex++)
@@ -151,11 +155,13 @@ namespace Hangfire.Dashboard
                 results.Add(item);
             }
         }
+
         private void AddNext(ICollection<Item> results)
         {
             var item = new Item(CurrentPage + 1, CurrentPage >= TotalPageCount, ItemType.NextPage);
             results.Add(item);
         }
+
         internal class Item
         {
             public Item(int pageIndex, bool disabled, ItemType type)
@@ -169,6 +175,7 @@ namespace Hangfire.Dashboard
             public bool Disabled { get; private set; }
             public ItemType Type { get; private set; }
         }
+
         internal enum ItemType
         {
             Page,
