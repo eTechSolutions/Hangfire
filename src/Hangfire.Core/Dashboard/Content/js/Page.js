@@ -162,7 +162,7 @@
                     $expander.text('Less details...');
                 }
 
-				$expandable.slideToggle(
+                $expandable.slideToggle(
 					150, 
 					function() {
 					    if (!$expandable.is(':visible')) {
@@ -274,11 +274,11 @@
                 $(this).on('click', '.js-jobs-filter-command', function (e) {                    
                     url = document.location.search;
                     var filterValueString = $("#filterValueString").val();
-                    var filterStartDate = $("#startDate").datepick({ dateFormat: 'dd-mm-yyyy' }).val();
-                    var filterEndDate = $("#endDate").datepick({ dateFormat: 'dd-mm-yyyy' }).val();
-                    var addedFilterString = prepFilterStringParameter(filterValueString);                        
-                    var addedDateFilterStrings = prepFilterDateParameters(filterStartDate, filterEndDate);
-                    if (addedDateFilterStrings || addedFilterString) {                                  
+                    var filterStartDateTime = $("#startDateTime").datepick().val();
+                    var filterEndDateTime = $("#endDateTime").datepick().val();
+                    var addedFilterString = prepFilterStringParameter(filterValueString);
+                    var addedDateTimeFilterStrings = prepFilterDateTimeParameters(filterStartDateTime, filterEndDateTime);                    
+                    if (addedDateTimeFilterStrings || addedFilterString) {                                  
                         redirectToFirstPage();                        
                     }                    
                     document.location.search = url;                                      
@@ -310,64 +310,89 @@
                             parameters[parameters.length] = ["filterString", filterString].join('=');  
                             result = true;
                         }                        
-                        url = '?' + parameters.join('&');                        
+                        if ( parameters.length > 0 ) url = '?' + parameters.join('&');                        
                     }                   
                     return result;                    
                 }
 
-                var prepFilterDateParameters = function (startDate, endDate) {
-                    var sDate = startDate.split('/'),
-                    eDate = endDate.split('/');
-                    var sTime = new Date(sDate[2],sDate[1],sDate[0]);
-                    var eTime = new Date(eDate[2], eDate[1], eDate[0]);
-                    var checked = $("#filterOnDate").is(':checked');
-                    if ((sTime - eTime) / (1000 * 24 * 60 * 60) <= 0 && checked) {                        
-                        if (url == '') {                            
-                            url = '?' + "startDate=" + sDate.join('-') + '&' + "endDate=" + eDate.join('-');                            
-                        } else {                            
-                            var parameters = url.substr(1).split('&');
-                            var element;
-                            var foundStart = false;
-                            var foundEnd = false;
-                            for (var i = 0; i < parameters.length; i++) {                                
-                                element = parameters[i].split('=');
-                                if (element[0] == "startDate") {
-                                    element[1] = sDate.join('-');
-                                    parameters[i] = element.join('=');
-                                    foundStart = true;                                    
-                                } else if (element[0] == "endDate") {
-                                    element[1] = eDate.join('-');
-                                    parameters[i] = element.join('=');
-                                    foundEnd = true;
-                                }                                                                
-                            }
-                            if (!foundStart) {
-                                parameters[parameters.length] = ["startDate", sDate.join('-')].join('=');
-                            }
-                            if (!foundEnd) {
-                                parameters[parameters.length] = ["endDate", eDate.join('-')].join('=');
-                            }
-                            url = '?' + parameters.join('&');                           
-                        }                       
-                        return true;
+                var prepFilterDateTimeParameters = function (startDateTime, endDateTime) {
+                    var sDate = startDateTime.split(' ')[0].split('/'),
+                    eDate = endDateTime.split(' ')[0].split('/'),
+                    sTime = startDateTime.split(' ')[1].split(':'),
+                    eTime = endDateTime.split(' ')[1].split(':');
+
+                    
+                    var startSeconds = new Date(sDate[2],sDate[1],sDate[0], sTime[0],sTime[1]);
+                    var endSeconds = new Date(eDate[2], eDate[1], eDate[0], eTime[0],eTime[1]);
+                    var checked = $("#filterOnDateTime").is(':checked');
+                    if ((startSeconds - endSeconds) <= 0 && checked) {
+                        return addOrModifyDateTimeParameters(sDate, eDate, sTime, eTime);
                     }
-                    else if ( url.indexOf("startDate") > -1 || url.indexOf("endDate") > -1 ) {
-                        if (url != '') {
-                            var parameters = url.substr(1).split('&');
-                            var element;
-                            var i = 0;
-                            do{
-                                element = parameters[i].split('=');
-                                if (element[0] == "startDate" || element[0] == "endDate") {
-                                    parameters.splice(i, 1);                                    
-                                } else {
-                                    i++;
-                                }                                
-                            } while (i < parameters.length)                           
-                            url = '?' + parameters.join('&');
-                        }     
+                    else {
+                        return removeDateTimeParameters();
+                    }                    
+                }
+
+                var addOrModifyDateTimeParameters = function (sDate, eDate, sTime, eTime) {
+                    if (url == '') {
+                        url = '?' + "startDate=" + sDate.join('-') + '&' + "endDate=" + eDate.join('-') + '&' + "startTime=" + sTime.join('-') + '&' + "endTime=" + eTime.join('-');
+                    } else {
+                        var parameters = url.substr(1).split('&');
+                        var element;
+                        var foundStartDate = false,
+                        foundEndDate = false,
+                        foundStartTime = false,
+                        foundEndTime = false;
+                        for (var i = 0; i < parameters.length; i++) {
+                            element = parameters[i].split('=');
+                            if (element[0] == "startDate") {
+                                element[1] = sDate.join('-');
+                                foundStartDate = true;
+                            } else if (element[0] == "endDate") {
+                                element[1] = eDate.join('-');
+                                foundEndDate = true;
+                            } else if (element[0] == "startTime") {
+                                element[1] = sTime.join('-');
+                                foundStartTime = true;
+                            } else if (element[0] == "endTime") {
+                                element[1] = eTime.join('-');
+                                foundEndTime = true;
+                            }
+                            parameters[i] = element.join('=');
+                        }
+                        if (!foundStartDate) {
+                            parameters[parameters.length] = ["startDate", sDate.join('-')].join('=');
+                        }
+                        if (!foundEndDate) {
+                            parameters[parameters.length] = ["endDate", eDate.join('-')].join('=');
+                        }
+                        if (!foundStartTime) {
+                            parameters[parameters.length] = ["startTime", sTime.join('-')].join('=');
+                        }
+                        if (!foundEndTime) {
+                            parameters[parameters.length] = ["endTime", eTime.join('-')].join('=');
+                        }
+                        url = '?' + parameters.join('&');
                     }
-                    return false;               
+                    return true;
+                }
+
+                var removeDateTimeParameters = function () {
+                    if (url != '') {
+                        var parameters = url.substr(1).split('&');
+                        var element;
+                        var i = 0;
+                        do {
+                            element = parameters[i].split('=');
+                            if (element[0] == "startDate" || element[0] == "endDate" || element[0] == "startTime" || element[0] == "endTime") {
+                                parameters.splice(i, 1);
+                            } else {
+                                i++;
+                            }
+                        } while (i < parameters.length)
+                        url = '?' + parameters.join('&');
+                    }
+                    return false;
                 }
 
                 var redirectToFirstPage = function () {                    
@@ -389,21 +414,26 @@
                 $(this).on('click', '.js-jobs-filtertext-clear', function (e) {                    
                     $("#filterValueString").val('');
                 })
+                      
 
-                $(this).on('click', '.js-jobs-filterOnDate-checked', function (e) {  
-                    var checked = $('input[type=checkbox]').is(':checked');
-                    if (checked) {                        
-                        document.getElementById("startDate").hidden = "";
-                        document.getElementById("endDate").hidden = "";         
+                $(this).on('click', '.js-jobs-filterOnDateTime-checked', function (e) {
+                    var checked = $("#filterOnDateTime").is(':checked');
+                    if (checked) {
+                        document.getElementById("startDateTime").hidden = "";
+                        document.getElementById("endDateTime").hidden = "";                        
                     }
-                    else {                       
-                        document.getElementById("startDate").hidden = "hidden";
-                        document.getElementById("endDate").hidden = "hidden";                                               
+                    else {
+                        document.getElementById("startDateTime").hidden = "hidden";
+                        document.getElementById("endDateTime").hidden = "hidden";
                     }
                 })
-
-                $(".dateselector-start").datepick();
-                $(".dateselector-end").datepick();
+                                
+                $(".datetimeselector-start").datetimepicker({
+                    maxDate: '0'
+                });
+                $(".datetimeselector-end").datetimepicker({                    
+                    maxDate: '0'
+                });
                 updateListState();
             });            
         };

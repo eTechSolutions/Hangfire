@@ -181,7 +181,7 @@ WriteLiteral(@""">
                         Filter jobs
                     </button>
                     <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear fltr-txtbx btn-sm"" />
-                    <input id=""filterOnDate"" type=""checkbox"" class=""js-jobs-filterOnDate-checked"">Filter on date</input>
+                    <input id=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"">Filter on date or time</input>                    
 ");
 
 
@@ -189,40 +189,41 @@ WriteLiteral(@""">
             #line 70 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
                        
                         var todaysDate = System.DateTime.Now.ToShortDateString();
+                        var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
                     
 
             
             #line default
             #line hidden
-WriteLiteral("                    <br />\r\n                    <br />                    \r\n     " +
-"               <input value=\"");
-
-
-            
-            #line 75 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
-                             Write(todaysDate);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" style=\"width: 100px; margin:0px 0px 0px 110px;\" readonly=\"\"  class=\"dateselecto" +
-"r-start\" id=\"startDate\" hidden=\"hidden\" />                        \r\n            " +
-"        <input value=\"");
+WriteLiteral("                    <br />                    \r\n                    <br />\r\n     " +
+"               <input type=\"text\" value=\"");
 
 
             
             #line 76 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
-                             Write(todaysDate);
+                                         Write(currentDateTime);
 
             
             #line default
             #line hidden
-WriteLiteral("\" style=\"width: 100px;\" readonly=\"\"  class=\"dateselector-end\" id=\"endDate\" hidden" +
-"=\"hidden\" />\r\n                    ");
+WriteLiteral("\" style=\"width: 130px; margin:0px 0px 0px 80px;\" class=\"datetimeselector-start\" i" +
+"d=\"startDateTime\" hidden=\"hidden\" />\r\n                    <input type=\"text\" val" +
+"ue=\"");
 
 
             
             #line 77 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
+                                         Write(currentDateTime);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\" style=\"width: 130px;\" class=\"datetimeselector-end\" id=\"endDateTime\" hidden=\"hid" +
+"den\" />\r\n                    ");
+
+
+            
+            #line 78 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
                Write(Html.PerPageSelector(pager));
 
             
@@ -230,8 +231,7 @@ WriteLiteral("\" style=\"width: 100px;\" readonly=\"\"  class=\"dateselector-end
             #line hidden
 WriteLiteral(@"
                 </div>
-                    
-                               
+                
                 <table class=""table"">
                     <thead>
                     <tr>

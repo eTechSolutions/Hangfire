@@ -13,7 +13,8 @@
                         color: '#d9534f',
                         data: failed,
                         name: 'Failed'
-                    }, {
+                    },
+                    {
                         color: '#6ACD65',
                         data: succeeded,
                         name: 'Succeeded'

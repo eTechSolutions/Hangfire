@@ -25,7 +25,7 @@ namespace Hangfire.Dashboard
     {
         private static readonly string[] Javascripts =
         {
-            "jquery-1.10.2.min.js", 
+            "jquery-1.10.2.min.js",            
             "bootstrap.min.js",
             "moment.min.js",
             "d3.min.js", 
@@ -34,18 +34,20 @@ namespace Hangfire.Dashboard
             "Metrics.js",
             "RealTimeGraph.js",
             "HistoryGraph.js",
-            "StatisticsPoller.js",
-            "Page.js",
+            "StatisticsPoller.js",            
             "jquery.plugin.min.js",
-            "jquery.datepick.min.js"
+            "jquery.datepick.min.js",            
+            "jquery.datetimepicker.full.min.js",
+            "Page.js"
         };
 
         private static readonly string[] Stylesheets =
         {
             "bootstrap.min.css", 
-            "rickshaw.min.css", 
+            "rickshaw.min.css",            
             "hangfire.css",
-            "jquery.datepick.css"
+            "jquery.datepick.css",
+            "jquery.datetimepicker.css"
         };
 
         static DashboardRoutes()

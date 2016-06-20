@@ -64,6 +64,7 @@ namespace Hangfire.Dashboard
             
             return newUrl;
         }
+
         public string RecordsPerPageUrl(int perPage)
         {
             if (perPage <= 0) return "#";
@@ -77,6 +78,7 @@ namespace Hangfire.Dashboard
                       
             return newUrl;
         }
+
         private ICollection<Item> GenerateItems()
         {
             // start page index

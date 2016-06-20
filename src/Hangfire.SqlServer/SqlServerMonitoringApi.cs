@@ -46,7 +46,7 @@ namespace Hangfire.SqlServer
                
         public long JobCountByStateName(string stateName, string filterString = null, string startDate = null, string endDate = null)
         {
-            var allowedStates = new String[]{
+            var allowedStates = new string[]{
                 FailedState.StateName,
                 SucceededState.StateName,
                 ScheduledState.StateName,
@@ -546,6 +546,7 @@ select * from (
                 result.Add(new KeyValuePair<string, TDto>(
                     job.Id.ToString(), dto));
             }
+
             return new JobList<TDto>(result);
         }
 
