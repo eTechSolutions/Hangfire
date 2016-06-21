@@ -14,9 +14,28 @@
     string filterString = Query("filterString");
     string startDate = Query("startDate");
     string endDate = Query("endDate");
+    string startTime = Query("startTime");
+    string endTime = Query("endTime");
 
     var monitor = Storage.GetMonitoringApi();
-    var pager = new Pager(from, perPage, monitor.EnqueuedCount(Queue, filterString, startDate, endDate), filterString, startDate, endDate);
+    var countParameters = new Dictionary<string, string>()
+    {
+        { "filterString", filterString },
+        { "startDate", startDate },
+        { "endDate", endDate },
+        { "startTime", startTime },
+        { "endTime", endTime }
+    };
+
+    var jobCount = monitor.EnqueuedCount(Queue, countParameters);
+    var pager = new Pager(from, perPage, jobCount)
+    {
+        JobsFilterText = filterString,
+        JobsFilterStartDate = startDate,
+        JobsFilterEndDate = endDate,
+        JobsFilterStartTime = startTime,
+        JobsFilterEndTime = endTime
+    };
     var enqueuedJobs = monitor.EnqueuedJobs(Queue, pager);
 }
 

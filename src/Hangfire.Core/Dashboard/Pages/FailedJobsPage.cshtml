@@ -11,12 +11,34 @@
     string filterString = Query("filterString");
     string startDate = Query("startDate");
     string endDate = Query("endDate");
+    string startTime = Query("startTime");
+    string endTime = Query("endTime");
 
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
 
     var monitor = Storage.GetMonitoringApi();
-    var pager = new Pager(from, perPage, monitor.JobCountByStateName(FailedState.StateName,filterString, startDate, endDate), filterString, startDate, endDate);
+    
+    var countParameters = new Dictionary<string, string>()
+    {
+        { "stateName", FailedState.StateName },
+        { "filterString", filterString },
+        { "startDate", startDate },
+        { "endDate", endDate },
+        { "startTime", startTime },
+        { "endTime", endTime }
+    };
+    
+    var jobCount = monitor.JobCountByStateName(countParameters);
+    var pager = new Pager(from, perPage, jobCount)
+    {
+        JobsFilterText = filterString,
+        JobsFilterStartDate = startDate,
+        JobsFilterEndDate = endDate,
+        JobsFilterStartTime = startTime,
+        JobsFilterEndTime = endTime
+    };
+
     var failedJobs = monitor.FailedJobs(pager);
 }
 
@@ -66,12 +88,11 @@
                         Filter jobs
                     </button>
                     <input type="text" value="" id="filterValueString" class="js-jobs-filtertext-clear fltr-txtbx btn-sm" />
-                    <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">Filter on date or time</input>                    
-                    @{ 
-                        var todaysDate = System.DateTime.Now.ToShortDateString();
+                    <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">Filter on date and time</input>
+                    @{                         
                         var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
                     }
-                    <br />                    
+                    <br />
                     <br />
                     <input type="text" value="@currentDateTime" style="width: 130px; margin:0px 0px 0px 80px;" class="datetimeselector-start" id="startDateTime" hidden="hidden" />
                     <input type="text" value="@currentDateTime" style="width: 130px;" class="datetimeselector-end" id="endDateTime" hidden="hidden" />

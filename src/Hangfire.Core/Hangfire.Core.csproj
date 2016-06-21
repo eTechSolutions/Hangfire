@@ -87,6 +87,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FailedJobsPage.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Dashboard\Pages\ProcessingJobsPage1.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProcessingJobsPage.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Obsolete\Job.Obsolete.cs" />
     <Compile Include="Common\TypeExtensions.cs" />
     <Compile Include="Dashboard\OwinRequestExtensions.cs" />
@@ -220,11 +225,6 @@
     </Compile>
     <Compile Include="Dashboard\Pages\LayoutPage.generated.cs">
       <DependentUpon>LayoutPage.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Dashboard\Pages\ProcessingJobsPage.generated.cs">
-      <DependentUpon>ProcessingJobsPage.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
@@ -452,7 +452,7 @@
     </None>
     <None Include="Dashboard\Pages\ProcessingJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ProcessingJobsPage.generated.cs</LastGenOutput>
+      <LastGenOutput>ProcessingJobsPage1.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\QueuesPage.cshtml">
       <Generator>RazorGenerator</Generator>

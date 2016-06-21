@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Messaging;
 using MQTools;
+using Hangfire.Dashboard;
 
 namespace Hangfire.SqlServer.Msmq
 {
@@ -41,7 +42,7 @@ namespace Hangfire.SqlServer.Msmq
             return _queues;
         }
 
-        public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, string filterString = null, string startDate = null, string endDate = null)
+        public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, Pager pager = null)
         {
             var result = new List<int>();
 
@@ -77,7 +78,7 @@ namespace Hangfire.SqlServer.Msmq
             return Enumerable.Empty<int>();
         }
 
-        public EnqueuedAndFetchedCountDto GetEnqueuedAndFetchedCount(string queue, string filterString = null, string startDate = null, string endDate = null)
+        public EnqueuedAndFetchedCountDto GetEnqueuedAndFetchedCount(string queue, Dictionary<string,string> parameters = null)
         {
             using (var messageQueue = new MessageQueue(String.Format(_pathPattern, queue)))
             {                
