@@ -68,7 +68,7 @@ WriteLiteral("\r\n");
     var monitor = Storage.GetMonitoringApi();
     var countParameters = new Dictionary<string, string>()
     {
-        { "stateName", FailedState.StateName },
+        { "stateName", DeletedState.StateName },
         { "filterString", filterString },
         { "startDate", startDate },
         { "endDate", endDate },
@@ -162,7 +162,7 @@ WriteLiteral(@""">
                         <span class=""glyphicon glyphicon-repeat""></span>
                         Filter jobs
                     </button>
-                    <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear fltr-txtbx btn-sm"" />
+                    <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
                     <input id=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"">Filter on date and time</input>
 ");
 
@@ -370,14 +370,14 @@ WriteLiteral("                                <td class=\"align-right\">\r\n");
             #line hidden
             
             #line 126 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                   Write(Html.RelativeTime(job.Value.DeletedAt.Value));
+                                   Write(Html.Raw(job.Value.DeletedAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
             #line 126 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                                                                     
+                                                                                                         ;
                                     }
 
             

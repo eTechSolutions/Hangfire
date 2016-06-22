@@ -82,7 +82,7 @@
     <Compile Include="BackgroundJobServer.cs" />
     <Compile Include="BackgroundJobServerOptions.cs" />
     <Compile Include="Client\CoreBackgroundJobFactory.cs" />
-    <Compile Include="Dashboard\Pages\FailedJobsPage1.generated.cs">
+    <Compile Include="Dashboard\Pages\FailedJobsPage.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FailedJobsPage.cshtml</DependentUpon>
@@ -436,7 +436,7 @@
     </None>
     <None Include="Dashboard\Pages\FailedJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>FailedJobsPage1.generated.cs</LastGenOutput>
+      <LastGenOutput>FailedJobsPage.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\FetchedJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>

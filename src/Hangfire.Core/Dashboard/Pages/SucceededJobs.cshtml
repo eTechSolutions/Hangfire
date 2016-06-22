@@ -20,7 +20,7 @@
     var monitor = Storage.GetMonitoringApi();
     var countParameters = new Dictionary<string, string>()
     {
-        { "stateName", FailedState.StateName },
+        { "stateName", SucceededState.StateName },
         { "filterString", filterString },
         { "startDate", startDate },
         { "endDate", endDate },
@@ -68,11 +68,11 @@
                     <br>
                     <br>
                     <button class="js-jobs-filter-command btn btn-sm btn-default"
-                            data-url="@Url.To("/jobs/failed")">
+                            data-url="@Url.To("/jobs/succeeded")">
                         <span class="glyphicon glyphicon-repeat"></span>
                         Filter jobs
                     </button>
-                    <input type="text" value="" id="filterValueString" class="js-jobs-filtertext-clear fltr-txtbx btn-sm" />
+                    <input type="text" value="" id="filterValueString" class="fltr-txtbx btn-sm" />
                     <input id="filterOnDate" type="checkbox" class="js-jobs-filterOnDate-checked">Filter on date</input>
                     @{
                         var todaysDate = System.DateTime.Now.ToShortDateString();
@@ -134,7 +134,7 @@
                                 <td class="min-width align-right">
                                     @if (job.Value.SucceededAt.HasValue)
                                     {
-                                        @Html.RelativeTime(job.Value.SucceededAt.Value)
+                                        @Html.Raw(job.Value.SucceededAt.Value.ToString("dd/MM/yyyy HH:mm"));
                                     }
                                 </td>
                             }

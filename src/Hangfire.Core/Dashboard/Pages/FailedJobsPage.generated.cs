@@ -202,7 +202,7 @@ WriteLiteral(@""">
                         <span class=""glyphicon glyphicon-repeat""></span>
                         Filter jobs
                     </button>
-                    <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear fltr-txtbx btn-sm"" />
+                    <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
                     <input id=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"">Filter on date and time</input>
 ");
 
@@ -403,14 +403,14 @@ WriteLiteral("                            </td>\r\n                            <
             #line hidden
             
             #line 134 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
-                               Write(Html.RelativeTime(job.Value.FailedAt.Value));
+                               Write(Html.Raw(job.Value.FailedAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
             #line 134 "..\..\Dashboard\Pages\FailedJobsPage.cshtml"
-                                                                                
+                                                                                                    ;
                                 }
 
             

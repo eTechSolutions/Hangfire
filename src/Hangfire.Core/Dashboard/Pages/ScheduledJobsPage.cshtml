@@ -19,7 +19,7 @@
     var monitor = Storage.GetMonitoringApi();
     var countParameters = new Dictionary<string, string>()
     {
-        { "stateName", FailedState.StateName },
+        { "stateName", ScheduledState.StateName },
         { "filterString", filterString },
         { "startDate", startDate },
         { "endDate", endDate },
@@ -76,11 +76,11 @@
                     <br>
                     <br>
                     <button class="js-jobs-filter-command btn btn-sm btn-default"
-                            data-url="@Url.To("/jobs/failed")">
+                            data-url="@Url.To("/jobs/scheduled")">
                         <span class="glyphicon glyphicon-repeat"></span>
                         Filter jobs
                     </button>
-                    <input type="text" value="" id="filterValueString" class="js-jobs-filtertext-clear fltr-txtbx btn-sm" />
+                    <input type="text" value="" id="filterValueString" class="fltr-txtbx btn-sm" />
                     <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">Filter on date and time</input>
                     @{
                         var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
@@ -121,7 +121,7 @@
                                 }
                             </td>
                             <td class="min-width">
-                                @Html.RelativeTime(job.Value.EnqueueAt)
+                                @Html.Raw(job.Value.EnqueueAt.ToString("dd/MM/yyyy HH:mm"));
                             </td>
                             <td>
                                 @Html.JobNameLink(job.Key, job.Value.Job)
@@ -129,7 +129,7 @@
                             <td class="align-right">
                                 @if (job.Value.ScheduledAt.HasValue)
                                 {
-                                    @Html.RelativeTime(job.Value.ScheduledAt.Value)
+                                    @Html.Raw(job.Value.ScheduledAt.Value.ToString("dd/MM/yyyy HH:mm"));
                                 }
                             </td>
                         </tr>

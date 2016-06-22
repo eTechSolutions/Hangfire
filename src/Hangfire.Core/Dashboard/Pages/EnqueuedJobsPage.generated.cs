@@ -189,7 +189,7 @@ WriteLiteral(@""">
                         <span class=""glyphicon glyphicon-repeat""></span>
                         Filter jobs
                     </button>
-                    <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear fltr-txtbx btn-sm"" />
+                    <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
                     <input id=""filterOnDate"" type=""checkbox"" class=""js-jobs-filterOnDate-checked"">Filter on date</input>
 ");
 
@@ -353,14 +353,14 @@ WriteLiteral("\r\n                            </td>\r\n                         
             #line hidden
             
             #line 126 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
-                               Write(Html.RelativeTime(job.Value.EnqueuedAt.Value));
+                               Write(Html.Raw(job.Value.EnqueuedAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
             #line 126 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
-                                                                                  
+                                                                                                      ;
                                 }
                                 else
                                 {

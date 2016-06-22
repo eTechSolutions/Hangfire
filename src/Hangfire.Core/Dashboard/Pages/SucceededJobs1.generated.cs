@@ -74,7 +74,7 @@ WriteLiteral("\r\n");
     var monitor = Storage.GetMonitoringApi();
     var countParameters = new Dictionary<string, string>()
     {
-        { "stateName", FailedState.StateName },
+        { "stateName", SucceededState.StateName },
         { "filterString", filterString },
         { "startDate", startDate },
         { "endDate", endDate },
@@ -159,7 +159,7 @@ WriteLiteral(@"""
 
             
             #line 71 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                 Write(Url.To("/jobs/failed"));
+                                 Write(Url.To("/jobs/succeeded"));
 
             
             #line default
@@ -168,7 +168,7 @@ WriteLiteral(@""">
                         <span class=""glyphicon glyphicon-repeat""></span>
                         Filter jobs
                     </button>
-                    <input type=""text"" value="""" id=""filterValueString"" class=""js-jobs-filtertext-clear fltr-txtbx btn-sm"" />
+                    <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
                     <input id=""filterOnDate"" type=""checkbox"" class=""js-jobs-filterOnDate-checked"">Filter on date</input>
 ");
 
@@ -408,14 +408,14 @@ WriteLiteral("                                <td class=\"min-width align-right\
             #line hidden
             
             #line 137 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                   Write(Html.RelativeTime(job.Value.SucceededAt.Value));
+                                   Write(Html.Raw(job.Value.SucceededAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
             #line 137 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                                                                       
+                                                                                                           ;
                                     }
 
             

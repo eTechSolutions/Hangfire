@@ -316,6 +316,7 @@
                 }
 
                 var prepFilterDateTimeParameters = function (startDateTime, endDateTime) {
+                    if (typeof startDateTime == 'undefined' || typeof endDateTime == 'undefined') return false;
                     var sDate = startDateTime.split(' ')[0].split('/'),
                     eDate = endDateTime.split(' ')[0].split('/'),
                     sTime = startDateTime.split(' ')[1].split(':'),
