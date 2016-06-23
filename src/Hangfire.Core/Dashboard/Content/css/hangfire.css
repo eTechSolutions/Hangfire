@@ -533,6 +533,17 @@ div.metric-null {
     display: none;
 }
 
+/*Advanced Search*/
+.advanced-search-header {
+    margin-top: 0;
+    font-weight:bold;
+}
+
+#datetime-filters,
+#filterMethodString {
+    display:none;
+}
+
 @media (min-width: 992px) {
     #stats {
         position: fixed;

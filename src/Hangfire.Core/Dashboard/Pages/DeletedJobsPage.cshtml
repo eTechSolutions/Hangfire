@@ -67,33 +67,55 @@
                         <span class="glyphicon glyphicon-repeat"></span>
                         Requeue jobs
                     </button>
-                    <br>
-                    <br>
-                    <button class="js-jobs-filter-command btn btn-sm btn-default"
-                            data-url="@Url.To("/jobs/deleted")">
-                        <span class="glyphicon glyphicon-repeat"></span>
-                        Filter jobs
-                    </button>
-                    <input type="text" value="" id="filterValueString" class="fltr-txtbx btn-sm" />
-                    <div style="width:200px;margin-right:10px;">
-                        <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">@Html.Raw("Filter on date and time")</input>
-                        <br />
-                        <input id="filterOnMethodName" type="checkbox" class="js-jobs-filterOnMethodName-checked">@Html.Raw("Filter on method name")</input>
-                    </div>
-                    @{
-                        var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                    }
-                    <br />
-                    <br />
-                    <label id="methodValueLabel" hidden="hidden">Method name</label>
-                    <input type="text" value="" id="filterMethodString" class="fltr-txtbx btn-sm" style="padding-bottom:inherit" hidden="hidden" />
-                    <br />
-                    <input type="text" value="@currentDateTime" style="width: 130px; margin:0px 0px 0px 80px;" class="datetimeselector-start" id="startDateTime" hidden="hidden" />
-                    <input type="text" value="@currentDateTime" style="width: 130px;" class="datetimeselector-end" id="endDateTime" hidden="hidden" />
-                    @Html.PerPageSelector(pager)
+                    <button data-toggle="collapse" data-target="#advanced-search-bar" class="btn btn-sm btn-success">Advanced Search</button>
                 </div>
-                <table class="table">
-                    <thead>
+                <div id="advanced-search-bar" class="collapse well">
+                    <h4 class="advanced-search-header">
+                        Advanced Search
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="text" value="" id="filterValueString" class="form-control" placeholder="Search..." />
+                            </div>
+                            <div class="form-group">
+                                @{
+                                    var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                                }
+                                <input id="filterOnDateTime" name="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked" />
+                                <label for="filterOnDateTime">Filter on date time</label>
+
+                                <div id="datetime-filters" class="row">
+                                    <div class="col-xs-6">
+                                        <input type="text" value="@currentDateTime" class="datetimeselector-start form-control" id="startDateTime" />
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <input type="text" value="@currentDateTime" class="datetimeselector-end form-control" id="endDateTime" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input id="filterOnMethodName" name="filterOnMethodName" type="checkbox" class="js-jobs-filterOnMethodName-checked" />
+                                <label for="filterOnMethodName">Filter on method name</label>
+                                <input type="text" value="" id="filterMethodString" class="form-control" placeholder="Method name..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button class="js-jobs-filter-command btn btn-sm btn-success"
+                                    data-url="@Url.To("/jobs/deleted")">
+                                <span class="glyphicon glyphicon-repeat"></span>
+
+                                Filter jobs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                @Html.PerPageSelector(pager)
+            </div>
+            <table class="table">
+                <thead>
                     <tr>
                         <th class="min-width">
                             <input type="checkbox" class="js-jobs-list-select-all"/>
@@ -141,9 +163,7 @@
                     }
                     </tbody>
                 </table>
-
                 @Html.Paginator(pager)
-            </div>
         }
     </div>
 </div>

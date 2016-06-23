@@ -439,26 +439,35 @@
                 $(this).on('click', '.js-jobs-filterOnDateTime-checked', function (e) {
                     var checked = $("#filterOnDateTime").is(':checked');
                     if (checked) {
-                        document.getElementById("startDateTime").hidden = "";
-                        document.getElementById("endDateTime").hidden = "";                        
+
+                        $("#datetime-filters").show();
+
+                        //document.getElementById("startDateTime").hidden = "";
+                        //document.getElementById("endDateTime").hidden = "";                        
                     }
                     else {
-                        document.getElementById("startDateTime").hidden = "hidden";
-                        document.getElementById("endDateTime").hidden = "hidden";                        
+
+                        $("#datetime-filters").hide();
+
+                        //document.getElementById("startDateTime").hidden = "hidden";
+                        //document.getElementById("endDateTime").hidden = "hidden";                        
                     }
                 })
                   
                 $(this).on('click', '.js-jobs-filterOnMethodName-checked', function (e) {
                     var checked = $("#filterOnMethodName").is(':checked');
                     if (checked) {
-                        document.getElementById("filterMethodString").hidden = "";
-                        document.getElementById("filterOnMethodName").checked = "checked";
-                        document.getElementById("methodValueLabel").hidden = "";
+                        $("#filterMethodString").show();
+
+                        //document.getElementById("filterMethodString").hidden = "";
+                        //document.getElementById("filterOnMethodName").checked = "checked";
+                        //document.getElementById("methodValueLabel").hidden = "";
                     }
                     else {
-                        document.getElementById("filterMethodString").hidden = "hidden";
-                        document.getElementById("filterOnMethodName").checked = "";
-                        document.getElementById("methodValueLabel").hidden = "hidden";
+                        $("#filterMethodString").hide();
+                        //document.getElementById("filterMethodString").hidden = "hidden";
+                        //document.getElementById("filterOnMethodName").checked = "";
+                        //document.getElementById("methodValueLabel").hidden = "hidden";
                     }
                 })
 

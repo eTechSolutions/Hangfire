@@ -148,13 +148,12 @@ WriteLiteral(@"""
                         <span class=""glyphicon glyphicon-play""></span>
                         Enqueue now
                     </button>
-
                     <button class=""js-jobs-list-command btn btn-sm btn-default""
                             data-url=""");
 
 
             
-            #line 72 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 71 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                  Write(Url.To("/jobs/scheduled/delete"));
 
             
@@ -167,99 +166,97 @@ WriteLiteral(@"""
                         <span class=""glyphicon glyphicon-remove""></span>
                         Delete selected
                     </button>
-                    <br>
-                    <br>
-                    <button class=""js-jobs-filter-command btn btn-sm btn-default""
-                            data-url=""");
+                    <button data-toggle=""collapse"" data-target=""#advanced-search-bar"" class=""btn btn-sm btn-success"">Advanced Search</button>
+                </div>
+                <div id=""advanced-search-bar"" class=""collapse well"">
+                    <h4 class=""advanced-search-header"">
+                        Advanced Search
+                    </h4>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <div class=""form-group"">
+                                <input type=""text"" value="""" id=""filterValueString"" class=""form-control"" placeholder=""Search..."" />
+                            </div>
+                            <div class=""form-group"">
+");
 
 
             
-            #line 82 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-                                 Write(Url.To("/jobs/scheduled"));
+            #line 90 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+                                  
+                                    var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                                
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@"                                <input id=""filterOnDateTime"" name=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"" />
+                                <label for=""filterOnDateTime"">Filter on date time</label>
+                                <div id=""datetime-filters"" class=""row"">
+                                    <div class=""col-xs-6"">
+                                        <input type=""text"" value=""");
+
+
+            
+            #line 97 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+                                                             Write(currentDateTime);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\" class=\"datetimeselector-start form-control\" id=\"startDateTime\" />\r\n            " +
+"                        </div>\r\n                                    <div class=\"" +
+"col-xs-6\">\r\n                                        <input type=\"text\" value=\"");
+
+
+            
+            #line 100 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+                                                             Write(currentDateTime);
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@""" class=""datetimeselector-end form-control"" id=""endDateTime"" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=""form-group"">
+                                <input id=""filterOnMethodName"" name=""filterOnMethodName"" type=""checkbox"" class=""js-jobs-filterOnMethodName-checked"" />
+                                <label for=""filterOnMethodName"">Filter on method name</label>
+                                <input type=""text"" value="""" id=""filterMethodString"" class=""form-control"" placeholder=""Method name..."" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <button class=""js-jobs-filter-command btn btn-sm btn-success"" data-url=""");
+
+
+            
+            #line 113 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+                                                                                               Write(Url.To("/jobs/scheduled"));
 
             
             #line default
             #line hidden
 WriteLiteral(@""">
-                        <span class=""glyphicon glyphicon-repeat""></span>
-                        Filter jobs
-                    </button>
-                    <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
-                    <div style=""width:200px;margin-right:10px;"">
-                        <input id=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"">");
+                                <span class=""glyphicon glyphicon-repeat""></span>
+                                Filter jobs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                ");
 
 
             
-            #line 88 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-                                                                                                         Write(Html.Raw("Filter on date and time"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</input>\r\n                        <br />\r\n                        <input id=\"filt" +
-"erOnMethodName\" type=\"checkbox\" class=\"js-jobs-filterOnMethodName-checked\">");
-
-
-            
-            #line 90 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-                                                                                                             Write(Html.Raw("Filter on method name"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</input>\r\n                    </div>\r\n");
-
-
-            
-            #line 92 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-                      
-                        var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                    
-
-            
-            #line default
-            #line hidden
-WriteLiteral(@"                    <br />
-                    <br />
-                    <label id=""methodValueLabel"" hidden=""hidden"">Method name</label>
-                    <input type=""text"" value="""" id=""filterMethodString"" class=""fltr-txtbx btn-sm"" style=""padding-bottom:inherit"" hidden=""hidden"" />
-                    <br />
-                    <input type=""text"" value=""");
-
-
-            
-            #line 100 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-                                         Write(currentDateTime);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" style=\"width: 130px; margin:0px 0px 0px 80px;\" class=\"datetimeselector-start\" i" +
-"d=\"startDateTime\" hidden=\"hidden\" />\r\n                    <input type=\"text\" val" +
-"ue=\"");
-
-
-            
-            #line 101 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-                                         Write(currentDateTime);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" style=\"width: 130px;\" class=\"datetimeselector-end\" id=\"endDateTime\" hidden=\"hid" +
-"den\" />\r\n                    ");
-
-
-            
-            #line 102 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
-               Write(Html.PerPageSelector(pager));
+            #line 120 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+           Write(Html.PerPageSelector(pager));
 
             
             #line default
             #line hidden
 WriteLiteral(@"
-                </div>
-
                 <table class=""table"">
                     <thead>
                     <tr>
@@ -276,7 +273,7 @@ WriteLiteral(@"
 
 
             
-            #line 117 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 133 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                      foreach (var job in scheduledJobs)
                     {
 
@@ -287,7 +284,7 @@ WriteLiteral("                        <tr class=\"js-jobs-list-row ");
 
 
             
-            #line 119 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 135 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                                 Write(!job.Value.InScheduledState ? "obsolete-data" : null);
 
             
@@ -297,7 +294,7 @@ WriteLiteral(" ");
 
 
             
-            #line 119 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 135 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                                                                                         Write(job.Value.InScheduledState ? "hover" : null);
 
             
@@ -307,7 +304,7 @@ WriteLiteral("\">\r\n                            <td>\r\n");
 
 
             
-            #line 121 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 137 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                  if (job.Value.InScheduledState)
                                 {
 
@@ -319,7 +316,7 @@ WriteLiteral("                                    <input type=\"checkbox\" class
 
 
             
-            #line 123 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 139 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                                                                                          Write(job.Key);
 
             
@@ -329,7 +326,7 @@ WriteLiteral("\"/>\r\n");
 
 
             
-            #line 124 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 140 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                 }
 
             
@@ -340,7 +337,7 @@ WriteLiteral("                            </td>\r\n                            <
 
 
             
-            #line 127 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 143 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                            Write(Html.JobIdLink(job.Key));
 
             
@@ -350,7 +347,7 @@ WriteLiteral("\r\n");
 
 
             
-            #line 128 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 144 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                  if (!job.Value.InScheduledState)
                                 {
 
@@ -362,7 +359,7 @@ WriteLiteral("                                    <span title=\"Job\'s state has
 
 
             
-            #line 131 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 147 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                 }
 
             
@@ -373,7 +370,7 @@ WriteLiteral("                            </td>\r\n                            <
 
 
             
-            #line 134 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 150 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                            Write(Html.Raw(job.Value.EnqueueAt.ToString("dd/MM/yyyy HH:mm")));
 
             
@@ -384,7 +381,7 @@ WriteLiteral(";\r\n                            </td>\r\n                        
 
 
             
-            #line 137 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 153 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                            Write(Html.JobNameLink(job.Key, job.Value.Job));
 
             
@@ -395,7 +392,7 @@ WriteLiteral("\r\n                            </td>\r\n                         
 
 
             
-            #line 140 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 156 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                  if (job.Value.ScheduledAt.HasValue)
                                 {
                                     
@@ -403,14 +400,14 @@ WriteLiteral("\r\n                            </td>\r\n                         
             #line default
             #line hidden
             
-            #line 142 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 158 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                Write(Html.Raw(job.Value.ScheduledAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
-            #line 142 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 158 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                                                                                                        ;
                                 }
 
@@ -421,7 +418,7 @@ WriteLiteral("                            </td>\r\n                        </tr>
 
 
             
-            #line 146 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 162 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
                     }
 
             
@@ -431,7 +428,7 @@ WriteLiteral("                </table>\r\n\r\n                ");
 
 
             
-            #line 149 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 165 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
            Write(Html.Paginator(pager));
 
             
@@ -441,7 +438,7 @@ WriteLiteral("\r\n            </div>\r\n");
 
 
             
-            #line 151 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
+            #line 167 "..\..\Dashboard\Pages\ScheduledJobsPage.cshtml"
         }
 
             

@@ -148,100 +148,105 @@ WriteLiteral(@"""
                         <span class=""glyphicon glyphicon-repeat""></span>
                         Requeue jobs
                     </button>
-                    <br>
-                    <br>
-                    <button class=""js-jobs-filter-command btn btn-sm btn-default""
-                            data-url=""");
+                    <button data-toggle=""collapse"" data-target=""#advanced-search-bar"" class=""btn btn-sm btn-success"">Advanced Search</button>
+                </div>
+                <div id=""advanced-search-bar"" class=""collapse well"">
+                    <h4 class=""advanced-search-header"">
+                        Advanced Search
+                    </h4>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <div class=""form-group"">
+                                <input type=""text"" value="""" id=""filterValueString"" class=""form-control"" placeholder=""Search..."" />
+                            </div>
+                            <div class=""form-group"">
+");
 
 
             
-            #line 73 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                 Write(Url.To("/jobs/deleted"));
+            #line 82 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+                                  
+                                    var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                                
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@"                                <input id=""filterOnDateTime"" name=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"" />
+                                <label for=""filterOnDateTime"">Filter on date time</label>
+
+                                <div id=""datetime-filters"" class=""row"">
+                                    <div class=""col-xs-6"">
+                                        <input type=""text"" value=""");
+
+
+            
+            #line 90 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+                                                             Write(currentDateTime);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\" class=\"datetimeselector-start form-control\" id=\"startDateTime\" />\r\n            " +
+"                        </div>\r\n                                    <div class=\"" +
+"col-xs-6\">\r\n                                        <input type=\"text\" value=\"");
+
+
+            
+            #line 93 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+                                                             Write(currentDateTime);
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@""" class=""datetimeselector-end form-control"" id=""endDateTime"" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=""form-group"">
+                                <input id=""filterOnMethodName"" name=""filterOnMethodName"" type=""checkbox"" class=""js-jobs-filterOnMethodName-checked"" />
+                                <label for=""filterOnMethodName"">Filter on method name</label>
+                                <input type=""text"" value="""" id=""filterMethodString"" class=""form-control"" placeholder=""Method name..."" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <button class=""js-jobs-filter-command btn btn-sm btn-success""
+                                    data-url=""");
+
+
+            
+            #line 107 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+                                         Write(Url.To("/jobs/deleted"));
 
             
             #line default
             #line hidden
 WriteLiteral(@""">
-                        <span class=""glyphicon glyphicon-repeat""></span>
-                        Filter jobs
-                    </button>
-                    <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
-                    <div style=""width:200px;margin-right:10px;"">
-                        <input id=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"">");
+                                <span class=""glyphicon glyphicon-repeat""></span>
 
-
-            
-            #line 79 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                                                                                         Write(Html.Raw("Filter on date and time"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</input>\r\n                        <br />\r\n                        <input id=\"filt" +
-"erOnMethodName\" type=\"checkbox\" class=\"js-jobs-filterOnMethodName-checked\">");
-
-
-            
-            #line 81 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                                                                                             Write(Html.Raw("Filter on method name"));
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</input>\r\n                    </div>\r\n");
-
-
-            
-            #line 83 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                      
-                        var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                    
-
-            
-            #line default
-            #line hidden
-WriteLiteral(@"                    <br />
-                    <br />
-                    <label id=""methodValueLabel"" hidden=""hidden"">Method name</label>
-                    <input type=""text"" value="""" id=""filterMethodString"" class=""fltr-txtbx btn-sm"" style=""padding-bottom:inherit"" hidden=""hidden"" />
-                    <br />
-                    <input type=""text"" value=""");
-
-
-            
-            #line 91 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                         Write(currentDateTime);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" style=\"width: 130px; margin:0px 0px 0px 80px;\" class=\"datetimeselector-start\" i" +
-"d=\"startDateTime\" hidden=\"hidden\" />\r\n                    <input type=\"text\" val" +
-"ue=\"");
-
-
-            
-            #line 92 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                         Write(currentDateTime);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" style=\"width: 130px;\" class=\"datetimeselector-end\" id=\"endDateTime\" hidden=\"hid" +
-"den\" />\r\n                    ");
-
-
-            
-            #line 93 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-               Write(Html.PerPageSelector(pager));
-
-            
-            #line default
-            #line hidden
-WriteLiteral(@"
+                                Filter jobs
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <table class=""table"">
-                    <thead>
+                ");
+
+
+            
+            #line 115 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+           Write(Html.PerPageSelector(pager));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\r\n            </div>\r\n");
+
+
+
+WriteLiteral(@"            <table class=""table"">
+                <thead>
                     <tr>
                         <th class=""min-width"">
                             <input type=""checkbox"" class=""js-jobs-list-select-all""/>
@@ -256,7 +261,7 @@ WriteLiteral(@"
 
 
             
-            #line 107 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 129 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                      foreach (var job in jobs)
                     {
 
@@ -267,7 +272,7 @@ WriteLiteral("                        <tr class=\"js-jobs-list-row ");
 
 
             
-            #line 109 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 131 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                                 Write(job.Value != null && !job.Value.InDeletedState ? "obsolete-data" : null);
 
             
@@ -277,7 +282,7 @@ WriteLiteral(" ");
 
 
             
-            #line 109 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 131 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                                                                                                            Write(job.Value != null && job.Value.InDeletedState && job.Value != null ? "hover" : null);
 
             
@@ -287,7 +292,7 @@ WriteLiteral("\">\r\n                            <td>\r\n");
 
 
             
-            #line 111 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 133 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                  if (job.Value != null && job.Value.InDeletedState)
                                 {
 
@@ -299,7 +304,7 @@ WriteLiteral("                                    <input type=\"checkbox\" class
 
 
             
-            #line 113 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 135 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                                                                                          Write(job.Key);
 
             
@@ -309,7 +314,7 @@ WriteLiteral("\"/>\r\n");
 
 
             
-            #line 114 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 136 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                 }
 
             
@@ -320,7 +325,7 @@ WriteLiteral("                            </td>\r\n                            <
 
 
             
-            #line 117 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 139 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                            Write(Html.JobIdLink(job.Key));
 
             
@@ -330,7 +335,7 @@ WriteLiteral("\r\n");
 
 
             
-            #line 118 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 140 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                  if (job.Value != null && !job.Value.InDeletedState)
                                 {
 
@@ -342,7 +347,7 @@ WriteLiteral("                                    <span title=\"Job\'s state has
 
 
             
-            #line 121 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 143 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                 }
 
             
@@ -352,7 +357,7 @@ WriteLiteral("                            </td>\r\n\r\n");
 
 
             
-            #line 124 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 146 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                              if (job.Value == null)
                             {
 
@@ -363,7 +368,7 @@ WriteLiteral("                                <td colspan=\"2\"><em>Job has expi
 
 
             
-            #line 127 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 149 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                             }
                             else
                             {
@@ -375,7 +380,7 @@ WriteLiteral("                                <td>\r\n                          
 
 
             
-            #line 131 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 153 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                Write(Html.JobNameLink(job.Key, job.Value.Job));
 
             
@@ -389,7 +394,7 @@ WriteLiteral("                                <td class=\"align-right\">\r\n");
 
 
             
-            #line 134 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 156 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                      if (job.Value.DeletedAt.HasValue)
                                     {
                                         
@@ -397,14 +402,14 @@ WriteLiteral("                                <td class=\"align-right\">\r\n");
             #line default
             #line hidden
             
-            #line 136 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 158 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                    Write(Html.Raw(job.Value.DeletedAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
-            #line 136 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 158 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                                                                                                          ;
                                     }
 
@@ -415,7 +420,7 @@ WriteLiteral("                                </td>\r\n");
 
 
             
-            #line 139 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 161 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                             }
 
             
@@ -425,27 +430,31 @@ WriteLiteral("                        </tr>\r\n");
 
 
             
-            #line 141 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 163 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
                     }
 
             
             #line default
             #line hidden
-WriteLiteral("                    </tbody>\r\n                </table>\r\n\r\n                ");
+WriteLiteral("                    </tbody>\r\n                </table>\r\n");
 
 
             
-            #line 145 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 166 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+                
+            
+            #line default
+            #line hidden
+            
+            #line 166 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
            Write(Html.Paginator(pager));
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n            </div>\r\n");
-
-
             
-            #line 147 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+            #line 166 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
+                                      
         }
 
             
