@@ -448,7 +448,7 @@ where j.Id in @jobIds", _storage.GetSchemaName());
             {
                   _storage.GetSchemaName(),
                   string.IsNullOrEmpty(filterString) ? string.Empty : " and Arguments LIKE '%'+@filterString+'%' ",
-                  string.IsNullOrEmpty(filterMethodString) ? string.Empty : " and InvocationData LIKE '%'+'\"Method\"'+':'+'\"'%'+@filterMethodString+'%'\"'+','+\"ParameterTypes\"+'%' " ,
+                  string.IsNullOrEmpty(filterMethodString) ? string.Empty : " and InvocationData LIKE '%\"Method\":\"%'+@filterMethodString+'%\",\"ParameterTypes\"%' " ,
                   !hasDateTimeParams(parameters) ? string.Empty : " and @startDateTime <= CreatedAt and CreatedAt <= @endDateTime "
             };
 
@@ -534,7 +534,7 @@ where j.Id in @jobIds", _storage.GetSchemaName());
             {
                   _storage.GetSchemaName(),
                   string.IsNullOrEmpty(pager.JobsFilterText) ? string.Empty : " and j.Arguments LIKE '%' + @filterString + '%' ",
-                  string.IsNullOrEmpty(pager.JobsFilterMethodText) ? string.Empty : " and j.InvocationData LIKE N'+'%'+"+('"'+"Method"+'"')+':'+"'"+('"'+"N'+'%'+@filterMethodString+'%'"+"'"+'"')+','+'"'+"ParameterTypes"+'"'+'%'+" " ,
+                  string.IsNullOrEmpty(pager.JobsFilterMethodText) ? string.Empty : " and J.InvocationData LIKE '%\"Method\":\"%'+@filterMethodString+'%\",\"ParameterTypes\"%' "  ,
                   !hasDateTimeParams(parameters) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
             };
 

@@ -67,7 +67,6 @@ namespace Hangfire.SqlServer
             dynamic parameters = null;
             if (pager != null) parameters = new
             {
-                filterString = pager.JobsFilterText,
                 startDate = pager.JobsFilterStartDate,
                 endDate = pager.JobsFilterEndDate,
                 startTime = pager.JobsFilterStartTime,
@@ -80,6 +79,7 @@ namespace Hangfire.SqlServer
             {
                   _storage.GetSchemaName(),
                   pager == null || string.IsNullOrEmpty(pager.JobsFilterText) ? string.Empty : " and j.Arguments LIKE '%'+@filterString+'%' ",
+                  pager == null || string.IsNullOrEmpty(pager.JobsFilterMethodText) ? string.Empty : " and J.InvocationData LIKE '%\"Method\":\"%'+@filterMethodString+'%\",\"ParameterTypes\"%' ",
                   !hasDateTimeParams(parameters) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
             };
            
@@ -87,7 +87,7 @@ namespace Hangfire.SqlServer
 select distinct r.JobId from (
   select jq.JobId, row_number() over (order by jq.Id) as row_num 
   from [{0}].JobQueue as jq, [{0}].Job as j 
-  where jq.Queue = @queue AND jq.JobId = j.Id {1} {2}  
+  where jq.Queue = @queue AND jq.JobId = j.Id {1} {2} {3}  
 ) as r
 where r.row_num between @start and @end", queryParams);
 
@@ -95,7 +95,7 @@ where r.row_num between @start and @end", queryParams);
             {
                 return connection.Query<JobIdDto>(
                     sqlQuery,
-                    new { queue = queue, start = from + 1, end = @from + perPage, filterString = pager.JobsFilterText, startDate = sqlFilterDates[0], endDate =sqlFilterDates[1] })
+                    new { queue = queue, start = from + 1, end = @from + perPage, filterString = pager.JobsFilterText, filterMethodString = pager.JobsFilterMethodText, startDate = sqlFilterDates[0], endDate =sqlFilterDates[1] })
                     .ToList()
                     .Select(x => x.JobId)
                     .ToList();
@@ -113,9 +113,9 @@ where r.row_num between @start and @end", queryParams);
             
             string[] queryParams = queryParams = new string[]
             {
-                  _storage.GetSchemaName(),
-                  countParameters == null || countParameters.Count <= 0 || string.IsNullOrEmpty(countParameters["filterMethodString"]) ? string.Empty : " and j.InvocationData LIKE N'+'%'+"+('"'+"Method"+'"')+':'+"'"+('"'+"N'+'%'+@filterMethodString+'%'"+"'"+'"')+','+'"'+"ParameterTypes"+'"'+'%'+" " ,
+                  _storage.GetSchemaName(),                  
                   countParameters == null || countParameters.Count <= 0 || string.IsNullOrEmpty(countParameters["filterString"]) ? string.Empty : " and j.Arguments LIKE '%'+@filterString+'%' ",
+                  countParameters == null || countParameters.Count <= 0 || string.IsNullOrEmpty(countParameters["filterMethodString"]) ? string.Empty : " and J.InvocationData LIKE '%\"Method\":\"%'+@filterMethodString+'%\",\"ParameterTypes\"%' ",
                   !hasDateTimeParams(countParameters) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
             };
             
