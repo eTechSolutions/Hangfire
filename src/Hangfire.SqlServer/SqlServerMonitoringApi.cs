@@ -442,22 +442,24 @@ where j.Id in @jobIds", _storage.GetSchemaName());
         {
             var stateName = parameters["stateName"];
             var filterString = parameters["filterString"];
+            var filterMethodString = parameters["filterMethodString"];
 
             string[] queryParams = new string[]
             {
                   _storage.GetSchemaName(),
-                  string.IsNullOrEmpty(filterString) ? string.Empty : " and Arguments LIKE '%' + @filterString + '%' ",
+                  string.IsNullOrEmpty(filterString) ? string.Empty : " and Arguments LIKE '%'+@filterString+'%' ",
+                  string.IsNullOrEmpty(filterMethodString) ? string.Empty : " and InvocationData LIKE '%'+'\"Method\"'+':'+'\"'%'+@filterMethodString+'%'\"'+','+\"ParameterTypes\"+'%' " ,
                   !hasDateTimeParams(parameters) ? string.Empty : " and @startDateTime <= CreatedAt and CreatedAt <= @endDateTime "
             };
 
             var sqlFilterDates = prepareSqlFilterDates(parameters);
             var sqlQuery = _jobListLimit.HasValue
-                ? string.Format(@"select count(j.Id) from (select top (@limit) Id from [{0}].Job where StateName = @state {1} {2}) as j", queryParams)
-                : string.Format(@"select count(Id) from [{0}].Job where StateName = @state {1} {2}", queryParams);
+                ? string.Format(@"select count(j.Id) from (select top (@limit) Id from [{0}].Job where StateName = @state {1} {2} {3}) as j", queryParams)
+                : string.Format(@"select count(Id) from [{0}].Job where StateName = @state {1} {2} {3} ", queryParams);
 
             var count = connection.Query<int>(
                  sqlQuery,
-                 new { state = stateName, limit = _jobListLimit, filterString = filterString, startDateTime = sqlFilterDates[0], endDateTime = sqlFilterDates[1] })
+                 new { state = stateName, limit = _jobListLimit, filterString = filterString, filterMethodString = filterMethodString, startDateTime = sqlFilterDates[0], endDateTime = sqlFilterDates[1] })
                  .Single();
 
             return count;
@@ -532,6 +534,7 @@ where j.Id in @jobIds", _storage.GetSchemaName());
             {
                   _storage.GetSchemaName(),
                   string.IsNullOrEmpty(pager.JobsFilterText) ? string.Empty : " and j.Arguments LIKE '%' + @filterString + '%' ",
+                  string.IsNullOrEmpty(pager.JobsFilterMethodText) ? string.Empty : " and j.InvocationData LIKE N'+'%'+"+('"'+"Method"+'"')+':'+"'"+('"'+"N'+'%'+@filterMethodString+'%'"+"'"+'"')+','+'"'+"ParameterTypes"+'"'+'%'+" " ,
                   !hasDateTimeParams(parameters) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
             };
 
@@ -541,14 +544,20 @@ select * from (
   select j.*, s.Reason as StateReason, s.Data as StateData, row_number() over (order by j.Id desc) as row_num
   from [{0}].Job j with (forceseek)
   left join [{0}].State s on j.StateId = s.Id
-  where j.StateName = @stateName {1} {2}
+  where j.StateName = @stateName {1} {2} {3} 
 ) as j where j.row_num between @start and @end
 ", queryParams);
 
             var jobs = connection.Query<SqlJob>(
                         jobsSql,
-                        new { stateName = stateName, start = @pager.FromRecord + 1, end = @pager.FromRecord + pager.RecordsPerPage, filterString = pager.JobsFilterText, startDate = sqlFilterDates[0], endDate = sqlFilterDates[1] })
-                        .ToList();
+                        new { stateName = stateName,
+                            start = @pager.FromRecord + 1,
+                            end = @pager.FromRecord + pager.RecordsPerPage,
+                            filterString = pager.JobsFilterText,
+                            filterMethodString = pager.JobsFilterMethodText,
+                            startDate = sqlFilterDates[0],
+                            endDate = sqlFilterDates[1] })
+                            .ToList();
             
             return DeserializeJobs(jobs, selector);
         }

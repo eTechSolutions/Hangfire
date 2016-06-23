@@ -9,6 +9,7 @@
 
     int from, perPage;
     string filterString = Query("filterString");
+    string filterMethodString = Query("filterMethodString");
     string startDate = Query("startDate");
     string endDate = Query("endDate");
     string startTime = Query("startTime");
@@ -23,6 +24,7 @@
     {
         { "stateName", FailedState.StateName },
         { "filterString", filterString },
+        { "filterMethodString", filterMethodString },
         { "startDate", startDate },
         { "endDate", endDate },
         { "startTime", startTime },
@@ -33,6 +35,7 @@
     var pager = new Pager(from, perPage, jobCount)
     {
         JobsFilterText = filterString,
+        JobsFilterMethodText = filterMethodString,
         JobsFilterStartDate = startDate,
         JobsFilterEndDate = endDate,
         JobsFilterStartTime = startTime,
@@ -81,18 +84,25 @@
                         Delete selected
                     </button>
                     <br>
-                    <br>                
+                    <br>
                     <button class="js-jobs-filter-command btn btn-sm btn-default"
                             data-url="@Url.To("/jobs/failed")">
                         <span class="glyphicon glyphicon-repeat"></span>
                         Filter jobs
-                    </button>
+                    </button>                                        
                     <input type="text" value="" id="filterValueString" class="fltr-txtbx btn-sm" />
-                    <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">Filter on date and time</input>
-                    @{                         
+                    <div style="width:200px;margin-right:10px;">
+                        <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">@Html.Raw("Filter on date and time")</input>
+                        <br />
+                        <input id="filterOnMethodName" type="checkbox" class="js-jobs-filterOnMethodName-checked">@Html.Raw("Filter on method name")</input>
+                    </div>
+                    @{
                         var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
                     }
                     <br />
+                    <br />
+                    <label id="methodValueLabel" hidden="hidden">Method name</label>
+                    <input type="text" value="" id="filterMethodString" class="fltr-txtbx btn-sm" style="padding-bottom:inherit" hidden="hidden" />
                     <br />
                     <input type="text" value="@currentDateTime" style="width: 130px; margin:0px 0px 0px 80px;" class="datetimeselector-start" id="startDateTime" hidden="hidden" />
                     <input type="text" value="@currentDateTime" style="width: 130px;" class="datetimeselector-end" id="endDateTime" hidden="hidden" />

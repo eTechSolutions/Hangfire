@@ -114,6 +114,7 @@ where r.row_num between @start and @end", queryParams);
             string[] queryParams = queryParams = new string[]
             {
                   _storage.GetSchemaName(),
+                  countParameters == null || countParameters.Count <= 0 || string.IsNullOrEmpty(countParameters["filterMethodString"]) ? string.Empty : " and j.InvocationData LIKE N'+'%'+"+('"'+"Method"+'"')+':'+"'"+('"'+"N'+'%'+@filterMethodString+'%'"+"'"+'"')+','+'"'+"ParameterTypes"+'"'+'%'+" " ,
                   countParameters == null || countParameters.Count <= 0 || string.IsNullOrEmpty(countParameters["filterString"]) ? string.Empty : " and j.Arguments LIKE '%'+@filterString+'%' ",
                   !hasDateTimeParams(countParameters) ? string.Empty : " and @startDate <= j.CreatedAt and j.CreatedAt <= @endDate "
             };
@@ -121,11 +122,16 @@ where r.row_num between @start and @end", queryParams);
             string sqlQuery = string.Format(@"
     select count(jq.Id) 
     from [{0}].JobQueue as jq, [{0}].Job as j 
-    where jq.Queue = @queue and jq.JobId = j.Id {1} {2} ", queryParams);
+    where jq.Queue = @queue and jq.JobId = j.Id {1} {2} {3} ", queryParams);
                         
             return UseTransaction(connection =>
             {
-                var result = connection.Query<int>(sqlQuery, new { queue = queue, filterString = countParameters["filterString"], startDate = sqlFilterDates[0], endDate = sqlFilterDates[1] }).Single();
+                var result = connection.Query<int>(sqlQuery, new { queue = queue,
+                    filterString = countParameters["filterString"],
+                    filterMethodString = countParameters["filterMethodString"],
+                    startDate = sqlFilterDates[0],
+                    endDate = sqlFilterDates[1] })
+                    .Single();
 
                 return new EnqueuedAndFetchedCountDto
                 {

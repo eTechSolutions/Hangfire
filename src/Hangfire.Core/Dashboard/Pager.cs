@@ -43,6 +43,7 @@ namespace Hangfire.Dashboard
         public int TotalPageCount { get; private set; }
         public long TotalRecordCount { get; private set; }
         public string JobsFilterText { get; set; }
+        public string JobsFilterMethodText { get; set; }
         public string JobsFilterStartDate { get; set; }
         public string JobsFilterEndDate { get; set; }
         public string JobsFilterStartTime { get; set; }

@@ -12,6 +12,7 @@
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
     string filterString = Query("filterString");
+    string filterMethodString = Query("filterMethodString");
     string startDate = Query("startDate");
     string endDate = Query("endDate");
     string startTime = Query("startTime");
@@ -21,6 +22,7 @@
     var countParameters = new Dictionary<string, string>()
     {
         { "filterString", filterString },
+        { "filterMethodString", filterMethodString },
         { "startDate", startDate },
         { "endDate", endDate },
         { "startTime", startTime },
@@ -31,6 +33,7 @@
     var pager = new Pager(from, perPage, jobCount)
     {
         JobsFilterText = filterString,
+        JobsFilterMethodText = filterMethodString,
         JobsFilterStartDate = startDate,
         JobsFilterEndDate = endDate,
         JobsFilterStartTime = startTime,
@@ -77,12 +80,19 @@
                         Filter jobs
                     </button>
                     <input type="text" value="" id="filterValueString" class="fltr-txtbx btn-sm" />
-                    <input id="filterOnDate" type="checkbox" class="js-jobs-filterOnDate-checked">Filter on date</input>
+                    <div style="width:200px;margin-right:10px;">
+                        <input id="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked">@Html.Raw("Filter on date and time")</input>
+                        <br />
+                        <input id="filterOnMethodName" type="checkbox" class="js-jobs-filterOnMethodName-checked">@Html.Raw("Filter on method name")</input>
+                    </div>
                     @{
                         var todaysDate = System.DateTime.Now.ToShortDateString();
                     }
                     <br>
                     <br>
+                    <label id="methodValueLabel" hidden="hidden">Method name</label>
+                    <input type="text" value="" id="filterMethodString" class="fltr-txtbx btn-sm" style="padding-bottom:inherit" hidden="hidden" />
+                    <br />
                     <input value="@todaysDate" style="width: 100px; margin:0px 0px 0px 110px;" readonly="" class="dateselector-start" id="startDate" hidden="hidden" />
                     <input value="@todaysDate" style="width: 100px;" readonly="" class="dateselector-end" id="endDate" hidden="hidden" />
                     @Html.PerPageSelector(pager)

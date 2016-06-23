@@ -271,48 +271,67 @@
                 });
 
 
-                $(this).on('click', '.js-jobs-filter-command', function (e) {                    
+                $(this).on('click', '.js-jobs-filter-command', function (e) {
                     url = document.location.search;
                     var filterValueString = $("#filterValueString").val();
+                    var filterMethodString = $("#filterMethodString").val();
                     var filterStartDateTime = $("#startDateTime").datepick().val();
                     var filterEndDateTime = $("#endDateTime").datepick().val();
-                    var addedFilterString = prepFilterStringParameter(filterValueString);
-                    var addedDateTimeFilterStrings = prepFilterDateTimeParameters(filterStartDateTime, filterEndDateTime);                    
-                    if (addedDateTimeFilterStrings || addedFilterString) {                                  
-                        redirectToFirstPage();                        
-                    }                    
-                    document.location.search = url;                                      
+                    var addedFilterString = prepFilterStringParameters(filterValueString, filterMethodString);
+                    var addedDateTimeFilterStrings = prepFilterDateTimeParameters(filterStartDateTime, filterEndDateTime);
+                    if (addedDateTimeFilterStrings || addedFilterString) redirectToFirstPage();
+                    
+                    document.location.search = url;
                 })
                 
-                var prepFilterStringParameter = function (filterString) {                    
+                var prepFilterStringParameters = function (filterString, filterMethodString) {
                     var result = false;
-                    if (url == '' && filterString != '') {                        
-                        url = '?' + "filterString=" + filterString;                       
+                    if (url == '' && (filterString != '' || filterMethodString != '')) {
+                        url = '?';
+                        if (filterString != '') url += "filterString=" + filterString;
+                        if (filterMethodString != '') url += "filterMethodString=" + filterMethodString;
                         result = true;
                     } else {
-                        var parameters = url.substr(1).split('&');                        
-                        var elements;
-                        var i = 0;
-                        for(i=0;i < parameters.length;i++){
-                            elements = parameters[i].split('=');
-                            if (elements[0] == "filterString" && filterString != '' ) {
-                                elements[1] = filterString;
-                                parameters[i] = elements.join('=');                                
-                                result = true;
-                                break;
-                            } else if (elements[0] == "filterString" && filterString == '') {
-                                parameters.splice(i, 1);                                
-                                result = false;
-                                break;
-                            }
-                        }
-                        if ( i >= parameters.length && filterString != '' ) {
-                            parameters[parameters.length] = ["filterString", filterString].join('=');  
+
+                        var res1 = updateOrRemoveSingleParameter("filterString", filterString);
+                        var res2 = updateOrRemoveSingleParameter("filterMethodString", filterMethodString);
+                        var parameters = url.substr(1).split('&');
+
+                        if (!res1 && filterString != '') {
+                            parameters[parameters.length] = ["filterString", filterString].join('=');
                             result = true;
-                        }                        
-                        if ( parameters.length > 0 ) url = '?' + parameters.join('&');                        
-                    }                   
-                    return result;                    
+                        }
+
+                        if (!res2 && filterMethodString != '') {
+                            parameters[parameters.length] = ["filterMethodString", filterMethodString].join('=');  
+                            result = true;
+                        }
+                        
+                        if ( parameters.length > 0 ) url = '?' + parameters.join('&');
+                    }
+                    return result;
+                }
+
+                var updateOrRemoveSingleParameter = function (parameter, value) {
+                    var result = false;
+                    var parameters = url.substr(1).split('&');
+                    var elements;
+                    var i = 0;
+                    for (i = 0; i < parameters.length; i++) {
+                        elements = parameters[i].split('=');
+                        if (elements[0] == parameter && (typeof value == 'undefined' || value == '') ) {
+                            parameters.splice(i, 1);
+                            result = false;
+                            break;
+                        } else if (elements[0] == parameter && value != '') {
+                            elements[1] = value;
+                            parameters[i] = elements.join('=');
+                            result = true;
+                            break;
+                        } 
+                    }
+                    if (parameters.length > 0) url = '?' + parameters.join('&');
+                    return result;
                 }
 
                 var prepFilterDateTimeParameters = function (startDateTime, endDateTime) {
@@ -331,7 +350,7 @@
                     }
                     else {
                         return removeDateTimeParameters();
-                    }                    
+                    }
                 }
 
                 var addOrModifyDateTimeParameters = function (sDate, eDate, sTime, eTime) {
@@ -396,7 +415,7 @@
                     return false;
                 }
 
-                var redirectToFirstPage = function () {                    
+                var redirectToFirstPage = function () {
                     if (url.indexOf("from") > -1 ) {
                         var parameters = url.substr(1).split('&');
                         var element;
@@ -407,11 +426,11 @@
                                 parameters[i] = element.join('=');
                                 break;
                             }
-                        }                        
-                        url = '?' + parameters.join('&');                       
+                        }
+                        url = '?' + parameters.join('&');
                     }
                 }
-                                
+                
                 $(this).on('click', '.js-jobs-filtertext-clear', function (e) {                    
                     $("#filterValueString").val('');
                 })
@@ -425,10 +444,24 @@
                     }
                     else {
                         document.getElementById("startDateTime").hidden = "hidden";
-                        document.getElementById("endDateTime").hidden = "hidden";
+                        document.getElementById("endDateTime").hidden = "hidden";                        
                     }
                 })
-                                
+                  
+                $(this).on('click', '.js-jobs-filterOnMethodName-checked', function (e) {
+                    var checked = $("#filterOnMethodName").is(':checked');
+                    if (checked) {
+                        document.getElementById("filterMethodString").hidden = "";
+                        document.getElementById("filterOnMethodName").checked = "checked";
+                        document.getElementById("methodValueLabel").hidden = "";
+                    }
+                    else {
+                        document.getElementById("filterMethodString").hidden = "hidden";
+                        document.getElementById("filterOnMethodName").checked = "";
+                        document.getElementById("methodValueLabel").hidden = "hidden";
+                    }
+                })
+
                 $(".datetimeselector-start").datetimepicker({
                     maxDate: '0'
                 });

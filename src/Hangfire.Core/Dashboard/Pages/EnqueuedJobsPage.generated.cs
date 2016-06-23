@@ -66,6 +66,7 @@ WriteLiteral("\r\n");
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
     string filterString = Query("filterString");
+    string filterMethodString = Query("filterMethodString");
     string startDate = Query("startDate");
     string endDate = Query("endDate");
     string startTime = Query("startTime");
@@ -75,6 +76,7 @@ WriteLiteral("\r\n");
     var countParameters = new Dictionary<string, string>()
     {
         { "filterString", filterString },
+        { "filterMethodString", filterMethodString },
         { "startDate", startDate },
         { "endDate", endDate },
         { "startTime", startTime },
@@ -85,6 +87,7 @@ WriteLiteral("\r\n");
     var pager = new Pager(from, perPage, jobCount)
     {
         JobsFilterText = filterString,
+        JobsFilterMethodText = filterMethodString,
         JobsFilterStartDate = startDate,
         JobsFilterEndDate = endDate,
         JobsFilterStartTime = startTime,
@@ -100,7 +103,7 @@ WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-3\">\r\n       
 
 
             
-            #line 44 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 47 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
    Write(Html.JobsSidebar());
 
             
@@ -110,7 +113,7 @@ WriteLiteral("\r\n    </div>\r\n    <div class=\"col-md-9\">\r\n        ");
 
 
             
-            #line 47 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 50 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
    Write(Html.Breadcrumbs(Queue.ToUpperInvariant(), new Dictionary<string, string>
         {
             { "Queues", Url.LinkToQueues() }
@@ -123,7 +126,7 @@ WriteLiteral("\r\n\r\n        <h1 class=\"page-header\">");
 
 
             
-            #line 52 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 55 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                            Write(Queue.ToUpperInvariant());
 
             
@@ -133,7 +136,7 @@ WriteLiteral(" <small>Enqueued jobs</small></h1>\r\n\r\n");
 
 
             
-            #line 54 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 57 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
          if (pager.TotalPageCount == 0)
         {
 
@@ -145,7 +148,7 @@ WriteLiteral("            <div class=\"alert alert-info\">\r\n                Th
 
 
             
-            #line 59 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 62 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
         }
         else
         {
@@ -159,7 +162,7 @@ WriteLiteral("            <div class=\"js-jobs-list\">\r\n                <div c
 
 
             
-            #line 65 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 68 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                  Write(Url.To("/jobs/enqueued/delete"));
 
             
@@ -179,7 +182,7 @@ WriteLiteral(@"""
 
 
             
-            #line 75 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 78 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                  Write(Url.To("/jobs/enqueued"));
 
             
@@ -190,12 +193,33 @@ WriteLiteral(@""">
                         Filter jobs
                     </button>
                     <input type=""text"" value="""" id=""filterValueString"" class=""fltr-txtbx btn-sm"" />
-                    <input id=""filterOnDate"" type=""checkbox"" class=""js-jobs-filterOnDate-checked"">Filter on date</input>
-");
+                    <div style=""width:200px;margin-right:10px;"">
+                        <input id=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"">");
 
 
             
-            #line 81 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 84 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+                                                                                                         Write(Html.Raw("Filter on date and time"));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</input>\r\n                        <br />\r\n                        <input id=\"filt" +
+"erOnMethodName\" type=\"checkbox\" class=\"js-jobs-filterOnMethodName-checked\">");
+
+
+            
+            #line 86 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+                                                                                                             Write(Html.Raw("Filter on method name"));
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</input>\r\n                    </div>\r\n");
+
+
+            
+            #line 88 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                       
                         var todaysDate = System.DateTime.Now.ToShortDateString();
                     
@@ -203,12 +227,16 @@ WriteLiteral(@""">
             
             #line default
             #line hidden
-WriteLiteral("                    <br>\r\n                    <br>\r\n                    <input va" +
-"lue=\"");
+WriteLiteral(@"                    <br>
+                    <br>
+                    <label id=""methodValueLabel"" hidden=""hidden"">Method name</label>
+                    <input type=""text"" value="""" id=""filterMethodString"" class=""fltr-txtbx btn-sm"" style=""padding-bottom:inherit"" hidden=""hidden"" />
+                    <br />
+                    <input value=""");
 
 
             
-            #line 86 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 96 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                              Write(todaysDate);
 
             
@@ -219,7 +247,7 @@ WriteLiteral("\" style=\"width: 100px; margin:0px 0px 0px 110px;\" readonly=\"\"
 
 
             
-            #line 87 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 97 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                              Write(todaysDate);
 
             
@@ -230,7 +258,7 @@ WriteLiteral("\" style=\"width: 100px;\" readonly=\"\" class=\"dateselector-end\
 
 
             
-            #line 88 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 98 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                Write(Html.PerPageSelector(pager));
 
             
@@ -256,7 +284,7 @@ WriteLiteral(@"
 
 
             
-            #line 104 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 114 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                      foreach (var job in enqueuedJobs)
                     {
 
@@ -267,7 +295,7 @@ WriteLiteral("                        <tr class=\"js-jobs-list-row hover ");
 
 
             
-            #line 106 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 116 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                                       Write(!job.Value.InEnqueuedState ? "obsolete-data" : null);
 
             
@@ -278,7 +306,7 @@ WriteLiteral("\">\r\n                            <td>\r\n                       
 
 
             
-            #line 108 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 118 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                                                                                      Write(job.Key);
 
             
@@ -289,7 +317,7 @@ WriteLiteral("\"/>\r\n                            </td>\r\n                     
 
 
             
-            #line 111 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 121 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                            Write(Html.JobIdLink(job.Key));
 
             
@@ -299,7 +327,7 @@ WriteLiteral("\r\n");
 
 
             
-            #line 112 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 122 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                  if (!job.Value.InEnqueuedState)
                                 {
 
@@ -311,7 +339,7 @@ WriteLiteral("                                    <span title=\"Job\'s state has
 
 
             
-            #line 115 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 125 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                 }
 
             
@@ -322,7 +350,7 @@ WriteLiteral("                            </td>\r\n                            <
 
 
             
-            #line 118 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 128 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                            Write(Html.StateLabel(job.Value.State));
 
             
@@ -333,7 +361,7 @@ WriteLiteral("\r\n                            </td>\r\n                         
 
 
             
-            #line 121 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 131 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                            Write(Html.JobNameLink(job.Key, job.Value.Job));
 
             
@@ -344,7 +372,7 @@ WriteLiteral("\r\n                            </td>\r\n                         
 
 
             
-            #line 124 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 134 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                  if (job.Value.EnqueuedAt.HasValue)
                                 {
                                     
@@ -352,14 +380,14 @@ WriteLiteral("\r\n                            </td>\r\n                         
             #line default
             #line hidden
             
-            #line 126 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 136 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                Write(Html.Raw(job.Value.EnqueuedAt.Value.ToString("dd/MM/yyyy HH:mm")));
 
             
             #line default
             #line hidden
             
-            #line 126 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 136 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                                                                                       ;
                                 }
                                 else
@@ -372,7 +400,7 @@ WriteLiteral("                                    <em>n/a</em>\r\n");
 
 
             
-            #line 131 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 141 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                                 }
 
             
@@ -382,7 +410,7 @@ WriteLiteral("                            </td>\r\n                        </tr>
 
 
             
-            #line 134 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 144 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
                     }
 
             
@@ -392,7 +420,7 @@ WriteLiteral("                    </tbody>\r\n                </table>\r\n\r\n  
 
 
             
-            #line 138 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 148 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
            Write(Html.Paginator(pager));
 
             
@@ -402,7 +430,7 @@ WriteLiteral("\r\n            </div>\r\n");
 
 
             
-            #line 140 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
+            #line 150 "..\..\Dashboard\Pages\EnqueuedJobsPage.cshtml"
         }
 
             
