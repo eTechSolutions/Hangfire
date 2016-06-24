@@ -7,7 +7,6 @@
     Layout = new LayoutPage("Deleted Jobs");
 
     int from, perPage;
-
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
     string filterString = Query("filterString");
@@ -142,7 +141,6 @@
                                     <span title="Job's state has been changed while fetching data." class="glyphicon glyphicon-question-sign"></span>
                                 }
                             </td>
-
                             @if (job.Value == null)
                             {
                                 <td colspan="2"><em>Job has expired.</em></td>

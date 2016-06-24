@@ -175,7 +175,6 @@
             $('.js-jobs-list').each(function () {
                 var container = this;
 
-
                 var selectRow = function(row, isSelected) {
                     var $checkbox = $('.js-jobs-list-checkbox', row);
                     if ($checkbox.length > 0) {
