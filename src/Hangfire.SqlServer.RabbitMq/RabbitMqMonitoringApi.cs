@@ -34,7 +34,7 @@ namespace Hangfire.SqlServer.RabbitMQ
         /// we dispose the RabbitMqJobQueue causing the channel to close. All unack'd
         /// messages then get requeued in order.
         /// </remarks>
-        public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, Pager pager= null)
+        public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, Pager pager = null)
         {
             using (var client = new RabbitMqJobQueue(new[] {queue}, _factory))
             {

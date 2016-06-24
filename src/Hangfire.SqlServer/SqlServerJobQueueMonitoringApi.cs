@@ -65,13 +65,16 @@ namespace Hangfire.SqlServer
         public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, Pager pager = null)
         {
             dynamic parameters = null;
-            if (pager != null) parameters = new
+            if (pager != null)
             {
-                startDate = pager.JobsFilterStartDate,
-                endDate = pager.JobsFilterEndDate,
-                startTime = pager.JobsFilterStartTime,
-                endTime = pager.JobsFilterEndTime
-            };
+                parameters = new
+                {
+                    startDate = pager.JobsFilterStartDate,
+                    endDate = pager.JobsFilterEndDate,
+                    startTime = pager.JobsFilterStartTime,
+                    endTime = pager.JobsFilterEndTime
+                };
+            }
 
             string[] sqlFilterDates = prepareSqlFilterDates(parameters);
 
