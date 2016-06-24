@@ -286,10 +286,10 @@
                 
                 var prepFilterStringParameters = function (filterString, filterMethodString) {
                     var result = false;
-                    if (url == '' && (filterString != '' || filterMethodString != '')) {
+                    if (url === '' && (filterString !== '' || filterMethodString !== '')) {
                         url = '?';
-                        if (filterString != '') url += "filterString=" + filterString;
-                        if (filterMethodString != '') url += "filterMethodString=" + filterMethodString;
+                        if (filterString !== '') url += "filterString=" + filterString;
+                        if (filterMethodString !== '') url += "filterMethodString=" + filterMethodString;
                         result = true;
                     } else {
 
@@ -297,12 +297,12 @@
                         var res2 = updateOrRemoveSingleParameter("filterMethodString", filterMethodString);
                         var parameters = url.substr(1).split('&');
 
-                        if (!res1 && filterString != '') {
+                        if (!res1 && filterString !== '') {
                             parameters[parameters.length] = ["filterString", filterString].join('=');
                             result = true;
                         }
 
-                        if (!res2 && filterMethodString != '') {
+                        if (!res2 && filterMethodString !== '') {
                             parameters[parameters.length] = ["filterMethodString", filterMethodString].join('=');  
                             result = true;
                         }
@@ -319,11 +319,11 @@
                     var i = 0;
                     for (i = 0; i < parameters.length; i++) {
                         elements = parameters[i].split('=');
-                        if (elements[0] == parameter && (typeof value == 'undefined' || value == '') ) {
+                        if (elements[0] === parameter && (typeof value === 'undefined' || value === '') ) {
                             parameters.splice(i, 1);
                             result = false;
                             break;
-                        } else if (elements[0] == parameter && value != '') {
+                        } else if (elements[0] === parameter && value != '') {
                             elements[1] = value;
                             parameters[i] = elements.join('=');
                             result = true;
@@ -331,11 +331,13 @@
                         } 
                     }
                     if (parameters.length > 0) url = '?' + parameters.join('&');
+                    else url = '';
+
                     return result;
                 }
 
                 var prepFilterDateTimeParameters = function (startDateTime, endDateTime) {
-                    if (typeof startDateTime == 'undefined' || typeof endDateTime == 'undefined') return false;
+                    if (typeof startDateTime === 'undefined' || typeof endDateTime === 'undefined') return false;
                     var sDate = startDateTime.split(' ')[0].split('/'),
                     eDate = endDateTime.split(' ')[0].split('/'),
                     sTime = startDateTime.split(' ')[1].split(':'),
@@ -354,7 +356,7 @@
                 }
 
                 var addOrModifyDateTimeParameters = function (sDate, eDate, sTime, eTime) {
-                    if (url == '') {
+                    if (url === '') {
                         url = '?' + "startDate=" + sDate.join('-') + '&' + "endDate=" + eDate.join('-') + '&' + "startTime=" + sTime.join('-') + '&' + "endTime=" + eTime.join('-');
                     } else {
                         var parameters = url.substr(1).split('&');
@@ -365,16 +367,16 @@
                         foundEndTime = false;
                         for (var i = 0; i < parameters.length; i++) {
                             element = parameters[i].split('=');
-                            if (element[0] == "startDate") {
+                            if (element[0] === "startDate") {
                                 element[1] = sDate.join('-');
                                 foundStartDate = true;
-                            } else if (element[0] == "endDate") {
+                            } else if (element[0] === "endDate") {
                                 element[1] = eDate.join('-');
                                 foundEndDate = true;
-                            } else if (element[0] == "startTime") {
+                            } else if (element[0] === "startTime") {
                                 element[1] = sTime.join('-');
                                 foundStartTime = true;
-                            } else if (element[0] == "endTime") {
+                            } else if (element[0] === "endTime") {
                                 element[1] = eTime.join('-');
                                 foundEndTime = true;
                             }
@@ -398,13 +400,13 @@
                 }
 
                 var removeDateTimeParameters = function () {
-                    if (url != '') {
+                    if (url !== '') {
                         var parameters = url.substr(1).split('&');
                         var element;
                         var i = 0;
                         do {
                             element = parameters[i].split('=');
-                            if (element[0] == "startDate" || element[0] == "endDate" || element[0] == "startTime" || element[0] == "endTime") {
+                            if (element[0] === "startDate" || element[0] === "endDate" || element[0] === "startTime" || element[0] === "endTime") {
                                 parameters.splice(i, 1);
                             } else {
                                 i++;
@@ -421,7 +423,7 @@
                         var element;
                         for (var i = 0; i < parameters.length; i++) {
                             element = parameters[i].split('=');
-                            if (element[0] == "from") {
+                            if (element[0] === "from") {
                                 element[1] = 0;
                                 parameters[i] = element.join('=');
                                 break;
@@ -439,18 +441,10 @@
                 $(this).on('click', '.js-jobs-filterOnDateTime-checked', function (e) {
                     var checked = $("#filterOnDateTime").is(':checked');
                     if (checked) {
-
-                        $("#datetime-filters").show();
-
-                        //document.getElementById("startDateTime").hidden = "";
-                        //document.getElementById("endDateTime").hidden = "";                        
+                        $("#datetime-filters").show();              
                     }
                     else {
-
-                        $("#datetime-filters").hide();
-
-                        //document.getElementById("startDateTime").hidden = "hidden";
-                        //document.getElementById("endDateTime").hidden = "hidden";                        
+                        $("#datetime-filters").hide();           
                     }
                 })
                   
@@ -458,16 +452,9 @@
                     var checked = $("#filterOnMethodName").is(':checked');
                     if (checked) {
                         $("#filterMethodString").show();
-
-                        //document.getElementById("filterMethodString").hidden = "";
-                        //document.getElementById("filterOnMethodName").checked = "checked";
-                        //document.getElementById("methodValueLabel").hidden = "";
                     }
                     else {
                         $("#filterMethodString").hide();
-                        //document.getElementById("filterMethodString").hidden = "hidden";
-                        //document.getElementById("filterOnMethodName").checked = "";
-                        //document.getElementById("methodValueLabel").hidden = "hidden";
                     }
                 })
 
