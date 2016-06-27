@@ -24,6 +24,8 @@ namespace Hangfire
         public DashboardOptions()
         {
             AppPath = "/";
+            EnableSearch = false;
+            RelativeTime = true;
             AuthorizationFilters = new[] { new LocalRequestsOnlyAuthorizationFilter() };
         }
 
@@ -31,6 +33,10 @@ namespace Hangfire
         /// The path for the Back To Site link. Set to <see langword="null" /> in order to hide the Back To Site link.
         /// </summary>
         public string AppPath { get; set; }
+
+        public bool EnableSearch { get; set; }
+
+        public bool RelativeTime { get; set; }
 
         public IEnumerable<IAuthorizationFilter> AuthorizationFilters { get; set; }
     }

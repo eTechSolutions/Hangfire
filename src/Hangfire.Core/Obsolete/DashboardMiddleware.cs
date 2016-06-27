@@ -26,6 +26,7 @@ namespace Hangfire.Dashboard
     internal class DashboardMiddleware : OwinMiddleware
     {
         private readonly string _appPath;
+        private readonly bool _enableSearch;
         private readonly JobStorage _storage;
         private readonly RouteCollection _routes;
         private readonly IEnumerable<IAuthorizationFilter> _authorizationFilters;
@@ -35,7 +36,8 @@ namespace Hangfire.Dashboard
             string appPath,
             [NotNull] JobStorage storage,
             [NotNull] RouteCollection routes, 
-            [NotNull] IEnumerable<IAuthorizationFilter> authorizationFilters)
+            [NotNull] IEnumerable<IAuthorizationFilter> authorizationFilters,
+            bool enableSearch = false)
             : base(next)
         {
             if (storage == null) throw new ArgumentNullException("storage");
@@ -43,6 +45,7 @@ namespace Hangfire.Dashboard
             if (authorizationFilters == null) throw new ArgumentNullException("authorizationFilters");
 
             _appPath = appPath;
+            _enableSearch = enableSearch;
             _storage = storage;
             _routes = routes;
             _authorizationFilters = authorizationFilters;
@@ -70,7 +73,8 @@ namespace Hangfire.Dashboard
                 _appPath,
                 _storage,
                 context.Environment,
-                dispatcher.Item2);
+                dispatcher.Item2,
+                _enableSearch);
 
             return dispatcher.Item1.Dispatch(dispatcherContext);
         }

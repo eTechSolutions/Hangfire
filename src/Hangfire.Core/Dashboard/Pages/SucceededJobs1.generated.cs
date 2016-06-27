@@ -154,91 +154,131 @@ WriteLiteral(@"""
                         <span class=""glyphicon glyphicon-repeat""></span>
                         Requeue jobs
                     </button>
-                    <button data-toggle=""collapse"" data-target=""#advanced-search-bar"" class=""btn btn-sm btn-success"">Advanced Search</button>
-                </div>
-                <div id=""advanced-search-bar"" class=""collapse well"">
-                    <h4 class=""advanced-search-header"">
-                        Advanced Search
-                    </h4>
-                    <div class=""row"">
-                        <div class=""col-md-12"">
-                            <div class=""form-group"">
-                                <input type=""text"" value="""" id=""filterValueString"" class=""form-control"" placeholder=""Search..."" />
-                            </div>
-                            <div class=""form-group"">
 ");
 
 
             
-            #line 83 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                  
-                                    var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                                
+            #line 71 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                     if (EnableSearch == true) {
+            
+            #line default
+            #line hidden
+WriteLiteral(" <button data-toggle=\"collapse\" data-target=\"#advanced-search-bar\" class=\"btn btn" +
+"-sm btn-success\">Advanced Search</button> ");
+
+
+            
+            #line 71 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                                                                                                                                                           }
 
             
             #line default
             #line hidden
-WriteLiteral(@"                                <input id=""filterOnDateTime"" name=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"" />
-                                <label for=""filterOnDateTime"">Filter on date time</label>
-                                <div id=""datetime-filters"" class=""row"">
-                                    <div class=""col-xs-6"">
-                                        <input type=""text"" value=""");
+WriteLiteral("                </div>\r\n");
 
 
             
-            #line 90 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                                             Write(currentDateTime);
+            #line 73 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                 if (EnableSearch == true)
+                {
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@"                    <div id=""advanced-search-bar"" class=""collapse well"">
+                        <h4 class=""advanced-search-header"">
+                            Advanced Search
+                        </h4>
+                        <div class=""row"">
+                            <div class=""col-md-12"">
+                                <div class=""form-group"">
+                                    <input type=""text"" value="""" id=""filterValueString"" class=""form-control"" placeholder=""Search..."" />
+                                </div>
+                                <div class=""form-group"">
+");
+
+
+            
+            #line 85 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                      
+                                        var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                                    
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@"                                    <input id=""filterOnDateTime"" name=""filterOnDateTime"" type=""checkbox"" class=""js-jobs-filterOnDateTime-checked"" />
+                                    <label for=""filterOnDateTime"">Filter on date time</label>
+                                    <div id=""datetime-filters"" class=""row"">
+                                        <div class=""col-xs-6"">
+                                            <input type=""text"" value=""");
+
+
+            
+            #line 92 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                                                 Write(currentDateTime);
 
             
             #line default
             #line hidden
 WriteLiteral("\" class=\"datetimeselector-start form-control\" id=\"startDateTime\" />\r\n            " +
-"                        </div>\r\n                                    <div class=\"" +
-"col-xs-6\">\r\n                                        <input type=\"text\" value=\"");
+"                            </div>\r\n                                        <div" +
+" class=\"col-xs-6\">\r\n                                            <input type=\"tex" +
+"t\" value=\"");
 
 
             
-            #line 93 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                                             Write(currentDateTime);
+            #line 95 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                                                 Write(currentDateTime);
 
             
             #line default
             #line hidden
 WriteLiteral(@""" class=""datetimeselector-end form-control"" id=""endDateTime"" />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class=""form-group"">
-                                <input id=""filterOnMethodName"" name=""filterOnMethodName"" type=""checkbox"" class=""js-jobs-filterOnMethodName-checked"" />
-                                <label for=""filterOnMethodName"">Filter on method name</label>
-                                <input type=""text"" value="""" id=""filterMethodString"" class=""form-control"" placeholder=""Method name..."" />
+                                <div class=""form-group"">
+                                    <input id=""filterOnMethodName"" name=""filterOnMethodName"" type=""checkbox"" class=""js-jobs-filterOnMethodName-checked"" />
+                                    <label for=""filterOnMethodName"">Filter on method name</label>
+                                    <input type=""text"" value="""" id=""filterMethodString"" class=""form-control"" placeholder=""Method name..."" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class=""row"">
-                        <div class=""col-md-12"">
-                            <button class=""js-jobs-filter-command btn btn-sm btn-success"" data-url=""");
+                        <div class=""row"">
+                            <div class=""col-md-12"">
+                                <button class=""js-jobs-filter-command btn btn-sm btn-success"" data-url=""");
 
 
             
-            #line 106 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                                                                               Write(Url.To("/jobs/succeeded"));
+            #line 108 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                                                                                   Write(Url.To("/jobs/succeeded"));
 
             
             #line default
             #line hidden
 WriteLiteral(@""">
-                                <span class=""glyphicon glyphicon-repeat""></span>
-                                Filter jobs
-                            </button>
+                                    <span class=""glyphicon glyphicon-repeat""></span>
+                                    Filter jobs
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                ");
+");
 
 
             
-            #line 113 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 115 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                }
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                ");
+
+
+            
+            #line 116 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
            Write(Html.PerPageSelector(pager));
 
             
@@ -262,7 +302,7 @@ WriteLiteral(@"
 
 
             
-            #line 127 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 130 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                      foreach (var job in succeededJobs)
                     {
 
@@ -273,7 +313,7 @@ WriteLiteral("                        <tr class=\"js-jobs-list-row ");
 
 
             
-            #line 129 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 132 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                                 Write(job.Value != null && !job.Value.InSucceededState ? "obsolete-data" : null);
 
             
@@ -283,7 +323,7 @@ WriteLiteral(" ");
 
 
             
-            #line 129 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 132 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                                                                                                              Write(job.Value != null && job.Value.InSucceededState ? "hover" : null);
 
             
@@ -293,7 +333,7 @@ WriteLiteral("\">\r\n                            <td>\r\n");
 
 
             
-            #line 131 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 134 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                  if (job.Value != null && job.Value.InSucceededState)
                                 {
 
@@ -305,7 +345,7 @@ WriteLiteral("                                    <input type=\"checkbox\" class
 
 
             
-            #line 133 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 136 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                                                                                          Write(job.Key);
 
             
@@ -315,7 +355,7 @@ WriteLiteral("\"/>\r\n");
 
 
             
-            #line 134 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 137 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                 }
 
             
@@ -326,7 +366,7 @@ WriteLiteral("                            </td>\r\n                            <
 
 
             
-            #line 137 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 140 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                            Write(Html.JobIdLink(job.Key));
 
             
@@ -336,7 +376,7 @@ WriteLiteral("\r\n");
 
 
             
-            #line 138 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 141 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                  if (job.Value != null && !job.Value.InSucceededState)
                                 {
 
@@ -348,7 +388,7 @@ WriteLiteral("                                    <span title=\"Job\'s state has
 
 
             
-            #line 141 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 144 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                 }
 
             
@@ -358,7 +398,7 @@ WriteLiteral("                            </td>\r\n\r\n");
 
 
             
-            #line 144 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 147 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                              if (job.Value == null)
                             {
 
@@ -370,7 +410,7 @@ WriteLiteral("                                <td colspan=\"3\">\r\n            
 
 
             
-            #line 149 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 152 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                             }
                             else
                             {
@@ -382,7 +422,7 @@ WriteLiteral("                                <td>\r\n                          
 
 
             
-            #line 153 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 156 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                Write(Html.JobNameLink(job.Key, job.Value.Job));
 
             
@@ -396,7 +436,7 @@ WriteLiteral("                                <td class=\"min-width align-right\
 
 
             
-            #line 156 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 159 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                      if (job.Value.TotalDuration.HasValue)
                                     {
                                         
@@ -404,14 +444,14 @@ WriteLiteral("                                <td class=\"min-width align-right\
             #line default
             #line hidden
             
-            #line 158 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 161 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                    Write(Html.ToHumanDuration(TimeSpan.FromMilliseconds(job.Value.TotalDuration.Value), false));
 
             
             #line default
             #line hidden
             
-            #line 158 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 161 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                                                                                                               
                                     }
 
@@ -426,7 +466,7 @@ WriteLiteral("                                <td class=\"min-width align-right\
 
 
             
-            #line 162 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 165 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                                      if (job.Value.SucceededAt.HasValue)
                                     {
                                         
@@ -434,15 +474,42 @@ WriteLiteral("                                <td class=\"min-width align-right\
             #line default
             #line hidden
             
-            #line 164 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                   Write(Html.Raw(job.Value.SucceededAt.Value.ToString("dd/MM/yyyy HH:mm")));
+            #line 167 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                         if (RelativeTime == true)
+                                        {
+                                            
+            
+            #line default
+            #line hidden
+            
+            #line 169 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                       Write(Html.RelativeTime(job.Value.SucceededAt.Value));
 
             
             #line default
             #line hidden
             
-            #line 164 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                                                                                           ;
+            #line 169 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                                                                           ;
+                                        }
+                                        else
+                                        {
+                                            
+            
+            #line default
+            #line hidden
+            
+            #line 173 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                       Write(Html.Raw(job.Value.SucceededAt.Value.ToString("dd/MM/yyyy HH:mm")));
+
+            
+            #line default
+            #line hidden
+
+            
+            #line 173 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+                                                                                                               ;
+                                        }
                                     }
 
             
@@ -452,7 +519,7 @@ WriteLiteral("                                </td>\r\n");
 
 
             
-            #line 167 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 177 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                             }
 
             
@@ -462,7 +529,7 @@ WriteLiteral("                        </tr>\r\n");
 
 
             
-            #line 169 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 179 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
                     }
 
             
@@ -472,7 +539,7 @@ WriteLiteral("                    </tbody>\r\n                </table>\r\n\r\n  
 
 
             
-            #line 173 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 183 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
            Write(Html.Paginator(pager));
 
             
@@ -482,7 +549,7 @@ WriteLiteral("\r\n            </div>\r\n");
 
 
             
-            #line 175 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
+            #line 185 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
         }
 
             
