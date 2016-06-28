@@ -88,7 +88,9 @@ namespace Hangfire.Dashboard
                         options.StatsPollingInterval,
                         storage,
                         context.Environment,
-                        dispatcher.Item2);
+                        dispatcher.Item2,
+                        options.EnableSearch,
+                        options.RelativeTime);
 
                     return dispatcher.Item1.Dispatch(dispatcherContext);
                 };

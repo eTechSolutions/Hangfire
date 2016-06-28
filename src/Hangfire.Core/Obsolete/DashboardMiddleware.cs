@@ -28,6 +28,7 @@ namespace Hangfire.Dashboard
     {
         private readonly string _appPath;
         private readonly int _statsPollingInterval;
+        private readonly bool _enableSearch;
         private readonly JobStorage _storage;
         private readonly RouteCollection _routes;
         private readonly IEnumerable<IAuthorizationFilter> _authorizationFilters;
@@ -38,7 +39,8 @@ namespace Hangfire.Dashboard
             int statsPollingInterval,
             [NotNull] JobStorage storage,
             [NotNull] RouteCollection routes, 
-            [NotNull] IEnumerable<IAuthorizationFilter> authorizationFilters)
+            [NotNull] IEnumerable<IAuthorizationFilter> authorizationFilters,
+            bool enableSearch = false)
             : base(next)
         {
             if (storage == null) throw new ArgumentNullException(nameof(storage));
@@ -47,6 +49,7 @@ namespace Hangfire.Dashboard
 
             _appPath = appPath;
             _statsPollingInterval = statsPollingInterval;
+            _enableSearch = enableSearch;
             _storage = storage;
             _routes = routes;
             _authorizationFilters = authorizationFilters;
@@ -76,7 +79,8 @@ namespace Hangfire.Dashboard
                 _statsPollingInterval,
                 _storage,
                 context.Environment,
-                dispatcher.Item2);
+                dispatcher.Item2,
+                _enableSearch);
 
             return dispatcher.Item1.Dispatch(dispatcherContext);
         }

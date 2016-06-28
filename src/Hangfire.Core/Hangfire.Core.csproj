@@ -85,6 +85,16 @@
     </Compile>
     <Compile Include="JobActivatorContext.cs" />
     <Compile Include="IRecurringJobManager.cs" />
+    <Compile Include="Dashboard\Pages\FailedJobsPage.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FailedJobsPage.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Dashboard\Pages\ProcessingJobsPage1.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProcessingJobsPage.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Obsolete\Job.Obsolete.cs" />
     <Compile Include="Common\TypeExtensions.cs" />
     <Compile Include="Dashboard\OwinRequestExtensions.cs" />
@@ -199,11 +209,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Dashboard\Pages\FailedJobsPage.generated.cs">
-      <DependentUpon>FailedJobsPage.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Dashboard\Pages\FetchedJobsPage.cs">
       <DependentUpon>FetchedJobsPage.cshtml</DependentUpon>
     </Compile>
@@ -225,11 +230,6 @@
     </Compile>
     <Compile Include="Dashboard\Pages\LayoutPage.generated.cs">
       <DependentUpon>LayoutPage.cshtml</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Dashboard\Pages\ProcessingJobsPage.generated.cs">
-      <DependentUpon>ProcessingJobsPage.cshtml</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
@@ -465,7 +465,7 @@
     </None>
     <None Include="Dashboard\Pages\ProcessingJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>ProcessingJobsPage.generated.cs</LastGenOutput>
+      <LastGenOutput>ProcessingJobsPage1.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\QueuesPage.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -545,7 +545,7 @@
     <EmbeddedResource Include="Dashboard\Content\js\d3.min.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Content\js\hangfire.js" />
+    <EmbeddedResource Include="Dashboard\Content\js\Page.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dashboard\Content\js\moment.min.js" />
@@ -556,6 +556,28 @@
   <ItemGroup>
     <EmbeddedResource Include="Dashboard\Content\js\jquery-2.1.4.min.js" />
     <EmbeddedResource Include="Dashboard\Content\js\moment-with-locales.min.js" />
+    <EmbeddedResource Include="Dashboard\Content\css\jquery.datepick.css" />
+    <EmbeddedResource Include="Dashboard\Content\js\jquery.datepick.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\js\jquery.plugin.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\js\Metrics.js" />
+    <EmbeddedResource Include="Dashboard\Content\js\RealTimeGraph.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\js\HistoryGraph.js" />
+    <EmbeddedResource Include="Dashboard\Content\js\StatisticsPoller.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dashboard\Content\js\Hangfire\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\css\jquery.datetimepicker.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dashboard\Content\js\jquery.datetimepicker.full.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,194 +1,6 @@
-(function (hangfire) {
-    hangfire.Metrics = (function() {
-        function Metrics() {
-            this._metrics = {};
-        }
-
-        Metrics.prototype.addElement = function(name, element) {
-            if (!(name in this._metrics)) {
-                this._metrics[name] = [];
-            }
-
-            this._metrics[name].push(element);
-        };
-
-        Metrics.prototype.getElements = function(name) {
-            if (!(name in this._metrics)) {
-                return [];
-            }
-
-            return this._metrics[name];
-        };
-
-        Metrics.prototype.getNames = function() {
-            var result = [];
-            var metrics = this._metrics;
-
-            for (var name in metrics) {
-                if (metrics.hasOwnProperty(name)) {
-                    result.push(name);
-                }
-            }
-
-            return result;
-        };
-
-        return Metrics;
-    })();
-
-    hangfire.RealtimeGraph = (function() {
-        function RealtimeGraph(element, succeeded, failed, succeededStr, failedStr) {
-            this._succeeded = succeeded;
-            this._failed = failed;
-            
-            this._graph = new Rickshaw.Graph({
-                element: element,
-                width: $(element).innerWidth(),
-                height: 200,
-                renderer: 'bar',
-                interpolation: 'linear',
-                stroke: true,
-
-                series: new Rickshaw.Series.FixedDuration([
-                        { name: failedStr, color: '#d9534f' },
-                        { name: succeededStr, color: '#5cb85c' }
-                ],
-                    undefined,
-                    { timeInterval: 2000, maxDataPoints: 100 }
-                )
-            });
-
-            var yAxis = new Rickshaw.Graph.Axis.Y({
-                graph: this._graph,
-                tickFormat: Rickshaw.Fixtures.Number.formatKMBT
-            });
-
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: this._graph,
-                yFormatter: function (y) { return Math.floor(y); },
-                xFormatter: function (x) { return moment(new Date(x * 1000)).format("LLLL"); }
-            });
-
-            this._graph.render();
-        }
-
-        RealtimeGraph.prototype.appendHistory = function (statistics) {
-            var newSucceeded = parseInt(statistics["succeeded:count"].intValue);
-            var newFailed = parseInt(statistics["failed:count"].intValue);
-
-            if (this._succeeded !== null && this._failed !== null) {
-                var succeeded = newSucceeded - this._succeeded;
-                var failed = newFailed - this._failed;
-
-                this._graph.series.addData({ failed: failed, succeeded: succeeded });
-                this._graph.render();
-            }
-            
-            this._succeeded = newSucceeded;
-            this._failed = newFailed;
-        };
-
-        RealtimeGraph.prototype.update = function() {
-            this._graph.update();
-        };
-
-        return RealtimeGraph;
-    })();
-
-    hangfire.HistoryGraph = (function() {
-        function HistoryGraph(element, succeeded, failed, succeededStr, failedStr) {
-            this._graph = new Rickshaw.Graph({
-                element: element,
-                width: $(element).innerWidth(),
-                height: 200,
-                renderer: 'area',
-                interpolation: 'linear',
-                stroke: true,
-                series: [
-                    {
-                        color: '#d9534f',
-                        data: failed,
-                        name: failedStr
-                    }, {
-                        color: '#6ACD65',
-                        data: succeeded,
-                        name: succeededStr
-                    }
-                ]
-            });
-
-            var xAxis = new Rickshaw.Graph.Axis.Time({ graph: this._graph });
-            var yAxis = new Rickshaw.Graph.Axis.Y({
-                graph: this._graph,
-                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-                tickTreatment: 'glow'
-            });
-            
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: this._graph,
-                yFormatter: function (y) { return Math.floor(y); },
-                xFormatter: function (x) { return moment(new Date(x * 1000)).format("LLLL"); }
-            });
-
-            this._graph.render();
-        }
-
-        HistoryGraph.prototype.update = function() {
-            this._graph.update();
-        };
-
-        return HistoryGraph;
-    })();
-
-    hangfire.StatisticsPoller = (function() {
-        function StatisticsPoller(metricsCallback, statisticsUrl, pollInterval) {
-            this._metricsCallback = metricsCallback;
-            this._listeners = [];
-            this._statisticsUrl = statisticsUrl;
-            this._pollInterval = pollInterval;
-            this._intervalId = null;
-        }
-
-        StatisticsPoller.prototype.start = function () {
-            var self = this;
-
-            var intervalFunc = function() {
-                try {
-                    $.post(self._statisticsUrl, { metrics: self._metricsCallback() }, function(data) {
-                        self._notifyListeners(data);
-                    });
-                } catch (e) {
-                    console.log(e);
-                }
-            };
-
-            this._intervalId = setInterval(intervalFunc, this._pollInterval);
-        };
-
-        StatisticsPoller.prototype.stop = function() {
-            if (this._intervalId !== null) {
-                clearInterval(this._intervalId);
-                this._intervalId = null;
-            }
-        };
-
-        StatisticsPoller.prototype.addListener = function(listener) {
-            this._listeners.push(listener);
-        };
-
-        StatisticsPoller.prototype._notifyListeners = function(statistics) {
-            var length = this._listeners.length;
-            var i;
-            
-            for (i = 0; i < length; i++) {
-                this._listeners[i](statistics);
-            }
-        };
-
-        return StatisticsPoller;
-    })();
-
-    hangfire.Page = (function() {
+﻿(function (hangFire) {
+    hangFire.Page = (function () {
+        var url;
         function Page(config) {
             this._metrics = new Hangfire.Metrics();
 
@@ -198,7 +10,7 @@
                 config.pollUrl,
                 config.pollInterval);
 
-            this._initialize(config.locale);
+            this._initialize();
             this._createGraphs();
             this._poller.start();
         }
@@ -231,8 +43,8 @@
             var succeeded = parseInt($(realtimeElement).data('succeeded'));
             var failed = parseInt($(realtimeElement).data('failed'));
 
-            var succeededStr = $(realtimeElement).data('succeeded-string');
-            var failedStr = $(realtimeElement).data('failed-string');
+            var succeededStr = $(historyElement).data('succeeded-string');
+            var failedStr = $(historyElement).data('failed-string');
 
             if (realtimeElement) {
                 var realtimeGraph = new Hangfire.RealtimeGraph(realtimeElement, succeeded, failed, succeededStr, failedStr);
@@ -274,8 +86,7 @@
             return null;
         };
 
-        Page.prototype._initialize = function (locale) {
-            moment.locale(locale);
+        Page.prototype._initialize = function() {
             var updateRelativeDates = function () {
                 $('*[data-moment]').each(function () {
                     var $this = $(this);
@@ -357,7 +168,7 @@
                     $expander.text('Less details...');
                 }
 
-				$expandable.slideToggle(
+                $expandable.slideToggle(
 					150, 
 					function() {
 					    if (!$expandable.is(':visible')) {
@@ -461,12 +272,205 @@
                             window.location.reload();
                         });
                     }
-
                     e.preventDefault();
                 });
 
+
+                $(this).on('click', '.js-jobs-filter-command', function (e) {
+                    url = document.location.search;
+                    var filterValueString = $("#filterValueString").val();
+                    var filterMethodString = $("#filterMethodString").val();
+                    var filterStartDateTime = $("#startDateTime").datepick().val();
+                    var filterEndDateTime = $("#endDateTime").datepick().val();
+                    var addedFilterString = prepFilterStringParameters(filterValueString, filterMethodString);
+                    var addedDateTimeFilterStrings = prepFilterDateTimeParameters(filterStartDateTime, filterEndDateTime);
+                    if (addedDateTimeFilterStrings || addedFilterString) redirectToFirstPage();
+                    
+                    document.location.search = url;
+                })
+                
+                var prepFilterStringParameters = function (filterString, filterMethodString) {
+                    var result = false;
+                    if (url === '' && (filterString !== '' || filterMethodString !== '')) {
+                        url = '?';
+                        if (filterString !== '') url += "filterString=" + filterString;
+                        if (filterMethodString !== '') url += "filterMethodString=" + filterMethodString;
+                        result = true;
+                    } else {
+
+                        var res1 = updateOrRemoveSingleParameter("filterString", filterString);
+                        var res2 = updateOrRemoveSingleParameter("filterMethodString", filterMethodString);
+                        var parameters = url.substr(1).split('&');
+
+                        if (!res1 && filterString !== '') {
+                            parameters[parameters.length] = ["filterString", filterString].join('=');
+                            result = true;
+                        }
+
+                        if (!res2 && filterMethodString !== '') {
+                            parameters[parameters.length] = ["filterMethodString", filterMethodString].join('=');  
+                            result = true;
+                        }
+                        
+                        if ( parameters.length > 0 ) url = '?' + parameters.join('&');
+                    }
+                    return result;
+                }
+
+                var updateOrRemoveSingleParameter = function (parameter, value) {
+                    var result = false;
+                    var parameters = url.substr(1).split('&');
+                    var elements;
+                    var i = 0;
+                    for (i = 0; i < parameters.length; i++) {
+                        elements = parameters[i].split('=');
+                        if (elements[0] === parameter && (typeof value === 'undefined' || value === '') ) {
+                            parameters.splice(i, 1);
+                            result = false;
+                            break;
+                        } else if (elements[0] === parameter && value != '') {
+                            elements[1] = value;
+                            parameters[i] = elements.join('=');
+                            result = true;
+                            break;
+                        } 
+                    }
+                    if (parameters.length > 0) url = '?' + parameters.join('&');
+                    else url = '';
+
+                    return result;
+                }
+
+                var prepFilterDateTimeParameters = function (startDateTime, endDateTime) {
+                    if (typeof startDateTime === 'undefined' || typeof endDateTime === 'undefined') return false;
+                    var sDate = startDateTime.split(' ')[0].split('/'),
+                    eDate = endDateTime.split(' ')[0].split('/'),
+                    sTime = startDateTime.split(' ')[1].split(':'),
+                    eTime = endDateTime.split(' ')[1].split(':');
+
+                    
+                    var startSeconds = new Date(sDate[2],sDate[1],sDate[0], sTime[0],sTime[1]);
+                    var endSeconds = new Date(eDate[2], eDate[1], eDate[0], eTime[0],eTime[1]);
+                    var checked = $("#filterOnDateTime").is(':checked');
+                    if ((startSeconds - endSeconds) <= 0 && checked) {
+                        return addOrModifyDateTimeParameters(sDate, eDate, sTime, eTime);
+                    }
+                    else {
+                        return removeDateTimeParameters();
+                    }
+                }
+
+                var addOrModifyDateTimeParameters = function (sDate, eDate, sTime, eTime) {
+                    if (url === '') {
+                        url = '?' + "startDate=" + sDate.join('-') + '&' + "endDate=" + eDate.join('-') + '&' + "startTime=" + sTime.join('-') + '&' + "endTime=" + eTime.join('-');
+                    } else {
+                        var parameters = url.substr(1).split('&');
+                        var element;
+                        var foundStartDate = false,
+                        foundEndDate = false,
+                        foundStartTime = false,
+                        foundEndTime = false;
+                        for (var i = 0; i < parameters.length; i++) {
+                            element = parameters[i].split('=');
+                            if (element[0] === "startDate") {
+                                element[1] = sDate.join('-');
+                                foundStartDate = true;
+                            } else if (element[0] === "endDate") {
+                                element[1] = eDate.join('-');
+                                foundEndDate = true;
+                            } else if (element[0] === "startTime") {
+                                element[1] = sTime.join('-');
+                                foundStartTime = true;
+                            } else if (element[0] === "endTime") {
+                                element[1] = eTime.join('-');
+                                foundEndTime = true;
+                            }
+                            parameters[i] = element.join('=');
+                        }
+                        if (!foundStartDate) {
+                            parameters[parameters.length] = ["startDate", sDate.join('-')].join('=');
+                        }
+                        if (!foundEndDate) {
+                            parameters[parameters.length] = ["endDate", eDate.join('-')].join('=');
+                        }
+                        if (!foundStartTime) {
+                            parameters[parameters.length] = ["startTime", sTime.join('-')].join('=');
+                        }
+                        if (!foundEndTime) {
+                            parameters[parameters.length] = ["endTime", eTime.join('-')].join('=');
+                        }
+                        url = '?' + parameters.join('&');
+                    }
+                    return true;
+                }
+
+                var removeDateTimeParameters = function () {
+                    if (url !== '') {
+                        var parameters = url.substr(1).split('&');
+                        var element;
+                        var i = 0;
+                        do {
+                            element = parameters[i].split('=');
+                            if (element[0] === "startDate" || element[0] === "endDate" || element[0] === "startTime" || element[0] === "endTime") {
+                                parameters.splice(i, 1);
+                            } else {
+                                i++;
+                            }
+                        } while (i < parameters.length)
+                        url = '?' + parameters.join('&');
+                    }
+                    return false;
+                }
+
+                var redirectToFirstPage = function () {
+                    if (url.indexOf("from") > -1 ) {
+                        var parameters = url.substr(1).split('&');
+                        var element;
+                        for (var i = 0; i < parameters.length; i++) {
+                            element = parameters[i].split('=');
+                            if (element[0] === "from") {
+                                element[1] = 0;
+                                parameters[i] = element.join('=');
+                                break;
+                            }
+                        }
+                        url = '?' + parameters.join('&');
+                    }
+                }
+                
+                $(this).on('click', '.js-jobs-filtertext-clear', function (e) {                    
+                    $("#filterValueString").val('');
+                })
+                      
+
+                $(this).on('click', '.js-jobs-filterOnDateTime-checked', function (e) {
+                    var checked = $("#filterOnDateTime").is(':checked');
+                    if (checked) {
+                        $("#datetime-filters").show();              
+                    }
+                    else {
+                        $("#datetime-filters").hide();           
+                    }
+                })
+                  
+                $(this).on('click', '.js-jobs-filterOnMethodName-checked', function (e) {
+                    var checked = $("#filterOnMethodName").is(':checked');
+                    if (checked) {
+                        $("#filterMethodString").show();
+                    }
+                    else {
+                        $("#filterMethodString").hide();
+                    }
+                })
+
+                $(".datetimeselector-start").datetimepicker({
+                    maxDate: '0'
+                });
+                $(".datetimeselector-end").datetimepicker({                    
+                    maxDate: '0'
+                });
                 updateListState();
-            });
+            });            
         };
 
         return Page;
