@@ -94,11 +94,19 @@ select distinct r.JobId from (
 ) as r
 where r.row_num between @start and @end", queryParams);
 
+            var filterString = "";
+            var filterMethodString = "";
+            if (pager != null)
+            {
+                filterString = pager.JobsFilterText;
+                filterMethodString = pager.JobsFilterMethodText;
+            }
+
             return UseTransaction(connection =>
             {
                 return connection.Query<JobIdDto>(
                     sqlQuery,
-                    new { queue = queue, start = from + 1, end = @from + perPage, filterString = pager.JobsFilterText, filterMethodString = pager.JobsFilterMethodText, startDate = sqlFilterDates[0], endDate =sqlFilterDates[1] })
+                    new { queue = queue, start = from + 1, end = @from + perPage, filterString = filterString, filterMethodString = filterMethodString, startDate = sqlFilterDates[0], endDate =sqlFilterDates[1] })
                     .ToList()
                     .Select(x => x.JobId)
                     .ToList();
@@ -126,12 +134,20 @@ where r.row_num between @start and @end", queryParams);
     select count(jq.Id) 
     from [{0}].JobQueue as jq, [{0}].Job as j 
     where jq.Queue = @queue and jq.JobId = j.Id {1} {2} {3} ", queryParams);
-                        
+
+            var filterString = "";
+            var filterMethodString = "";
+            if (countParameters != null)
+            {
+                filterString = countParameters["JobsFilterText"];
+                filterMethodString = countParameters["JobsFilterMethodText"];
+            }
+
             return UseTransaction(connection =>
             {
                 var result = connection.Query<int>(sqlQuery, new { queue = queue,
-                    filterString = countParameters["filterString"],
-                    filterMethodString = countParameters["filterMethodString"],
+                    filterString = filterString,
+                    filterMethodString = filterMethodString,
                     startDate = sqlFilterDates[0],
                     endDate = sqlFilterDates[1] })
                     .Single();
