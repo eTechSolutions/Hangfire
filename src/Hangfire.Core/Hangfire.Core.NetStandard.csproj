@@ -403,7 +403,6 @@
     <EmbeddedResource Include="Dashboard\Content\js\bootstrap.min.js" />
     <EmbeddedResource Include="Dashboard\Content\js\d3.layout.min.js" />
     <EmbeddedResource Include="Dashboard\Content\js\d3.min.js" />
-    <EmbeddedResource Include="Dashboard\Content\js\hangfire.js" />
     <EmbeddedResource Include="Dashboard\Content\js\jquery-2.1.4.min.js" />
     <EmbeddedResource Include="Dashboard\Content\js\moment-with-locales.min.js" />
     <EmbeddedResource Include="Dashboard\Content\js\moment.min.js" />
@@ -518,6 +517,16 @@
     <Folder Include="Filters\Client\" />
     <Folder Include="Filters\Server\" />
     <Folder Include="Filters\States\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Dashboard\Content\js\HistoryGraph.js" />
+    <Content Include="Dashboard\Content\js\jquery.datepick.min.js" />
+    <Content Include="Dashboard\Content\js\jquery.datetimepicker.full.min.js" />
+    <Content Include="Dashboard\Content\js\jquery.plugin.min.js" />
+    <Content Include="Dashboard\Content\js\Metrics.js" />
+    <Content Include="Dashboard\Content\js\Page.js" />
+    <Content Include="Dashboard\Content\js\RealTimeGraph.js" />
+    <Content Include="Dashboard\Content\js\StatisticsPoller.js" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
