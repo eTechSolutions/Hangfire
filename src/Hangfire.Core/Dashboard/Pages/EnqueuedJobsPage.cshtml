@@ -11,10 +11,35 @@
 
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
+    string filterString = Query("filterString");
+    string filterMethodString = Query("filterMethodString");
+    string startDate = Query("startDate");
+    string endDate = Query("endDate");
+    string startTime = Query("startTime");
+    string endTime = Query("endTime");
 
     var monitor = Storage.GetMonitoringApi();
-    var pager = new Pager(from, perPage, monitor.EnqueuedCount(Queue));
-    var enqueuedJobs = monitor.EnqueuedJobs(Queue, pager.FromRecord, pager.RecordsPerPage);
+    var countParameters = new Dictionary<string, string>()
+    {
+        { "filterString", filterString },
+        { "filterMethodString", filterMethodString },
+        { "startDate", startDate },
+        { "endDate", endDate },
+        { "startTime", startTime },
+        { "endTime", endTime }
+    };
+
+    var jobCount = monitor.EnqueuedCount(Queue, countParameters);
+    var pager = new Pager(from, perPage, jobCount)
+    {
+        JobsFilterText = filterString,
+        JobsFilterMethodText = filterMethodString,
+        JobsFilterStartDate = startDate,
+        JobsFilterEndDate = endDate,
+        JobsFilterStartTime = startTime,
+        JobsFilterEndTime = endTime
+    };
+    var enqueuedJobs = monitor.EnqueuedJobs(Queue, pager);
 }
 
 <div class="row">
@@ -47,10 +72,53 @@
                         <span class="glyphicon glyphicon-remove"></span>
                         Delete selected
                     </button>
-
-                    @Html.PerPageSelector(pager)
+                    @if (EnableSearch == true)
+                    { <button data-toggle="collapse" data-target="#advanced-search-bar" class="btn btn-sm btn-success">Advanced Search</button> }
                 </div>
-
+                @if (EnableSearch == true)
+                {
+                    <div id="advanced-search-bar" class="collapse well">
+                        <h4 class="advanced-search-header">
+                            Advanced Search
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="text" value="" id="filterValueString" class="form-control" placeholder="Search..." />
+                                </div>
+                                <div class="form-group">
+                                    @{
+                                        var currentDateTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                                    }
+                                    <input id="filterOnDateTime" name="filterOnDateTime" type="checkbox" class="js-jobs-filterOnDateTime-checked" />
+                                    <label for="filterOnDateTime">Filter on date time</label>
+                                    <div id="datetime-filters" class="row">
+                                        <div class="col-xs-6">
+                                            <input type="text" value="@currentDateTime" class="datetimeselector-start form-control" id="startDateTime" />
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <input type="text" value="@currentDateTime" class="datetimeselector-end form-control" id="endDateTime" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="filterOnMethodName" name="filterOnMethodName" type="checkbox" class="js-jobs-filterOnMethodName-checked" />
+                                    <label for="filterOnMethodName">Filter on method name</label>
+                                    <input type="text" value="" id="filterMethodString" class="form-control" placeholder="Method name..." />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="js-jobs-filter-command btn btn-sm btn-success" data-url="@Url.To("/jobs/enqueued")" >
+                                <span class="glyphicon glyphicon-repeat"></span>
+                                    Filter jobs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @Html.PerPageSelector(pager)
                 <table class="table">
                     <thead>
                     <tr>
@@ -86,7 +154,14 @@
                             <td class="align-right">
                                 @if (job.Value.EnqueuedAt.HasValue)
                                 {
-                                    @Html.RelativeTime(job.Value.EnqueuedAt.Value)
+                                    @if (RelativeTime == true)
+                                    {
+                                        @Html.RelativeTime(job.Value.EnqueuedAt.Value);
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw(job.Value.EnqueuedAt.Value.ToString("dd/MM/yyyy HH:mm"));
+                                    }
                                 }
                                 else
                                 {

@@ -42,6 +42,8 @@ namespace Hangfire.Dashboard
 
         public JobStorage Storage { get; internal set; }
         public string AppPath { get; internal set; }
+        public bool EnableSearch { get; internal set; }
+        public bool RelativeTime { get; internal set; }
         public Stopwatch GenerationTime { get; private set; }
 
         public StatisticsDto Statistics
@@ -81,6 +83,8 @@ namespace Hangfire.Dashboard
             Response = parentPage.Response;
             Storage = parentPage.Storage;
             AppPath = parentPage.AppPath;
+            EnableSearch = parentPage.EnableSearch;
+            RelativeTime = parentPage.RelativeTime;
             Url = parentPage.Url;
 
             GenerationTime = parentPage.GenerationTime;
@@ -95,6 +99,8 @@ namespace Hangfire.Dashboard
             Response = owinContext.Response;
             Storage = context.JobStorage;
             AppPath = context.AppPath;
+            EnableSearch = context.EnableSearch;
+            RelativeTime = context.RelativeTime;
             Url = new UrlHelper(context.OwinEnvironment);
 
             _statisticsLazy = new Lazy<StatisticsDto>(() =>
