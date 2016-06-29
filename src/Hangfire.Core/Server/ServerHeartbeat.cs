@@ -26,6 +26,7 @@ namespace Hangfire.Server
 
         public ServerHeartbeat(TimeSpan heartbeatInterval)
         {
+
             _heartbeatInterval = heartbeatInterval;
         }
 
