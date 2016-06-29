@@ -105,6 +105,8 @@
     <Compile Include="Server\BackgroundProcessContext.cs" />
     <Compile Include="Obsolete\IServerProcess.cs" />
     <Compile Include="Server\BackgroundProcessingServerOptions.cs" />
+    <Compile Include="Server\ServerStatusNotifierOptions.cs" />
+    <Compile Include="Server\ServerStatusNotifier.cs" />
     <Compile Include="Server\CoreBackgroundJobPerformer.cs" />
     <Compile Include="Server\IBackgroundProcess.cs" />
     <Compile Include="Server\IBackgroundProcessWrapper.cs" />
