@@ -29,7 +29,7 @@ namespace Hangfire.Dashboard
             [NotNull] IDictionary<string, object> owinEnvironment, 
             [NotNull] Match uriMatch,
             bool enableSearch = false,
-            bool relativeTime = false)
+            bool relativeTime = true)
         {
             if (jobStorage == null) throw new ArgumentNullException("jobStorage");
             if (owinEnvironment == null) throw new ArgumentNullException("owinEnvironment");
