@@ -155,7 +155,7 @@ namespace Hangfire.Server
         private IEnumerable<IBackgroundProcess> GetRequiredProcesses()
         {
             yield return new ServerHeartbeat(_options.HeartbeatInterval);
-            yield return new ServerWatchdog(_options.ServerCheckInterval, _options.ServerTimeout,_options.NotifierOptions);
+            yield return new ServerWatchdog(_options.ServerCheckInterval, _options.ServerTimeout);
         } 
 
         private static IServerProcess WrapProcess(IServerProcess process)

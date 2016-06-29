@@ -141,17 +141,20 @@ namespace Hangfire
 
         private BackgroundProcessingServerOptions GetProcessingServerOptions()
         {
-            return new BackgroundProcessingServerOptions()
+            return new BackgroundProcessingServerOptions
             {
                 ShutdownTimeout = _options.ShutdownTimeout,
                 HeartbeatInterval = _options.HeartbeatInterval,
-                ServerCheckInterval = _options.ServerWatchdogOptions != null ? _options.ServerWatchdogOptions.CheckInterval : _options.ServerCheckInterval,
-                ServerTimeout = _options.ServerWatchdogOptions != null ? _options.ServerWatchdogOptions.ServerTimeout : _options.ServerTimeout,
-                NotifierOptions = _options.NotifierOptions
+                ServerCheckInterval = _options.ServerWatchdogOptions != null
+                    ? _options.ServerWatchdogOptions.CheckInterval
+                    : _options.ServerCheckInterval,
+                ServerTimeout = _options.ServerWatchdogOptions != null
+                    ? _options.ServerWatchdogOptions.ServerTimeout
+                    : _options.ServerTimeout
             };
         }
 
-        [Obsolete("This method is a stub. There is no need to call the `Start` method. Will be removed in Fversion 2.0.0.")]
+        [Obsolete("This method is a stub. There is no need to call the `Start` method. Will be removed in version 2.0.0.")]
         public void Start()
         {
         }

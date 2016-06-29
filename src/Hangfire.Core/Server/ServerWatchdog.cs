@@ -28,14 +28,11 @@ namespace Hangfire.Server
 
         private readonly TimeSpan _checkInterval;
         private readonly TimeSpan _serverTimeout;
-        private readonly ServerStatusNotifierOptions _notifierOptions;
-        private ServerStatusNotifier _notifier;
-        public ServerWatchdog(TimeSpan checkInterval, TimeSpan serverTimeout, ServerStatusNotifierOptions NotifierOptions = null)
+
+        public ServerWatchdog(TimeSpan checkInterval, TimeSpan serverTimeout)
         {
             _checkInterval = checkInterval;
             _serverTimeout = serverTimeout;
-            _notifier = NotifierOptions != null ?  new ServerStatusNotifier(NotifierOptions) : null;
-
         }
 
         public void Execute(BackgroundProcessContext context)
@@ -45,11 +42,9 @@ namespace Hangfire.Server
                 var serversRemoved = connection.RemoveTimedOutServers(_serverTimeout);
                 if (serversRemoved != 0)
                 {
-                    if (_notifier == null) _notifier.Notify(0, context.Storage.ToString());
                     Logger.Info(String.Format(
                         "{0} servers were removed due to timeout", 
                         serversRemoved));
-
                 }
             }
 

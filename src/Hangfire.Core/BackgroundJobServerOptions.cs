@@ -15,7 +15,6 @@
 // License along with Hangfire. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using Hangfire.Annotations;
 using Hangfire.Common;
 using Hangfire.Server;
@@ -31,7 +30,6 @@ namespace Hangfire
         private int _workerCount;
         private string[] _queues;
 
-
         public BackgroundJobServerOptions()
         {
             WorkerCount = Math.Min(Environment.ProcessorCount * 5, MaxDefaultWorkerCount);
@@ -44,11 +42,6 @@ namespace Hangfire
             
             FilterProvider = null;
             Activator = null;
-        }
-        
-        public BackgroundJobServerOptions(string username, string password, string fromEmail, string fromName, List<string> receivers) : this()
-        {
-            ServerStatusNotifierOptions NotifierOptions = new ServerStatusNotifierOptions(username, password, fromEmail, fromName, receivers);
         }
 
         [Obsolete("Server Id is auto-generated now, and this option does not make sense anymore. Will be removed in 2.0.0.")]
@@ -82,7 +75,6 @@ namespace Hangfire
         public TimeSpan HeartbeatInterval { get; set; }
         public TimeSpan ServerTimeout { get; set; }
         public TimeSpan ServerCheckInterval { get; set; }
-        public ServerStatusNotifierOptions NotifierOptions;
 
         [Obsolete("Please use `ServerTimeout` or `ServerCheckInterval` options instead. Will be removed in 2.0.0.")]
         public ServerWatchdogOptions ServerWatchdogOptions { get; set; }

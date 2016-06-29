@@ -28,13 +28,9 @@ namespace Hangfire.Server
             ServerTimeout = ServerWatchdog.DefaultServerTimeout;
         }
 
-
-
         public TimeSpan ShutdownTimeout { get; set; }
         public TimeSpan HeartbeatInterval { get; set; }
         public TimeSpan ServerCheckInterval { get; set; }
         public TimeSpan ServerTimeout { get; set; }
-        public ServerStatusNotifierOptions NotifierOptions { get; set; }
-        
     }
 }
