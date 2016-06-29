@@ -23,6 +23,7 @@ namespace Hangfire.Server
     {
         public static readonly TimeSpan DefaultCheckInterval = TimeSpan.FromMinutes(5);
         public static readonly TimeSpan DefaultServerTimeout = TimeSpan.FromMinutes(5);
+        
 
         private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 
@@ -39,9 +40,19 @@ namespace Hangfire.Server
         {
             using (var connection = context.Storage.GetConnection())
             {
+                var timedOutServers = connection.GetTimedOutServerId(_serverTimeout);
                 var serversRemoved = connection.RemoveTimedOutServers(_serverTimeout);
                 if (serversRemoved != 0)
                 {
+                    string msg = "The servers with server ID: \n";
+                    foreach (var item in timedOutServers)
+                    {
+                        msg +='\n'+item + ", ";
+                    }
+                    msg += "\n\n have timed out.";
+
+                    ServerStatusNotifier.Notify(0, msg);
+
                     Logger.Info(String.Format(
                         "{0} servers were removed due to timeout", 
                         serversRemoved));
