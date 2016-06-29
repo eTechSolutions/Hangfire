@@ -17,29 +17,31 @@ namespace Hangfire.Server
         
         public static void Notify(int statusIndex, string message)
         {
-            string fromEmail = ConfigurationManager.AppSettings["fromEmail"];
-            string fromName = ConfigurationManager.AppSettings["fromName"];
             string[] toEmail = ConfigurationManager.AppSettings["toEmail"].Split(',');
-            string subject = statusCodes[statusIndex];
-            
-            _smtpClient = new SmtpClient();
+            if (toEmail != null || toEmail.Count() > 0) {
+                string fromEmail = ConfigurationManager.AppSettings["fromEmail"];
+                string fromName = ConfigurationManager.AppSettings["fromName"];
+                string subject = statusCodes[statusIndex];
 
-            MailMessage mailMsg = new MailMessage();
-                
-            // Compose email
-            foreach (string receiver in toEmail)
-            {
-                mailMsg.To.Add(receiver);
+                _smtpClient = new SmtpClient();
+
+                MailMessage mailMsg = new MailMessage();
+
+                // Compose email
+                foreach (string receiver in toEmail)
+                {
+                    mailMsg.To.Add(receiver);
+                }
+
+                mailMsg.From = new MailAddress(fromEmail, fromName);
+
+                // Subject and multipart/alternative Body
+                mailMsg.Subject = subject;
+                mailMsg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(message, null, MediaTypeNames.Text.Plain));
+
+                // Send the email
+                _smtpClient.Send(mailMsg);
             }
-            
-            mailMsg.From = new MailAddress(fromEmail, fromName);
-
-            // Subject and multipart/alternative Body
-            mailMsg.Subject = subject;
-            mailMsg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(message, null, MediaTypeNames.Text.Plain));
-
-            // Send the email
-            _smtpClient.Send(mailMsg);
         }
     }
 }
