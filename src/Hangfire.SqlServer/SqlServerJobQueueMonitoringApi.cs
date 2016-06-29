@@ -139,8 +139,8 @@ where r.row_num between @start and @end", queryParams);
             var filterMethodString = "";
             if (countParameters != null)
             {
-                filterString = countParameters["JobsFilterText"];
-                filterMethodString = countParameters["JobsFilterMethodText"];
+                filterString = countParameters["filterString"];
+                filterMethodString = countParameters["filterMethodText"];
             }
 
             return UseTransaction(connection =>
