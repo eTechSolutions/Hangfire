@@ -44,12 +44,12 @@ namespace Hangfire.Server
                 var serversRemoved = connection.RemoveTimedOutServers(_serverTimeout);
                 if (serversRemoved != 0)
                 {
-                    string msg = "The servers with server ID: \n";
+                    string msg = "The servers with machine name and server ID: \n";
                     foreach (var item in timedOutServers)
                     {
-                        msg +='\n'+item + ", ";
+                        msg +='\n'+item.Split(':')[0]+ " ::  " + item.Split(':')[1] +", ";
                     }
-                    msg += "\n\n have timed out.";
+                    msg += "\n \n have timed out.";
 
                     ServerStatusNotifier.Notify(0, msg);
 
