@@ -17,10 +17,17 @@ namespace Hangfire.Server
         
         public static void Notify(int statusIndex, string message)
         {
-            string[] toEmail = ConfigurationManager.AppSettings["toEmail"].Split(',');
-            if (toEmail != null || toEmail.Count() > 0) {
-                string fromEmail = ConfigurationManager.AppSettings["fromEmail"];
-                string fromName = ConfigurationManager.AppSettings["fromName"];
+            var toEmail = ConfigurationManager.AppSettings["toEmail"];
+            var fromEmail = ConfigurationManager.AppSettings["fromEmail"];
+            var fromName = ConfigurationManager.AppSettings["fromName"];
+
+            if (!string.IsNullOrEmpty(toEmail) && !string.IsNullOrEmpty(fromEmail) && !string.IsNullOrEmpty(fromName)) 
+                throw new Exception("Email settings is incorrect or not set!"); 
+
+            string[] receivers = toEmail.Split(',');
+
+            if (receivers != null || receivers.Count() > 0) {
+                
                 string subject = statusCodes[statusIndex];
 
                 _smtpClient = new SmtpClient();
@@ -28,7 +35,7 @@ namespace Hangfire.Server
                 MailMessage mailMsg = new MailMessage();
 
                 // Compose email
-                foreach (string receiver in toEmail)
+                foreach (string receiver in receivers)
                 {
                     mailMsg.To.Add(receiver);
                 }

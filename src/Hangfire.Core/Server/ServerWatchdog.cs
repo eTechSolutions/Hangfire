@@ -16,6 +16,7 @@
 
 using System;
 using Hangfire.Logging;
+using System.Configuration;
 
 namespace Hangfire.Server
 {
@@ -44,14 +45,19 @@ namespace Hangfire.Server
                 var serversRemoved = connection.RemoveTimedOutServers(_serverTimeout);
                 if (serversRemoved != 0)
                 {
-                    string msg = "The servers with machine name and server ID: \n";
-                    foreach (var item in timedOutServers)
-                    {
-                        msg +='\n'+item.Split(':')[0]+ " ::  " + item.Split(':')[1] +", ";
-                    }
-                    msg += "\n \n have timed out.";
+                    var value = ConfigurationManager.AppSettings["enableServerTimeOutNotification"];
 
-                    ServerStatusNotifier.Notify(0, msg);
+                    if (!string.IsNullOrEmpty(value) && Convert.ToBoolean(value) == true)
+                    {
+                        string msg = "The servers with machine name and server ID: \n";
+                        foreach (var item in timedOutServers)
+                        {
+                            msg += '\n' + item.Split(':')[0] + " ::  " + item.Split(':')[1] + ", ";
+                        }
+                        msg += "\n \n have timed out.";
+
+                        ServerStatusNotifier.Notify(0, msg);
+                    }
 
                     Logger.Info(String.Format(
                         "{0} servers were removed due to timeout", 

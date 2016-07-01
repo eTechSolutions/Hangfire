@@ -23,6 +23,7 @@ using Hangfire.Annotations;
 using Hangfire.Logging;
 using Hangfire.States;
 using Hangfire.Storage;
+using System.Configuration;
 
 namespace Hangfire.Server
 {
@@ -132,12 +133,17 @@ namespace Hangfire.Server
                             fetchedJob.JobId, 
                             state, 
                             ProcessingState.StateName));
-                        
-                        if(state.Name == FailedState.StateName)
-                        {                            
-                            foreach (var item in _observers)
+
+                        if (state.Name == FailedState.StateName)
+                        {
+                            var value = ConfigurationManager.AppSettings["enableFailedJobPeakNotification"];
+
+                            if (!string.IsNullOrEmpty(value) && Convert.ToBoolean(value) == true )
                             {
-                                item.OnNext(0);
+                                foreach (var item in _observers)
+                                {
+                                    item.OnNext(0);
+                                }
                             }
                         }
                     }
