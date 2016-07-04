@@ -140,7 +140,7 @@ where r.row_num between @start and @end", queryParams);
             if (countParameters != null)
             {
                 filterString = countParameters["filterString"];
-                filterMethodString = countParameters["filterMethodText"];
+                filterMethodString = countParameters["filterMethodString"];
             }
 
             return UseTransaction(connection =>
