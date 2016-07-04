@@ -23,8 +23,7 @@ namespace Hangfire.Server
     internal class ServerWatchdog : IBackgroundProcess
     {
         public static readonly TimeSpan DefaultCheckInterval = TimeSpan.FromMinutes(5);
-        public static readonly TimeSpan DefaultServerTimeout = TimeSpan.FromMinutes(5);
-        
+        public static readonly TimeSpan DefaultServerTimeout = TimeSpan.FromMinutes(5); 
 
         private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 

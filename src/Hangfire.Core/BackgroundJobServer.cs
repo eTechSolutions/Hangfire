@@ -177,8 +177,12 @@ namespace Hangfire
 
         public void OnNext(int i)
         {
-            int threshold = int.Parse(ConfigurationManager.AppSettings["failedJobCountThreshold"]);
-            int delay = int.Parse(ConfigurationManager.AppSettings["failedJobCheckInterval"]);
+            var threshold = 0;
+            var delay = 0;
+
+            int.TryParse(ConfigurationManager.AppSettings["failedJobCountThreshold"], out threshold);
+            int.TryParse(ConfigurationManager.AppSettings["failedJobCheckInterval"], out delay);
+
             TimeSpan duration = new TimeSpan(0, delay, 0);
 
             lock (_failedLock)
@@ -194,9 +198,8 @@ namespace Hangfire
             }
             else if(_failedJobsCount > threshold )
             {
-                string msg = "The server with machine name: \n";
-                msg += '\n' + Environment.MachineName + ", ";
-                msg += "\n \n has had a peak of failed jobs.";
+                var name = Environment.MachineName;
+                var msg = $"The server with machine name: \"{ name }\" has had a peak of failed jobs.";
 
                 ServerStatusNotifier.Notify(1, msg);
                 _hasFirstFailedDateTime = false;
@@ -205,16 +208,12 @@ namespace Hangfire
 
         public void OnError(Exception error)
         {
-            throw new NotImplementedException();
+            throw new Exception("Method \"OnError()\" not implemented.");
         }
 
         public void OnCompleted()
         {
-            throw new NotImplementedException();
+            throw new Exception("Method \"OnCompleted()\" not implemented.");
         }
-
-
-
-
     }
 }

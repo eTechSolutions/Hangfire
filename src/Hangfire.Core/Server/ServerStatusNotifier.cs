@@ -13,7 +13,8 @@ namespace Hangfire.Server
     { 
         private static SmtpClient _smtpClient;
 
-        private static readonly List<string> statusCodes = new List<string> { "Server timeout", "Multiple job failures" }; 
+        private static readonly List<string> statusCodes = new List<string>
+        { "Server timeout", "Multiple job failures" }; 
         
         public static void Notify(int statusIndex, string message)
         {
@@ -26,8 +27,8 @@ namespace Hangfire.Server
 
             string[] receivers = toEmail.Split(',');
 
-            if (receivers != null || receivers.Count() > 0) {
-                
+            if (receivers != null || receivers.Count() > 0)
+            {
                 string subject = statusCodes[statusIndex];
 
                 _smtpClient = new SmtpClient();
