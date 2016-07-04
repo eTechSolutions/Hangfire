@@ -45,8 +45,10 @@ namespace Hangfire.Server
                 if (serversRemoved != 0)
                 {
                     var value = ConfigurationManager.AppSettings["enableServerTimeOutNotification"];
-
-                    if (!string.IsNullOrEmpty(value) && Convert.ToBoolean(value) == true)
+                    var isOn = false;
+                    bool.TryParse(value, out isOn);
+                    
+                    if (isOn == true)
                     {
                         string msg = "The servers with machine name and server ID: \n";
                         foreach (var item in timedOutServers)
