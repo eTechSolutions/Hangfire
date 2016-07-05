@@ -512,6 +512,5 @@ order by [Id] desc", _storage.GetSchemaName());
 
             return _storage.UseConnection(connection => connection.Query<string>(query, new { key = key }).ToList());
         }
-
     }
 }
