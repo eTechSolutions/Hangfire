@@ -75,7 +75,7 @@ namespace Hangfire.Dashboard
         public string RecordsPerPageUrl(int perPage)
         {
             if (perPage <= 0) return "#";
-                        
+
             var newUrl = BasePageUrl + "?from=0&count=" + perPage;
 
             if (!string.IsNullOrEmpty(JobsFilterText)) newUrl += "&filterString=" + JobsFilterText;
@@ -86,7 +86,7 @@ namespace Hangfire.Dashboard
                 newUrl += "&startDate=" + JobsFilterStartDate + "&endDate=" + JobsFilterEndDate;
 
             if (!string.IsNullOrEmpty(JobsFilterStartTime) && !string.IsNullOrEmpty(JobsFilterEndTime))
-                newUrl += "&startTime=" + JobsFilterStartDate + "&endTime=" + JobsFilterEndDate;
+                newUrl += "&startTime=" + JobsFilterStartTime + "&endTime=" + JobsFilterEndTime;
 
             return newUrl;
         }
