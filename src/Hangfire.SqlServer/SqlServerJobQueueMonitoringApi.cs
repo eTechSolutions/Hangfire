@@ -64,15 +64,15 @@ namespace Hangfire.SqlServer
 
         public IEnumerable<int> GetEnqueuedJobIds(string queue, int @from, int perPage, Pager pager = null)
         {
-            dynamic parameters = null;
+            Dictionary<string,string> parameters = null;
             if (pager != null)
             {
-                parameters = new
+                parameters = new Dictionary<string, string>
                 {
-                    startDate = pager.JobsFilterStartDate,
-                    endDate = pager.JobsFilterEndDate,
-                    startTime = pager.JobsFilterStartTime,
-                    endTime = pager.JobsFilterEndTime
+                    ["startDate"] = pager.JobsFilterStartDate,
+                    ["endDate"] = pager.JobsFilterEndDate,
+                    ["startTime"] = pager.JobsFilterStartTime,
+                    ["endTime"] = pager.JobsFilterEndTime
                 };
             }
 
@@ -139,8 +139,8 @@ where r.row_num between @start and @end", queryParams);
             var filterMethodString = "";
             if (countParameters != null)
             {
-                filterString = countParameters["JobsFilterText"];
-                filterMethodString = countParameters["JobsFilterMethodText"];
+                filterString = countParameters["filterString"];
+                filterMethodString = countParameters["filterMethodString"];
             }
 
             return UseTransaction(connection =>
