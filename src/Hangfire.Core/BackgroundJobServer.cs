@@ -175,7 +175,7 @@ namespace Hangfire
         {
         }
 
-        public void OnNext(int i)
+        public void OnNext(int notUsed)
         {
             var threshold = 0;
             var delay = 0;
