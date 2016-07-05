@@ -39,14 +39,14 @@ namespace Hangfire.Server
     /// <threadsafety static="true" instance="true"/>
     /// 
     /// <seealso cref="EnqueuedState"/>
-    public class Worker : IBackgroundProcess, IObservable<int>
+    public class Worker : IBackgroundProcess, IWorkerObservable
     {
         private static readonly TimeSpan JobInitializationWaitTimeout = TimeSpan.FromMinutes(1);
         private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 
         private readonly string _workerId;
         private readonly string[] _queues;
-        private List<IObserver<int>> _observers;
+        private List<IWorkerObserver> _observers;
 
         private readonly IBackgroundJobPerformer _performer;
         private readonly IBackgroundJobStateChanger _stateChanger;
@@ -70,7 +70,7 @@ namespace Hangfire.Server
             if (stateChanger == null) throw new ArgumentNullException("stateChanger");
             
             _queues = queues.ToArray();
-            _observers = new List<IObserver<int>>();
+            _observers = new List<IWorkerObserver>();
             _performer = performer;
             _stateChanger = stateChanger;
             _workerId = Guid.NewGuid().ToString();
@@ -142,7 +142,7 @@ namespace Hangfire.Server
                             {
                                 foreach (var item in _observers)
                                 {
-                                    item.OnNext(0);
+                                    item.Update();
                                 }
                             }
                         }
@@ -227,10 +227,9 @@ namespace Hangfire.Server
             }
         }
 
-        public IDisposable Subscribe(IObserver<int> observer)
+        public void Subscribe(IWorkerObserver observer)
         {
             _observers.Add(observer);
-            return (IDisposable)observer;            
         }
     }
 }

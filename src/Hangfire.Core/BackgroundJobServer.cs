@@ -27,7 +27,7 @@ using System.Configuration;
 
 namespace Hangfire
 {
-    public class BackgroundJobServer : IDisposable, IObserver<int>
+    public class BackgroundJobServer : IDisposable, IWorkerObserver
     {
         private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 
@@ -175,7 +175,7 @@ namespace Hangfire
         {
         }
 
-        public void OnNext(int notUsed)
+        public void Update()
         {
             var threshold = 0;
             var delay = 0;
@@ -204,16 +204,6 @@ namespace Hangfire
                 ServerStatusNotifier.Notify(1, msg);
                 _hasFirstFailedDateTime = false;
             }
-        }
-
-        public void OnError(Exception error)
-        {
-            throw new Exception("Method \"OnError()\" not implemented.");
-        }
-
-        public void OnCompleted()
-        {
-            throw new Exception("Method \"OnCompleted()\" not implemented.");
         }
     }
 }

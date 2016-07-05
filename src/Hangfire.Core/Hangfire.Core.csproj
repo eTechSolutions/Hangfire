@@ -93,6 +93,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ProcessingJobsPage.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="IWorkerObserver.cs" />
     <Compile Include="Obsolete\Job.Obsolete.cs" />
     <Compile Include="Common\TypeExtensions.cs" />
     <Compile Include="Dashboard\OwinRequestExtensions.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Server\IBackgroundProcess.cs" />
     <Compile Include="Server\IBackgroundProcessWrapper.cs" />
     <Compile Include="Server\InfiniteLoopProcess.cs" />
+    <Compile Include="Server\IWorkerObservable.cs" />
     <Compile Include="Server\ServerProcessExtensions.cs" />
     <Compile Include="Server\BackgroundProcessingServer.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Pairwise.cs" />
