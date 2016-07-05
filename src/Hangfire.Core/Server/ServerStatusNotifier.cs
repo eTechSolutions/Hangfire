@@ -22,7 +22,7 @@ namespace Hangfire.Server
             var fromEmail = ConfigurationManager.AppSettings["fromEmail"];
             var fromName = ConfigurationManager.AppSettings["fromName"];
 
-            if (!string.IsNullOrEmpty(toEmail) && !string.IsNullOrEmpty(fromEmail) && !string.IsNullOrEmpty(fromName)) 
+            if (string.IsNullOrEmpty(toEmail) || string.IsNullOrEmpty(fromEmail) || string.IsNullOrEmpty(fromName)) 
                 throw new Exception("Email settings is incorrect or not set!"); 
 
             string[] receivers = toEmail.Split(',');
