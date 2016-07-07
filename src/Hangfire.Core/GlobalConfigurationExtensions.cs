@@ -22,12 +22,25 @@ using Hangfire.Dashboard;
 using Hangfire.Dashboard.Pages;
 using Hangfire.Logging;
 using Hangfire.Logging.LogProviders;
+using Hangfire.Email;
 
 namespace Hangfire
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class GlobalConfigurationExtensions
     {
+
+        public static IGlobalConfiguration<TStorage> UseEmailStorage<TStorage>(
+            [NotNull] this IGlobalConfiguration configuration,
+            [NotNull] TStorage storage)
+            where TStorage : EmailStorage
+        {
+            if (configuration == null) throw new ArgumentNullException("configuration");
+            if (storage == null) throw new ArgumentNullException("storage");
+
+            return configuration.Use(storage, x => EmailStorage.Current = x);
+        }
+
         public static IGlobalConfiguration<TStorage> UseStorage<TStorage>(
             [NotNull] this IGlobalConfiguration configuration,
             [NotNull] TStorage storage)

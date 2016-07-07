@@ -201,7 +201,12 @@ namespace Hangfire
                 var name = Environment.MachineName;
                 var msg = $"The server with machine name: \"{ name }\" has had a peak of failed jobs.";
 
-                ServerStatusNotifier.Notify(1, msg);
+          /*      foreach (var notifier in placewhereerrornotificationregisteris)
+                {
+                    notifier.errorNotify(1, msg);
+                }
+                */
+                //ServerStatusNotifier.Notify(1, msg);
                 _hasFirstFailedDateTime = false;
             }
         }

@@ -93,6 +93,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ProcessingJobsPage.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Email\EmailStorage.cs" />
+    <Compile Include="Email\EventTypes.cs" />
+    <Compile Include="Email\INotifier.cs" />
     <Compile Include="IWorkerObserver.cs" />
     <Compile Include="Obsolete\Job.Obsolete.cs" />
     <Compile Include="Common\TypeExtensions.cs" />
