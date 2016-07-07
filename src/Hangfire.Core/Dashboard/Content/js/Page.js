@@ -291,13 +291,14 @@
                 
                 var prepFilterStringParameters = function (filterString, filterMethodString) {
                     var result = false;
+                    var checked = $("#filterOnMethodName").is(':checked');
                     if (url === '' && (filterString !== '' || filterMethodString !== '')) {
-                        url = '?';
-                        if (filterString !== '') url += "filterString=" + filterString;
-                        if (filterMethodString !== '') url += "filterMethodString=" + filterMethodString;
+                        var parameters = [];                        
+                        if (filterString !== '') parameters[parameters.length] = ["filterString", filterString].join('=');
+                        if (checked && filterMethodString !== '') parameters[parameters.length] = ["filterMethodString", filterMethodString].join('=');
+                        if (parameters.length > 0) url = '?' + parameters.join('&');
                         result = true;
                     } else {
-
                         var res1 = updateOrRemoveSingleParameter("filterString", filterString);
                         var res2 = updateOrRemoveSingleParameter("filterMethodString", filterMethodString);
                         var parameters = url.substr(1).split('&');
@@ -307,7 +308,7 @@
                             result = true;
                         }
 
-                        if (!res2 && filterMethodString !== '') {
+                        if (checked && !res2 && filterMethodString !== '') {
                             parameters[parameters.length] = ["filterMethodString", filterMethodString].join('=');  
                             result = true;
                         }
@@ -322,18 +323,20 @@
                     var parameters = url.substr(1).split('&');
                     var elements;
                     var i = 0;
+                    var checked = true;
+                    if(parameter !== "filterString") checked = $("#filterOnMethodName").is(':checked');
                     for (i = 0; i < parameters.length; i++) {
                         elements = parameters[i].split('=');
-                        if (elements[0] === parameter && (typeof value === 'undefined' || value === '') ) {
-                            parameters.splice(i, 1);
-                            result = false;
-                            break;
-                        } else if (elements[0] === parameter && value != '') {
-                            elements[1] = value;
-                            parameters[i] = elements.join('=');
-                            result = true;
-                            break;
-                        } 
+                        if (elements[0] === parameter) {
+                            if (value === '' || !checked || typeof value === 'undefined' ) {
+                                parameters.splice(i, 1);
+                                result = false;
+                            } else if (value != '') {
+                                elements[1] = value;
+                                parameters[i] = elements.join('=');
+                                result = true;
+                            }
+                        }
                     }
                     if (parameters.length > 0) url = '?' + parameters.join('&');
                     else url = '';
