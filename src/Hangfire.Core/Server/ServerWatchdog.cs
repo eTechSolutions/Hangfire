@@ -16,13 +16,15 @@
 
 using System;
 using Hangfire.Logging;
+using Hangfire.Email;
+using System.Configuration;
 
 namespace Hangfire.Server
 {
     internal class ServerWatchdog : IBackgroundProcess
     {
         public static readonly TimeSpan DefaultCheckInterval = TimeSpan.FromMinutes(5);
-        public static readonly TimeSpan DefaultServerTimeout = TimeSpan.FromMinutes(5);
+        public static readonly TimeSpan DefaultServerTimeout = TimeSpan.FromMinutes(5); 
 
         private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 
@@ -39,9 +41,26 @@ namespace Hangfire.Server
         {
             using (var connection = context.Storage.GetConnection())
             {
+                var timedOutServers = connection.GetTimedOutServerId(_serverTimeout);
                 var serversRemoved = connection.RemoveTimedOutServers(_serverTimeout);
                 if (serversRemoved != 0)
                 {
+                    var value = ConfigurationManager.AppSettings["enableServerTimeOutNotification"];
+                    var isOn = false;
+                    bool.TryParse(value, out isOn);
+                    
+                    if (isOn == true)
+                    {
+                        string msg = "The servers with machine name and server ID: \n";
+                        foreach (var item in timedOutServers)
+                        {
+                            msg += '\n' + item.Split(':')[0] + " ::  " + item.Split(':')[1] + ", ";
+                        }
+                        msg += "\n \n have timed out.";
+
+                        EmailStorage.Current.NotifyAll(EventTypes.Events.ServerTimeout, "Hangfire Server Timeout", msg);
+                    }
+
                     Logger.Info(String.Format(
                         "{0} servers were removed due to timeout", 
                         serversRemoved));

@@ -345,6 +345,20 @@ when not matched then insert ([Key], Field, Value) values (Source.[Key], Source.
                 new { timeOutAt = DateTime.UtcNow.Add(timeOut.Negate()) }));
         }
 
+        public override List<string> GetTimedOutServerId(TimeSpan timeOut)
+        {
+            if (timeOut.Duration() != timeOut)
+            {
+                throw new ArgumentException("The `timeOut` value must be positive.", "timeOut");
+            }
+
+            var query = string.Format(@"select Id from [{0}].Server where LastHeartbeat < @timeOutAt", _storage.GetSchemaName());
+
+            return _storage.UseConnection(connection => connection
+                .Query<string>(query, new { timeOutAt = DateTime.UtcNow.Add(timeOut.Negate()) }))
+                .ToList();
+        }
+
         public override long GetSetCount(string key)
         {
             if (key == null) throw new ArgumentNullException("key");

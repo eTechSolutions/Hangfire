@@ -23,15 +23,21 @@ using Hangfire.Common;
 using Hangfire.Logging;
 using Hangfire.Server;
 using Hangfire.States;
+using Hangfire.Email;
+using System.Configuration;
 
 namespace Hangfire
 {
-    public class BackgroundJobServer : IDisposable
+    public class BackgroundJobServer : IDisposable, IWorkerObserver
     {
         private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
 
         private readonly BackgroundJobServerOptions _options;
-        private readonly IDisposable _processingServer;
+        private readonly IDisposable _processingServer;        
+        private DateTime _lastEmailNotification;
+        private bool _hasFirstFailedDateTime;
+        private long _failedJobsCount;
+        private object _failedLock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BackgroundJobServer"/> class
@@ -83,6 +89,10 @@ namespace Hangfire
             if (additionalProcesses == null) throw new ArgumentNullException("additionalProcesses");
 
             _options = options;
+            _lastEmailNotification = new DateTime();
+            _hasFirstFailedDateTime = false;
+            _failedJobsCount = 0;
+            _failedLock = new object();
 
             var processes = new List<IBackgroundProcess>();
             processes.AddRange(GetRequiredProcesses());
@@ -104,11 +114,11 @@ namespace Hangfire
             Logger.InfoFormat("    Listening queues: {0}.", String.Join(", ", options.Queues.Select(x => "'" + x + "'")));
             Logger.InfoFormat("    Shutdown timeout: {0}.", options.ShutdownTimeout);
             Logger.InfoFormat("    Schedule polling interval: {0}.", options.SchedulePollingInterval);
-            
+
             _processingServer = new BackgroundProcessingServer(
-                storage, 
-                processes, 
-                properties, 
+                storage,
+                processes,
+                properties,
                 GetProcessingServerOptions());
         }
 
@@ -130,7 +140,9 @@ namespace Hangfire
             
             for (var i = 0; i < _options.WorkerCount; i++)
             {
-                processes.Add(new Worker(_options.Queues, performer, stateChanger));
+                Worker worker = new Worker(_options.Queues, performer, stateChanger);
+                worker.Subscribe(this);
+                processes.Add(worker);
             }
             
             processes.Add(new DelayedJobScheduler(_options.SchedulePollingInterval, stateChanger));
@@ -162,6 +174,37 @@ namespace Hangfire
         [Obsolete("This method is a stub. Please call the `Dispose` method instead. Will be removed in version 2.0.0.")]
         public void Stop()
         {
+        }
+
+        public void Update()
+        {
+            var threshold = 0;
+            var delay = 0;
+
+            int.TryParse(ConfigurationManager.AppSettings["failedJobCountThreshold"], out threshold);
+            int.TryParse(ConfigurationManager.AppSettings["failedJobCheckInterval"], out delay);
+
+            TimeSpan duration = new TimeSpan(0, delay, 0);
+
+            lock (_failedLock)
+            {
+                _failedJobsCount++;
+            }            
+
+            if (!_hasFirstFailedDateTime || DateTime.Now.Subtract(duration) > _lastEmailNotification)
+            {
+                _lastEmailNotification = DateTime.Now;
+                _failedJobsCount = 1;
+                _hasFirstFailedDateTime = true;
+            }
+            else if(_failedJobsCount > threshold )
+            {
+                var name = Environment.MachineName;
+                var msg = $"The server with machine name: \"{ name }\" has had a peak of failed jobs.";
+
+                EmailStorage.Current.NotifyAll(EventTypes.Events.FailedJobPeak, "Hangfire - Multiple failed jobs", msg);
+                _hasFirstFailedDateTime = false;
+            }
         }
     }
 }
