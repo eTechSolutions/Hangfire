@@ -16,6 +16,7 @@
 
 using System;
 using Hangfire.Logging;
+using Hangfire.Email;
 using System.Configuration;
 
 namespace Hangfire.Server
@@ -57,7 +58,7 @@ namespace Hangfire.Server
                         }
                         msg += "\n \n have timed out.";
 
-                        ServerStatusNotifier.Notify(0, msg);
+                        EmailStorage.Current.NotifyAll(EventTypes.Events.ServerTimeout, "Hangfire Server Timeout", msg);
                     }
 
                     Logger.Info(String.Format(

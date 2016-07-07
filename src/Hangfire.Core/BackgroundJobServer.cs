@@ -23,6 +23,7 @@ using Hangfire.Common;
 using Hangfire.Logging;
 using Hangfire.Server;
 using Hangfire.States;
+using Hangfire.Email;
 using System.Configuration;
 
 namespace Hangfire
@@ -201,12 +202,7 @@ namespace Hangfire
                 var name = Environment.MachineName;
                 var msg = $"The server with machine name: \"{ name }\" has had a peak of failed jobs.";
 
-          /*      foreach (var notifier in placewhereerrornotificationregisteris)
-                {
-                    notifier.errorNotify(1, msg);
-                }
-                */
-                //ServerStatusNotifier.Notify(1, msg);
+                EmailStorage.Current.NotifyAll(EventTypes.Events.FailedJobPeak, "Hangfire - Multiple failed jobs", msg);
                 _hasFirstFailedDateTime = false;
             }
         }
