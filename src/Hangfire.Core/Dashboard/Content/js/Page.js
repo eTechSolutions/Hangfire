@@ -43,8 +43,8 @@
             var succeeded = parseInt($(realtimeElement).data('succeeded'));
             var failed = parseInt($(realtimeElement).data('failed'));
 
-            var succeededStr = $(historyElement).data('succeeded-string');
-            var failedStr = $(historyElement).data('failed-string');
+            var succeededStr = $(realtimeElement).data('succeeded-string');
+            var failedStr = $(realtimeElement).data('failed-string');
 
             if (realtimeElement) {
                 var realtimeGraph = new Hangfire.RealtimeGraph(realtimeElement, succeeded, failed, succeededStr, failedStr);
@@ -80,7 +80,7 @@
                 var succeededStr = $(historyElement).data('succeeded-string');
                 var failedStr = $(historyElement).data('failed-string');
 
-                return new Hangfire.HistoryGraph(historyElement, succeeded, failed, succeededStr, failedStr);
+                return new hangfire.HistoryGraph(historyElement, succeeded, failed, succeededStr, failedStr);
             }
 
             return null;

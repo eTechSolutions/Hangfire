@@ -62,7 +62,7 @@ namespace Hangfire.SqlServer
             if (!allowedStates.Contains(parameters["stateName"])) throw new Exception("JobCountByStateName() method does not support the jobstate: " + parameters["stateName"]);
 
             return UseConnection((connection, transaction) => 
-                GetNumberOfJobsByStateName(connection, transaction, new Dictionary<string, string> { { "stateName", ScheduledState.StateName } }));
+                GetNumberOfJobsByStateName(connection, transaction, parameters));
         }
  
         /* 4 parameter option has only been implemented on SqlServer database version! See code in file: "SqlServerJobQueueMonitoringApi.cs" */
