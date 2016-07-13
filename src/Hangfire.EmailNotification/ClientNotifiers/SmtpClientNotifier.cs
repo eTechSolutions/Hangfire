@@ -5,9 +5,9 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Hangfire.Email;
+using Hangfire.Notification;
 
-namespace Hangfire.EmailNotification
+namespace Hangfire.Notification
 {
     public class SmtpClientNotifier : INotifier
     {
@@ -26,10 +26,10 @@ namespace Hangfire.EmailNotification
 
         public void Notify(EventTypes.Events eventType, string subject, string message)
         {
-            MailMessage mailMsg = new MailMessage();
+            var mailMsg = new MailMessage();
 
             List<string> emails;
-            _eventReceivers.TryGetValue(eventType,out emails);
+            _eventReceivers.TryGetValue(eventType, out emails);
 
             if (emails.Count > 0)
             {
@@ -44,7 +44,6 @@ namespace Hangfire.EmailNotification
 
                 _smtpClient.Send(mailMsg);
             }
-
         }
 
         public void Subscribe(EventTypes.Events eventType, List<string> toEmails)

@@ -17,20 +17,20 @@
 using System;
 using Hangfire.Annotations;
 using System.Collections.Generic;
-using Hangfire.Email;
+using Hangfire.Notification;
 
-namespace Hangfire.EmailNotification
+namespace Hangfire.Notification
 {
-    public static class EmailNotificationExtensions
+    public static class NotificationExtensions
     {
-        public static IGlobalConfiguration<EmailStorage> AddNotificationSystem(
+        public static IGlobalConfiguration<NotificationStorage> AddNotificationSystem(
             [NotNull] this IGlobalConfiguration configuration,
             [NotNull] List<INotifier> notifiers )
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
 
-            var storage = new EmailStorage(notifiers);
-            return configuration.UseEmailStorage(storage);
+            var storage = new NotificationStorage(notifiers);
+            return configuration.UseNotificationStorage(storage);
         }
     }
 }

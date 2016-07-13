@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hangfire.Email
+namespace Hangfire.Notification
 {
-    public class EmailStorage
+    public class NotificationStorage
     {
         private static readonly object LockObject = new object();
-        private static EmailStorage _current;
+        private static NotificationStorage _current;
         private static List<INotifier> _notifiers;
         
-        public static EmailStorage Current
+        public static NotificationStorage Current
         {
             get
             {
@@ -35,7 +35,7 @@ namespace Hangfire.Email
             }
         }
 
-        public EmailStorage(List<INotifier> notifiers)
+        public NotificationStorage(List<INotifier> notifiers)
         {
             _notifiers = notifiers;
         }

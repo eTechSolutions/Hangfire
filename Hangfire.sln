@@ -62,7 +62,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.AspNetCore.NetStan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.AspNetCore", "src\Hangfire.AspNetCore\Hangfire.AspNetCore.csproj", "{73AFEBE0-9B11-44F6-A69C-8A51538CF18E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.EmailNotification", "src\Hangfire.EmailNotification\Hangfire.EmailNotification.csproj", "{FEA5CB33-AD1F-47A9-92F8-90D10F158C69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hangfire.Notification", "src\Hangfire.EmailNotification\Hangfire.Notification.csproj", "{FEA5CB33-AD1F-47A9-92F8-90D10F158C69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

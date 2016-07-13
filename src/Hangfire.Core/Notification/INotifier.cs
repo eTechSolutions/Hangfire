@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hangfire.Email
+namespace Hangfire.Notification
 {
     public interface INotifier
     {

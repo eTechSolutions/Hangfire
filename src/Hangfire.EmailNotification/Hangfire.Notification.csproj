@@ -43,7 +43,7 @@
     <Compile Include="ClientConfiguration\SmtpConfiguration.cs" />
     <Compile Include="ClientNotifiers\SmtpClientNotifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EmailNotificationExtensions.cs" />
+    <Compile Include="NotificationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hangfire.Core\Hangfire.Core.csproj">
