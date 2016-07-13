@@ -30,9 +30,9 @@ namespace Hangfire
             var mailMsg = new MailMessage();
 
             List<string> emails;
-            _eventReceivers.TryGetValue(eventType, out emails);
+            var success = _eventReceivers.TryGetValue(eventType, out emails);
 
-            if (emails != null && emails.Count > 0)
+            if (success && emails.Count > 0)
             {
                 foreach (string email in emails)
                 {
