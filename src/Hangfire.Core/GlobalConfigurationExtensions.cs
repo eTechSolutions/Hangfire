@@ -21,7 +21,7 @@ using Hangfire.Dashboard;
 using Hangfire.Dashboard.Pages;
 using Hangfire.Logging;
 using Hangfire.Logging.LogProviders;
-using Hangfire.Notification;
+using Hangfire.EmailNotification;
 
 namespace Hangfire
 {

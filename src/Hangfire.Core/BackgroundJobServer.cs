@@ -23,7 +23,7 @@ using Hangfire.Common;
 using Hangfire.Logging;
 using Hangfire.Server;
 using Hangfire.States;
-using Hangfire.Notification;
+using Hangfire.EmailNotification;
 
 namespace Hangfire
 {

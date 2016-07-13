@@ -16,7 +16,7 @@
 
 using System;
 using Hangfire.Logging;
-using Hangfire.Notification;
+using Hangfire.EmailNotification;
 
 namespace Hangfire.Server
 {
