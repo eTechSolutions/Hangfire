@@ -42,12 +42,12 @@ namespace Hangfire
         public static IGlobalConfiguration<TStorage> UseNotificationStorage<TStorage>(
             [NotNull] this IGlobalConfiguration configuration,
             [NotNull] TStorage notificationStorage)
-            where TStorage : NotificationStorage
+            where TStorage : NotificationStore
         {
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
             if (notificationStorage == null) throw new ArgumentNullException(nameof(notificationStorage));
 
-            return configuration.Use(notificationStorage, x => NotificationStorage.Current = x);
+            return configuration.Use(notificationStorage, x => NotificationStore.Current = x);
         }
 
         public static IGlobalConfiguration<TActivator> UseActivator<TActivator>(

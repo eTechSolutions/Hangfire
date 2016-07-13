@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Hangfire.Notification
 {
-    public class NotificationStorage
+    public class NotificationStore
     {
         private static readonly object LockObject = new object();
-        private static NotificationStorage _current;
+        private static NotificationStore _current;
         private static List<INotifier> _notifiers;
         
-        public static NotificationStorage Current
+        public static NotificationStore Current
         {
             get
             {
@@ -35,7 +35,7 @@ namespace Hangfire.Notification
             }
         }
 
-        public NotificationStorage(List<INotifier> notifiers)
+        public NotificationStore(List<INotifier> notifiers)
         {
             _notifiers = notifiers;
         }

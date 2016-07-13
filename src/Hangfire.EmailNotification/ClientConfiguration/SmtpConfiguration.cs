@@ -20,7 +20,5 @@ namespace Hangfire.Notification
             Password = password;
             Port = port;
         }
-
-
     }
 }

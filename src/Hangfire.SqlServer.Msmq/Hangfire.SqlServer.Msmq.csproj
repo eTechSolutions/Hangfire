@@ -45,7 +45,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Messaging" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -74,9 +73,6 @@
       <Project>{A523C0E3-097D-4869-977F-15A717EA3E83}</Project>
       <Name>Hangfire.SqlServer</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

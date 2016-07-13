@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Hangfire.Notification;
 
-namespace Hangfire.Notification
+namespace Hangfire
 {
     public class SmtpClientNotifier : INotifier
     {
         private SmtpClient _smtpClient;
-        Dictionary<EventTypes.Events, List<string>> _eventReceivers = new Dictionary<EventTypes.Events, List<string>>();
+        private Dictionary<EventTypes.Events, List<string>> _eventReceivers;
         private string _fromEmail;
         private string _fromName;
         
@@ -21,6 +21,7 @@ namespace Hangfire.Notification
             _fromEmail = fromEmail;
             _fromName = fromName;
             _smtpClient = new SmtpClient(sendgridConfig.Host, sendgridConfig.Port);
+            _eventReceivers = new Dictionary<EventTypes.Events, List<string>>();
             _smtpClient.Credentials = new System.Net.NetworkCredential(sendgridConfig.Username, sendgridConfig.Password);
         }
 
@@ -31,7 +32,7 @@ namespace Hangfire.Notification
             List<string> emails;
             _eventReceivers.TryGetValue(eventType, out emails);
 
-            if (emails.Count > 0)
+            if (emails != null && emails.Count > 0)
             {
                 foreach (string email in emails)
                 {

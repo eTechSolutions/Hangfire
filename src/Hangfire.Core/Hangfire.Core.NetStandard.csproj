@@ -307,7 +307,7 @@
     <Compile Include="MoreLinq\MoreEnumerable.Pairwise.cs" />
     <Compile Include="Notification\EventTypes.cs" />
     <Compile Include="Notification\INotifier.cs" />
-    <Compile Include="Notification\NotificationStorage.cs" />
+    <Compile Include="Notification\NotificationStore.cs" />
     <Compile Include="Obsolete\CreateJobFailedException.cs" />
     <Compile Include="Obsolete\IServerComponent.cs" />
     <Compile Include="Obsolete\IServerProcess.cs" />

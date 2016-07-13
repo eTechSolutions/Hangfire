@@ -21,15 +21,15 @@ using Hangfire.Notification;
 
 namespace Hangfire.Notification
 {
-    public static class NotificationExtensions
+    public static class EmailNotificationExtensions
     {
-        public static IGlobalConfiguration<NotificationStorage> AddNotificationSystem(
+        public static IGlobalConfiguration<NotificationStore> AddNotificationSystem(
             [NotNull] this IGlobalConfiguration configuration,
             [NotNull] List<INotifier> notifiers )
         {
             if (configuration == null) throw new ArgumentNullException("configuration");
 
-            var storage = new NotificationStorage(notifiers);
+            var storage = new NotificationStore(notifiers);
             return configuration.UseNotificationStorage(storage);
         }
     }
