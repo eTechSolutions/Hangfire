@@ -46,7 +46,7 @@ namespace Hangfire.Storage
         public abstract void RemoveServer(string serverId);
         public abstract void Heartbeat(string serverId);
         public abstract int RemoveTimedOutServers(TimeSpan timeOut);
-        public abstract List<string> FetchAndRemoveTimedOutServers(TimeSpan timeOut);
+        public abstract List<string> GetTimedOutServers(TimeSpan timeOut);
 
         // Sets
         public abstract HashSet<string> GetAllItemsFromSet(string key);

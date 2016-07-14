@@ -341,7 +341,7 @@ when not matched then insert (Id, Data, LastHeartbeat) values (Source.Id, Source
                 new { timeOutAt = DateTime.UtcNow.Add(timeOut.Negate()) }));
         }
 
-        public override List<string> FetchAndRemoveTimedOutServers(TimeSpan timeOut)
+        public override List<string> GetTimedOutServers(TimeSpan timeOut)
         {
             if (timeOut.Duration() != timeOut)
             {
@@ -350,15 +350,9 @@ when not matched then insert (Id, Data, LastHeartbeat) values (Source.Id, Source
 
             string query = $@"select Id from [{nameof(_storage)}].Server where LastHeartbeat < @timeOutAt";
 
-            var servers = _storage.UseConnection(connection => connection
+            return _storage.UseConnection(connection => connection
                 .Query<string>(query, new { timeOutAt = DateTime.UtcNow.Add(timeOut.Negate()) }))
                 .ToList();
-
-            _storage.UseConnection(connection => connection.Execute(
-                $@"delete from [{_storage.SchemaName}].Server where LastHeartbeat < @timeOutAt",
-                new { timeOutAt = DateTime.UtcNow.Add(timeOut.Negate()) }));
-
-            return servers;
         }
 
         public override long GetSetCount(string key)

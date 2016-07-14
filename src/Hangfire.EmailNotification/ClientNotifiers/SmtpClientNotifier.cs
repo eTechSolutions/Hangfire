@@ -5,9 +5,8 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Hangfire.EmailNotification;
 
-namespace Hangfire
+namespace Hangfire.EmailNotification
 {
     public class SmtpClientNotifier : INotifier
     {
