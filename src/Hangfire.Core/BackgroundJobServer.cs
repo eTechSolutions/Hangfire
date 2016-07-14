@@ -33,6 +33,7 @@ namespace Hangfire
 
         private readonly BackgroundJobServerOptions _options;
         private readonly BackgroundProcessingServer _processingServer;
+
         private DateTime _lastEmailNotification;
         private bool _hasFirstFailedDateTime;
         private long _failedJobsCount;
