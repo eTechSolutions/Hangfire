@@ -24,14 +24,15 @@ namespace Hangfire
 {
     public class BackgroundJobServerOptions
     {
+        public static readonly TimeSpan DefaultJobCheckInterval = TimeSpan.FromMinutes(5);
+        public static readonly int DefaultJobCheckThreshold = 100;
+
         // https://github.com/HangfireIO/Hangfire/issues/246
         private const int MaxDefaultWorkerCount = 40;
-
         private int _workerCount;
         private string[] _queues;
 
-        public static readonly TimeSpan DefaultJobCheckInterval = TimeSpan.FromMinutes(5);
-        public static readonly int DefaultJobCheckThreshold = 100;
+        
 
         public BackgroundJobServerOptions()
         {

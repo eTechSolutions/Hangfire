@@ -10,7 +10,7 @@ namespace Hangfire.EmailNotification
     {
         private static readonly object LockObject = new object();
         private static NotificationStore _current;
-        private static List<INotifier> _notifiers;
+        private List<INotifier> _notifiers;
         
         public static NotificationStore Current
         {

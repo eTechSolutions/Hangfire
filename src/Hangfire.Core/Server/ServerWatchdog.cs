@@ -40,14 +40,16 @@ namespace Hangfire.Server
         {
             using (var connection = context.Storage.GetConnection())
             {
-                var timedOutServers = connection.GetTimedOutServerId(_serverTimeout);
-                var serversRemoved = connection.RemoveTimedOutServers(_serverTimeout);
-                if (serversRemoved != 0)
+                var serversRemoved = connection.FetchAndRemoveTimedOutServers(_serverTimeout);
+                
+                if ( serversRemoved != null && serversRemoved.Count != 0)
                 {
                     var msg = "The servers with machine name and server ID: \n";
-                    foreach (var item in timedOutServers)
+                    foreach (var item in serversRemoved)
                     {
-                        msg += '\n' + item.Split(':')[0] + " ::  " + item.Split(':')[1] + ", ";
+                        var machineName = item.Split(':')[0];
+                        var serverId = item.Split(':')[1];
+                        msg += $"\n{machineName}  ::  {serverId}, ";
                     }
                     msg += "\n \n have timed out.";
 
