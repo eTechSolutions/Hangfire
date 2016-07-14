@@ -32,8 +32,6 @@ namespace Hangfire
         private int _workerCount;
         private string[] _queues;
 
-        
-
         public BackgroundJobServerOptions()
         {
             WorkerCount = Math.Min(Environment.ProcessorCount * 5, MaxDefaultWorkerCount);
