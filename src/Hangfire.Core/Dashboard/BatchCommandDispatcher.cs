@@ -15,6 +15,7 @@
 // License along with Hangfire. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Hangfire.Dashboard.Resources;
@@ -42,7 +43,7 @@ namespace Hangfire.Dashboard
         {
             var jobIds = await context.Request.GetFormValuesAsync("jobs[]");
             var queueNameList = await context.Request.GetFormValuesAsync("queueName");
-            var queueName = queueNameList?[0];
+            var queueName = queueNameList.FirstOrDefault();
 
             if (jobIds.Count == 0)
             {
