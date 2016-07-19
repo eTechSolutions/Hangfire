@@ -81,6 +81,10 @@ body {
     height: 1px;
 }
 
+.input-group[class*=col-] {
+    float: left;
+}
+
 a:hover .label-hover {
     background-color: #2a6496!important;
     color: #fff!important;
