@@ -53,7 +53,15 @@
                         <span class="glyphicon glyphicon-play-circle"></span>
                         @Strings.RecurringJobsPage_TriggerNow
                     </button>
-
+                    <div class="input-group col-xs-3">
+                        <input type="text" class="input-sm form-control">
+                        <span class="input-group-btn">
+                            <button class="js-jobs-list-command btn btn-sm btn-default" 
+                                    type="button">
+                                Update Cron
+                            </button>
+                        </span>
+                    </div>
                     <button class="js-jobs-list-command btn btn-sm btn-default"
                             data-url="@Url.To("/recurring/remove")"
                             data-loading-text="@Strings.Common_Deleting"
