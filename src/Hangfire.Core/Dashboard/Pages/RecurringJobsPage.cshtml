@@ -55,10 +55,13 @@
                     </button>
                     <div class="input-group col-xs-3">
                         <input type="text" class="input-sm form-control">
-                        <span class="input-group-btn">
+                        <span class="input-group-btn" 
+                            data-url="@Url.To("/recurring/updatecron")"
+                            data-loading-text="@Strings.Common_Updating"
+                            disabled="disabled">
                             <button class="js-jobs-list-command btn btn-sm btn-default" 
                                     type="button">
-                                Update Cron
+                                @Strings.RecurringJobsPage_UpdateCron
                             </button>
                         </span>
                     </div>
