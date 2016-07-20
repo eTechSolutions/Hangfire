@@ -91,6 +91,42 @@ namespace Hangfire
             }
         }
 
+        public void UpdateCron(string recurringJobId, string cronExpression)
+        {
+            if (recurringJobId == null) throw new ArgumentNullException(nameof(recurringJobId));
+            if (cronExpression == null) throw new ArgumentNullException(nameof(cronExpression));
+
+            ValidateCronExpression(cronExpression);
+
+            using (var connection = _storage.GetConnection())
+            {
+                var recurringlist = connection.GetRecurringJobs();
+                
+                // Find the correct JobDto
+                var recurringJobDto = recurringlist.Find(i => i.Id == recurringJobId);
+                
+                var recurringJob = recurringJobDto.Job;
+                var recurringJobDict = new Dictionary<string, string>();
+                var invocationData = InvocationData.Serialize(recurringJob);
+
+                recurringJobDict["Job"] = JobHelper.ToJson(invocationData);
+                recurringJobDict["Cron"] = cronExpression;
+                recurringJobDict["TimeZoneId"] = recurringJobDto.TimeZoneId;
+                recurringJobDict["Queue"] = recurringJobDto.Queue;
+
+                using (var transaction = connection.CreateWriteTransaction())
+                {
+                    transaction.SetRangeInHash(
+                        $"recurring-job:{recurringJobId}",
+                        recurringJobDict);
+
+                    transaction.AddToSet("recurring-jobs", recurringJobId);
+
+                    transaction.Commit();
+                }
+            }
+        }
+
         public void Trigger(string recurringJobId)
         {
             if (recurringJobId == null) throw new ArgumentNullException(nameof(recurringJobId));
