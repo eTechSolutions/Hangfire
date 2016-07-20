@@ -12,6 +12,7 @@ using System.Reflection;
 
 namespace Hangfire.Dashboard.Resources {
     using System;
+    using System.Reflection;
     
     
     /// <summary>

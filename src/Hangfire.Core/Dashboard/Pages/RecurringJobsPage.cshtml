@@ -53,14 +53,14 @@
                         <span class="glyphicon glyphicon-play-circle"></span>
                         @Strings.RecurringJobsPage_TriggerNow
                     </button>
-                    <div class="input-group col-xs-3">
-                        <input type="text" class="input-sm form-control">
-                        <span class="input-group-btn" 
-                            data-url="@Url.To("/recurring/updatecron")"
-                            data-loading-text="@Strings.Common_Updating"
-                            disabled="disabled">
-                            <button class="js-jobs-list-command btn btn-sm btn-default" 
-                                    type="button">
+                    <div class="input-group col-xs-2">
+                        <input type="text" class="input-sm form-control js-cron-validation" name="crontext">
+                        <span class="input-group-btn">
+                            <button class="js-cron-update-command btn btn-sm btn-default" 
+                                    type="button"
+                                    data-url="@Url.To("/recurring/updatecron")"
+                                    data-loading-text="@Strings.Common_Updating"
+                                    disabled="disabled">
                                 @Strings.RecurringJobsPage_UpdateCron
                             </button>
                         </span>

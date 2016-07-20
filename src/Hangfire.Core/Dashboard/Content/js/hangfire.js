@@ -386,6 +386,8 @@
                     }
                 };
 
+                var validCron = false;
+
                 var setListState = function (state) {
                     $('.js-jobs-list-select-all', container)
                         .prop('checked', state === 'all-selected')
@@ -393,6 +395,9 @@
                     
                     $('.js-jobs-list-command', container)
                         .prop('disabled', state === 'none-selected');
+
+                    $('.js-cron-update-command', container)
+                        .prop('disabled', (state === 'none-selected' || !validCron) );
                 };
 
                 var updateListState = function() {
@@ -445,7 +450,7 @@
                 $(this).on('click', '.js-jobs-list-command', function(e) {
                     var $this = $(this);
                     var confirmText = $this.data('confirm');
-
+                    
                     var jobs = $("input[name='jobs[]']:checked", container).map(function() {
                         return $(this).val();
                     }).get();
@@ -456,13 +461,50 @@
                             $this.button('loading');
                         }, 100);
 
-                        $.post($this.data('url'), { 'jobs[]': jobs }, function () {
+                        $.post($this.data('url'), { 'jobs[]': jobs, 'Cron': cron }, function () {
                             clearTimeout(loadingDelay);
                             window.location.reload();
                         });
                     }
 
                     e.preventDefault();
+                });
+
+                $(this).on('click', '.js-cron-update-command', function (e) {
+                    var $this = $(this);
+                    var confirmText = $this.data('confirm');
+
+                    var cron = $("input[name='crontext']").val();
+                    var jobs = $("input[name='jobs[]']:checked", container).map(function () {
+                        return $(this).val();
+                    }).get();
+
+                    if (!confirmText || confirm(confirmText)) {
+                        var loadingDelay = setTimeout(function () {
+                            $this.button('loading');
+                        }, 100);
+
+                        $.post($this.data('url'), { 'jobs[]': jobs, 'Cron': cron }, function () {
+                            clearTimeout(loadingDelay);
+                            $this.button('reset');
+                            window.location.reload();
+                        });
+                    }
+
+                    e.preventDefault();
+                });
+
+                $(this).on('input', 'js-cron-validation', function (e) {
+                    var cron = $("input[name='crontext']").val();
+                   
+                    var spaces = cron.split(' ').length;
+                    if (spaces !== 5) {
+                        validCron = true;
+                    }
+                    else {
+                        validCron = false; 
+                    }
+
                 });
 
                 updateListState();
