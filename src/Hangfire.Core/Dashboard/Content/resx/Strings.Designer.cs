@@ -8,8 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Reflection;
-
 namespace Hangfire.Dashboard.Resources {
     using System;
     
@@ -41,7 +39,7 @@ namespace Hangfire.Dashboard.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hangfire.Dashboard.Content.resx.Strings", typeof(Strings).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Hangfire.Dashboard.Content.resx.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -365,6 +363,15 @@ namespace Hangfire.Dashboard.Resources {
         public static string Common_Unknown {
             get {
                 return ResourceManager.GetString("Common_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating....
+        /// </summary>
+        public static string Common_Updating {
+            get {
+                return ResourceManager.GetString("Common_Updating", resourceCulture);
             }
         }
         
@@ -1059,6 +1066,15 @@ namespace Hangfire.Dashboard.Resources {
         public static string RecurringJobsPage_TriggerNow {
             get {
                 return ResourceManager.GetString("RecurringJobsPage_TriggerNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update cron.
+        /// </summary>
+        public static string RecurringJobsPage_UpdateCron {
+            get {
+                return ResourceManager.GetString("RecurringJobsPage_UpdateCron", resourceCulture);
             }
         }
         
