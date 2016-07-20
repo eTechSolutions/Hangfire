@@ -32,5 +32,6 @@ namespace Hangfire.Storage
         public DateTime? CreatedAt { get; set; }
         public bool Removed { get; set; }
         public string TimeZoneId { get; set; }
+        public string Queue { get; set; }
     }
 }
