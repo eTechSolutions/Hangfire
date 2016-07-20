@@ -104,7 +104,10 @@ namespace Hangfire
                 
                 // Find the correct JobDto
                 var recurringJobDto = recurringlist.Find(i => i.Id == recurringJobId);
-                
+
+                // We didnt find the JobDto despite being assured it was in the db 
+                if (recurringJobDto == null) throw new NullReferenceException(recurringJobId);
+
                 var recurringJob = recurringJobDto.Job;
                 var recurringJobDict = new Dictionary<string, string>();
                 var invocationData = InvocationData.Serialize(recurringJob);
