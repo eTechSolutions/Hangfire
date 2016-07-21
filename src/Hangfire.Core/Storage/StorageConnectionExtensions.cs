@@ -123,7 +123,7 @@ namespace Hangfire.Storage
 
                 if (hash.ContainsKey("Queue"))
                 {
-                    dto.Queue = hash["CreatedAt"];
+                    dto.Queue = hash["Queue"];
                 }
 
                 result.Add(dto);
