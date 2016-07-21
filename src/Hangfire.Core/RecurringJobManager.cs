@@ -96,7 +96,15 @@ namespace Hangfire
             if (recurringJobId == null) throw new ArgumentNullException(nameof(recurringJobId));
             if (cronExpression == null) throw new ArgumentNullException(nameof(cronExpression));
 
-            ValidateCronExpression(cronExpression);
+            try
+            {
+                ValidateCronExpression(cronExpression);
+            }
+            catch(ArgumentException)
+            {
+                // the expression is invalid, DO NOT CHANGE CRON
+                return;
+            };
 
             using (var connection = _storage.GetConnection())
             {
