@@ -479,7 +479,7 @@
                             $this.button('loading');
                         }, 100);
 
-                        $.post($this.data('url'), { 'jobs[]': jobs, 'Cron': cron }, function () {
+                        $.post($this.data('url'), { 'jobs[]': jobs }, function () {
                             clearTimeout(loadingDelay);
                             window.location.reload();
                         });
@@ -494,7 +494,7 @@
 
                     var cron = $("input[name='crontext']").val();
                     var jobs = $("input[name='jobs[]']:checked", container).map(function () {
-                        return $(this).val();
+                        return [$(this).val(),cron].join(':');
                     }).get();
 
                     if (!confirmText || confirm(confirmText)) {
@@ -502,7 +502,7 @@
                             $this.button('loading');
                         }, 100);
 
-                        $.post($this.data('url'), { 'jobs[]': jobs, 'Cron': cron }, function () {
+                        $.post($this.data('url'), { 'jobs[]': jobs }, function () {
                             clearTimeout(loadingDelay);
                             $this.button('reset');
                             window.location.reload();
