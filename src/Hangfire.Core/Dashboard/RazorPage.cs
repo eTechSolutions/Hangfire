@@ -41,6 +41,7 @@ namespace Hangfire.Dashboard
 
         public JobStorage Storage { get; internal set; }
         public string AppPath { get; internal set; }
+        public bool UpdateCron { get; internal set; }
         public int StatsPollingInterval { get; internal set; }
         public Stopwatch GenerationTime { get; private set; }
 
@@ -78,6 +79,7 @@ namespace Hangfire.Dashboard
             Response = parentPage.Response;
             Storage = parentPage.Storage;
             AppPath = parentPage.AppPath;
+            UpdateCron = parentPage.UpdateCron;
             StatsPollingInterval = parentPage.StatsPollingInterval;
             Url = parentPage.Url;
 
@@ -92,6 +94,7 @@ namespace Hangfire.Dashboard
 
             Storage = context.Storage;
             AppPath = context.Options.AppPath;
+            UpdateCron = context.Options.UpdateCron;
             StatsPollingInterval = context.Options.StatsPollingInterval;
             Url = new UrlHelper(context);
 
