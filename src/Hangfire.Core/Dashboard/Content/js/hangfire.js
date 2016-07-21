@@ -367,6 +367,26 @@
                 e.preventDefault();
             });
 
+            var validCron = false;
+
+            $("input[type = 'text']").keyup(function () {
+                var cron = $("input[name='crontext']").val();
+                var disabled = $('.js-jobs-list-command').is(':disabled');
+                var splitcron = cron.split(" ");
+                var spaces = splitcron.length;
+
+                if ((spaces !== 5) || (splitcron.indexOf("") > -1)) {
+                    validCron = false;
+                }
+                else {
+                    validCron = true;
+                }
+
+                $('.js-cron-update-command')
+                     .prop('disabled', (disabled || !validCron));
+
+            });
+
             $('.js-jobs-list').each(function () {
                 var container = this;
 
@@ -385,8 +405,6 @@
                         selectRow(row, !isSelected);
                     }
                 };
-
-                var validCron = false;
 
                 var setListState = function (state) {
                     $('.js-jobs-list-select-all', container)
@@ -492,19 +510,6 @@
                     }
 
                     e.preventDefault();
-                });
-
-                $(this).on('input', 'js-cron-validation', function (e) {
-                    var cron = $("input[name='crontext']").val();
-                   
-                    var spaces = cron.split(' ').length;
-                    if (spaces !== 5) {
-                        validCron = true;
-                    }
-                    else {
-                        validCron = false; 
-                    }
-
                 });
 
                 updateListState();
