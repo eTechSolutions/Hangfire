@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Hangfire.Annotations;
 using Hangfire.Client;
 using Hangfire.Common;
@@ -182,7 +183,7 @@ namespace Hangfire
             var threshold = _options.JobCheckThreshold;
             var interval = _options.JobCheckInterval;
             
-            System.Threading.Interlocked.Increment(ref _failedJobsCount);
+            Interlocked.Increment(ref _failedJobsCount);
 
             if ( DateTime.Now.Subtract(interval) > _lastEmailNotification)
             {
