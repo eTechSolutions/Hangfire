@@ -33,7 +33,6 @@ namespace Hangfire
 
         private readonly BackgroundJobServerOptions _options;
         private readonly BackgroundProcessingServer _processingServer;
-        //private readonly object _failedLock;
 
         private DateTime _lastEmailNotification;
         private long _failedJobsCount;
@@ -90,7 +89,6 @@ namespace Hangfire
             _options = options;
             _lastEmailNotification = DateTime.MinValue;
             _failedJobsCount = 0;
-            //_failedLock = new object();
 
             var processes = new List<IBackgroundProcess>();
             processes.AddRange(GetRequiredProcesses());
@@ -183,12 +181,8 @@ namespace Hangfire
         {
             var threshold = _options.JobCheckThreshold;
             var interval = _options.JobCheckInterval;
-
-            //lock (_failedLock)
-            //{
+            
             System.Threading.Interlocked.Increment(ref _failedJobsCount);
-            //    _failedJobsCount++;
-            //}
 
             if ( DateTime.Now.Subtract(interval) > _lastEmailNotification)
             {
