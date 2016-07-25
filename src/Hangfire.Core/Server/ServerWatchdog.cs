@@ -46,6 +46,7 @@ namespace Hangfire.Server
                 if (serversRemoved != 0)
                 {
                     var msg = "The servers with machine name and server ID: \n";
+
                     foreach (var item in timedOutServers)
                     {
                         var servername = item.Split(':');
