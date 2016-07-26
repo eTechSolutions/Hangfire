@@ -92,7 +92,7 @@
     <Compile Include="Dashboard\Owin\OwinDashboardContextExtensions.cs" />
     <Compile Include="Dashboard\Owin\OwinDashboardRequest.cs" />
     <Compile Include="Dashboard\Owin\OwinDashboardResponse.cs" />
-    <Compile Include="Dashboard\Pages\RecurringJobsPage1.generated.cs">
+    <Compile Include="Dashboard\Pages\RecurringJobsPage.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>RecurringJobsPage.cshtml</DependentUpon>
@@ -467,7 +467,7 @@
     </None>
     <None Include="Dashboard\Pages\JobDetailsPage.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>JobDetailsPage1.generated.cs</LastGenOutput>
+      <LastGenOutput>JobDetailsPage.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\LayoutPage.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -483,7 +483,7 @@
     </None>
     <None Include="Dashboard\Pages\RecurringJobsPage.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>RecurringJobsPage1.generated.cs</LastGenOutput>
+      <LastGenOutput>RecurringJobsPage.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\RetriesPage.cshtml">
       <Generator>RazorGenerator</Generator>
@@ -499,7 +499,7 @@
     </None>
     <None Include="Dashboard\Pages\SucceededJobs.cshtml">
       <Generator>RazorGenerator</Generator>
-      <LastGenOutput>SucceededJobs1.generated.cs</LastGenOutput>
+      <LastGenOutput>SucceededJobs.generated.cs</LastGenOutput>
     </None>
     <None Include="Dashboard\Pages\_BlockMetric.cshtml">
       <Generator>RazorGenerator</Generator>
