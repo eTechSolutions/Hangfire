@@ -59,7 +59,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -100,8 +100,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-12\">\r\n        <h1 class=\"page-header\"" +
-">");
+WriteLiteral("\n<div class=\"row\">\n    <div class=\"col-md-12\">\n        <h1 class=\"page-header\">");
 
 
             
@@ -111,7 +110,7 @@ WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-12\">\r\n      
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n\r\n");
+WriteLiteral("</h1>\n\n");
 
 
             
@@ -122,7 +121,7 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            <div class=\"alert alert-info\">\r\n                ");
+WriteLiteral("            <div class=\"alert alert-info\">\n                ");
 
 
             
@@ -132,7 +131,7 @@ WriteLiteral("            <div class=\"alert alert-info\">\r\n                ")
             
             #line default
             #line hidden
-WriteLiteral("\r\n            </div>\r\n");
+WriteLiteral("\n            </div>\n");
 
 
             
@@ -144,9 +143,9 @@ WriteLiteral("\r\n            </div>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            <div class=\"js-jobs-list\">\r\n                <div class=\"btn-toolbar b" +
-"tn-toolbar-top\">\r\n                    <button class=\"js-jobs-list-command btn bt" +
-"n-sm btn-primary\"\r\n                            data-url=\"");
+WriteLiteral("            <div class=\"js-jobs-list\">\n                <div class=\"btn-toolbar bt" +
+"n-toolbar-top\">\n                    <button class=\"js-jobs-list-command btn btn-" +
+"sm btn-primary\"\n                            data-url=\"");
 
 
             
@@ -156,7 +155,7 @@ WriteLiteral("            <div class=\"js-jobs-list\">\r\n                <div c
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                            data-loading-text=\"");
+WriteLiteral("\"\n                            data-loading-text=\"");
 
 
             
@@ -166,8 +165,8 @@ WriteLiteral("\"\r\n                            data-loading-text=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                            disabled=\"disabled\">\r\n                        <spa" +
-"n class=\"glyphicon glyphicon-play-circle\"></span>\r\n                        ");
+WriteLiteral("\"\n                            disabled=\"disabled\">\n                        <span " +
+"class=\"glyphicon glyphicon-play-circle\"></span>\n                        ");
 
 
             
@@ -177,7 +176,7 @@ WriteLiteral("\"\r\n                            disabled=\"disabled\">\r\n      
             
             #line default
             #line hidden
-WriteLiteral("\r\n                    </button>\r\n");
+WriteLiteral("\n                    </button>\n");
 
 
             
@@ -202,7 +201,7 @@ WriteLiteral(@"                        <div class=""input-group col-xs-2"">
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                                        data-loading-text=\"");
+WriteLiteral("\"\n                                        data-loading-text=\"");
 
 
             
@@ -212,8 +211,8 @@ WriteLiteral("\"\r\n                                        data-loading-text=\"
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                                        disabled=\"disabled\">\r\n                " +
-"                    ");
+WriteLiteral("\"\n                                        disabled=\"disabled\">\n                  " +
+"                  ");
 
 
             
@@ -223,8 +222,8 @@ WriteLiteral("\"\r\n                                        disabled=\"disabled\
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                </button>\r\n                            </span>\r" +
-"\n                        </div>\r\n");
+WriteLiteral("\n                                </button>\n                            </span>\n  " +
+"                      </div>\n");
 
 
             
@@ -234,8 +233,8 @@ WriteLiteral("\r\n                                </button>\r\n                 
             
             #line default
             #line hidden
-WriteLiteral("                    <button class=\"js-jobs-list-command btn btn-sm btn-default\"\r\n" +
-"                            data-url=\"");
+WriteLiteral("                    <button class=\"js-jobs-list-command btn btn-sm btn-default\"\n " +
+"                           data-url=\"");
 
 
             
@@ -245,7 +244,7 @@ WriteLiteral("                    <button class=\"js-jobs-list-command btn btn-s
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                            data-loading-text=\"");
+WriteLiteral("\"\n                            data-loading-text=\"");
 
 
             
@@ -255,7 +254,7 @@ WriteLiteral("\"\r\n                            data-loading-text=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                            data-confirm=\"");
+WriteLiteral("\"\n                            data-confirm=\"");
 
 
             
@@ -265,8 +264,8 @@ WriteLiteral("\"\r\n                            data-confirm=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                            disabled=\"disabled\">\r\n                        <spa" +
-"n class=\"glyphicon glyphicon-remove\"></span>\r\n                        ");
+WriteLiteral("\"\n                            disabled=\"disabled\">\n                        <span " +
+"class=\"glyphicon glyphicon-remove\"></span>\n                        ");
 
 
             
@@ -276,7 +275,7 @@ WriteLiteral("\"\r\n                            disabled=\"disabled\">\r\n      
             
             #line default
             #line hidden
-WriteLiteral("\r\n                    </button>\r\n\r\n");
+WriteLiteral("\n                    </button>\n\n");
 
 
             
@@ -299,7 +298,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -328,7 +327,7 @@ WriteLiteral(@"                </div>
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th class=\"min-width\">");
+WriteLiteral("</th>\n                                <th class=\"min-width\">");
 
 
             
@@ -338,7 +337,7 @@ WriteLiteral("</th>\r\n                                <th class=\"min-width\">"
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th>");
+WriteLiteral("</th>\n                                <th>");
 
 
             
@@ -348,7 +347,7 @@ WriteLiteral("</th>\r\n                                <th>");
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th>");
+WriteLiteral("</th>\n                                <th>");
 
 
             
@@ -358,7 +357,7 @@ WriteLiteral("</th>\r\n                                <th>");
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th class=\"align-right min-width\">");
+WriteLiteral("</th>\n                                <th class=\"align-right min-width\">");
 
 
             
@@ -368,7 +367,7 @@ WriteLiteral("</th>\r\n                                <th class=\"align-right m
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th class=\"align-right min-width\">");
+WriteLiteral("</th>\n                                <th class=\"align-right min-width\">");
 
 
             
@@ -378,7 +377,7 @@ WriteLiteral("</th>\r\n                                <th class=\"align-right m
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th class=\"align-right min-width\">");
+WriteLiteral("</th>\n                                <th class=\"align-right min-width\">");
 
 
             
@@ -388,8 +387,8 @@ WriteLiteral("</th>\r\n                                <th class=\"align-right m
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                            </tr>\r\n                        </thead>\r\n     " +
-"                   <tbody>\r\n");
+WriteLiteral("</th>\n                            </tr>\n                        </thead>\n        " +
+"                <tbody>\n");
 
 
             
@@ -400,9 +399,9 @@ WriteLiteral("</th>\r\n                            </tr>\r\n                    
             
             #line default
             #line hidden
-WriteLiteral("                                <tr class=\"js-jobs-list-row hover\">\r\n            " +
-"                        <td>\r\n                                        <input typ" +
-"e=\"checkbox\" class=\"js-jobs-list-checkbox\" name=\"jobs[]\" value=\"");
+WriteLiteral("                                <tr class=\"js-jobs-list-row hover\">\n             " +
+"                       <td>\n                                        <input type=" +
+"\"checkbox\" class=\"js-jobs-list-checkbox\" name=\"jobs[]\" value=\"");
 
 
             
@@ -412,8 +411,8 @@ WriteLiteral("                                <tr class=\"js-jobs-list-row hover
             
             #line default
             #line hidden
-WriteLiteral("\" />\r\n                                    </td>\r\n                                " +
-"    <td class=\"min-width\">");
+WriteLiteral("\" />\n                                    </td>\n                                  " +
+"  <td class=\"min-width\">");
 
 
             
@@ -423,12 +422,12 @@ WriteLiteral("\" />\r\n                                    </td>\r\n            
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                                    <td class=\"min-width\">\r\n              " +
-"                          ");
+WriteLiteral("</td>\n                                    <td class=\"min-width\">\n                " +
+"                        ");
 
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -449,7 +448,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -472,7 +471,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -494,7 +493,7 @@ WriteLiteral("                                            <code>");
             
             #line default
             #line hidden
-WriteLiteral("</code>\r\n");
+WriteLiteral("</code>\n");
 
 
             
@@ -504,8 +503,8 @@ WriteLiteral("</code>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                    </td>\r\n                                    <t" +
-"d class=\"min-width\">\r\n");
+WriteLiteral("                                    </td>\n                                    <td" +
+" class=\"min-width\">\n");
 
 
             
@@ -536,7 +535,7 @@ WriteLiteral("\" data-container=\"body\">");
             
             #line default
             #line hidden
-WriteLiteral("</span>\r\n");
+WriteLiteral("</span>\n");
 
 
             
@@ -550,7 +549,7 @@ WriteLiteral("</span>\r\n");
             #line hidden
 WriteLiteral("                                            ");
 
-WriteLiteral(" UTC\r\n");
+WriteLiteral(" UTC\n");
 
 
             
@@ -560,8 +559,8 @@ WriteLiteral(" UTC\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                    </td>\r\n                                    <t" +
-"d>\r\n");
+WriteLiteral("                                    </td>\n                                    <td" +
+">\n");
 
 
             
@@ -584,7 +583,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -606,7 +605,7 @@ WriteLiteral("                                            <em>");
             
             #line default
             #line hidden
-WriteLiteral("</em>\r\n");
+WriteLiteral("</em>\n");
 
 
             
@@ -616,8 +615,8 @@ WriteLiteral("</em>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                    </td>\r\n                                    <t" +
-"d class=\"align-right min-width\">\r\n");
+WriteLiteral("                                    </td>\n                                    <td" +
+" class=\"align-right min-width\">\n");
 
 
             
@@ -655,7 +654,7 @@ WriteLiteral("                                            <em>");
             
             #line default
             #line hidden
-WriteLiteral("</em>\r\n");
+WriteLiteral("</em>\n");
 
 
             
@@ -665,8 +664,8 @@ WriteLiteral("</em>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                    </td>\r\n                                    <t" +
-"d class=\"align-right min-width\">\r\n");
+WriteLiteral("                                    </td>\n                                    <td" +
+" class=\"align-right min-width\">\n");
 
 
             
@@ -689,8 +688,8 @@ WriteLiteral("                                                <a href=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                                                    <span class=\"label label-" +
-"default label-hover\" style=\"");
+WriteLiteral("\">\n                                                    <span class=\"label label-d" +
+"efault label-hover\" style=\"");
 
 
             
@@ -700,7 +699,7 @@ WriteLiteral("\">\r\n                                                    <span c
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                                                        ");
+WriteLiteral("\">\n                                                        ");
 
 
             
@@ -710,8 +709,8 @@ WriteLiteral("\">\r\n                                                        ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                                    </span>\r\n                  " +
-"                              </a>\r\n");
+WriteLiteral("\n                                                    </span>\n                    " +
+"                            </a>\n");
 
 
             
@@ -723,8 +722,8 @@ WriteLiteral("\r\n                                                    </span>\r\
             
             #line default
             #line hidden
-WriteLiteral("                                                <em>\r\n                           " +
-"                         ");
+WriteLiteral("                                                <em>\n                            " +
+"                        ");
 
 
             
@@ -744,7 +743,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                                </em>\r\n");
+WriteLiteral("\n                                                </em>\n");
 
 
             
@@ -767,7 +766,7 @@ WriteLiteral("                                            <em>");
             
             #line default
             #line hidden
-WriteLiteral("</em>\r\n");
+WriteLiteral("</em>\n");
 
 
             
@@ -777,8 +776,8 @@ WriteLiteral("</em>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                    </td>\r\n                                    <t" +
-"d class=\"align-right min-width\">\r\n");
+WriteLiteral("                                    </td>\n                                    <td" +
+" class=\"align-right min-width\">\n");
 
 
             
@@ -806,7 +805,7 @@ WriteLiteral("                                    </td>\r\n                     
             
             #line default
             #line hidden
-WriteLiteral("                                            <em>N/A</em>\r\n");
+WriteLiteral("                                            <em>N/A</em>\n");
 
 
             
@@ -816,8 +815,7 @@ WriteLiteral("                                            <em>N/A</em>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                    </td>\r\n                                </tr>\r" +
-"\n");
+WriteLiteral("                                    </td>\n                                </tr>\n");
 
 
             
@@ -827,8 +825,8 @@ WriteLiteral("                                    </td>\r\n                     
             
             #line default
             #line hidden
-WriteLiteral("                        </tbody>\r\n                    </table>\r\n                <" +
-"/div>\r\n\r\n");
+WriteLiteral("                        </tbody>\n                    </table>\n                </d" +
+"iv>\n\n");
 
 
             
@@ -851,7 +849,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -861,7 +859,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            </div>\r\n");
+WriteLiteral("            </div>\n");
 
 
             
@@ -871,7 +869,7 @@ WriteLiteral("            </div>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    </div>\r\n</div>    ");
+WriteLiteral("    </div>\n</div>    ");
 
 
         }
