@@ -12,6 +12,7 @@ using System.Reflection;
 
 namespace Hangfire.Dashboard.Resources {
     using System;
+    using System.Reflection;
     
     
     /// <summary>
@@ -365,6 +366,15 @@ namespace Hangfire.Dashboard.Resources {
         public static string Common_Unknown {
             get {
                 return ResourceManager.GetString("Common_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating....
+        /// </summary>
+        public static string Common_Updating {
+            get {
+                return ResourceManager.GetString("Common_Updating", resourceCulture);
             }
         }
         
@@ -1059,6 +1069,15 @@ namespace Hangfire.Dashboard.Resources {
         public static string RecurringJobsPage_TriggerNow {
             get {
                 return ResourceManager.GetString("RecurringJobsPage_TriggerNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update cron.
+        /// </summary>
+        public static string RecurringJobsPage_UpdateCron {
+            get {
+                return ResourceManager.GetString("RecurringJobsPage_UpdateCron", resourceCulture);
             }
         }
         

@@ -121,6 +121,11 @@ namespace Hangfire.Storage
                     dto.CreatedAt = JobHelper.DeserializeDateTime(hash["CreatedAt"]);
                 }
 
+                if (hash.ContainsKey("Queue"))
+                {
+                    dto.Queue = hash["Queue"];
+                }
+
                 result.Add(dto);
             }
 
