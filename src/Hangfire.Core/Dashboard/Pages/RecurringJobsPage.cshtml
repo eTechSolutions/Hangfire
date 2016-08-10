@@ -53,7 +53,8 @@
                         <span class="glyphicon glyphicon-play-circle"></span>
                         @Strings.RecurringJobsPage_TriggerNow
                     </button>
-                    @if (UpdateCron) {
+                    @if (UpdateCron)
+                    {
                         <div class="input-group col-xs-2">
                             <input type="text" class="input-sm form-control js-cron-validation" name="crontext">
                             <span class="input-group-btn">
