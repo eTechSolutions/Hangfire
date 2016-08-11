@@ -377,14 +377,12 @@
 
                 if ((spaces !== 5) || (splitcron.indexOf("") > -1)) {
                     validCron = false;
-                }
-                else {
+                } else {
                     validCron = true;
                 }
 
                 $('.js-cron-update-command')
                      .prop('disabled', (disabled || !validCron));
-
             });
 
             $('.js-jobs-list').each(function () {
