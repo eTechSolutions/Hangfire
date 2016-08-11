@@ -523,4 +523,10 @@
   <data name="HomePage_GraphHover_Succeeded" xml:space="preserve">
     <value>Succeeded</value>
   </data>
+  <data name="RecurringJobsPage_UpdateCron" xml:space="preserve">
+    <value>Update cron</value>
+  </data>
+  <data name="Common_Updating" xml:space="preserve">
+    <value>Updating...</value>
+  </data>
 </root>

@@ -175,6 +175,10 @@ namespace Hangfire.Dashboard
                 "/recurring/trigger", 
                 (manager, jobId) => manager.Trigger(jobId));
 
+            Routes.AddRecurringBatchCommand(
+                "/recurring/updatecron",
+                (manager, jobIdAndCron) => manager.UpdateCron(jobIdAndCron.Split(new char[] { ':' })[0], jobIdAndCron.Split(new char[] { ':' })[1]));
+
             Routes.AddRazorPage("/servers", x => new ServersPage());
             Routes.AddRazorPage("/retries", x => new RetriesPage());
 
