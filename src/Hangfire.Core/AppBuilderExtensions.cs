@@ -22,6 +22,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hangfire.Annotations;
 using Hangfire.Dashboard;
+using Hangfire.Dashboard.Owin;
+using Hangfire.Logging;
 using Hangfire.Server;
 using Owin;
 using Microsoft.Owin;
@@ -308,9 +310,15 @@ namespace Hangfire
                     + "Please use another OWIN host or create an instance of the `BackgroundJobServer` class manually.");
             }
 
-            token.Register(server.Dispose);
-
+            token.Register(OnAppDisposing, server);
             return builder;
+        }
+
+        private static void OnAppDisposing(object state)
+        {
+            var logger = LogProvider.GetLogger(typeof(AppBuilderExtensions));
+            logger.Info("Web application is shutting down via OWIN's host.OnAppDisposing callback.");
+            ((IDisposable) state).Dispose();
         }
 
         /// <summary>
@@ -396,6 +404,34 @@ namespace Hangfire
             [NotNull] DashboardOptions options,
             [NotNull] JobStorage storage)
         {
+            return builder.UseHangfireDashboard(pathMatch, options, storage, null);
+        }
+
+        /// <summary>
+        /// Adds Dashboard UI middleware to the OWIN request processing pipeline with the
+        /// specified parameters and antiforgery service.
+        /// </summary>
+        /// <param name="builder">OWIN application builder.</param>
+        /// <param name="pathMatch">Path prefix for middleware to use, e.g. "/hangfire".</param>
+        /// <param name="options">Options for Dashboard UI.</param>
+        /// <param name="storage">Job storage to use by Dashboard IO.</param>
+        /// <param name="antiforgery">Antiforgery service.</param>
+        /// 
+        /// <exception cref="ArgumentNullException"><paramref name="builder"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="pathMatch"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="storage"/> is null.</exception>
+        /// 
+        /// <remarks>
+        /// Please see <see cref="AppBuilderExtensions"/> for details and examples.
+        /// </remarks>
+        public static IAppBuilder UseHangfireDashboard(
+                [NotNull] this IAppBuilder builder,
+                [NotNull] string pathMatch,
+                [NotNull] DashboardOptions options,
+                [NotNull] JobStorage storage,
+                [CanBeNull] IOwinDashboardAntiforgery antiforgery)
+        {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (pathMatch == null) throw new ArgumentNullException(nameof(pathMatch));
             if (options == null) throw new ArgumentNullException(nameof(options));
@@ -405,7 +441,7 @@ namespace Hangfire
 
             builder.Map(pathMatch, subApp => subApp
                 .UseOwin()
-                .UseHangfireDashboard(options, storage, DashboardRoutes.Routes));
+                .UseHangfireDashboard(options, storage, DashboardRoutes.Routes, antiforgery));
 
             return builder;
         }

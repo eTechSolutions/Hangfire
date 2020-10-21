@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -12,6 +11,7 @@ using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
+// ReSharper disable LocalizableElement
 // ReSharper disable AssignNullToNotNullAttribute
 
 #pragma warning disable 618
@@ -248,12 +248,60 @@ namespace Hangfire.Core.Tests.Common
         }
 
         [Fact]
+        public void FromNonGenericExpression_InfersACorrectMethod_FromAGivenObject_WhenInterfaceTreeIsUsed()
+        {
+            IDisposable instance = new Instance();
+            var job = Job.FromExpression(() => instance.Dispose());
+
+            Assert.Equal(typeof(Instance), job.Method.DeclaringType);
+        }
+
+        [Fact]
         public void FromNonGenericExpression_ThrowsAnException_IfGivenObjectIsNull()
         {
             IDisposable instance = null;
 
             Assert.Throws<InvalidOperationException>(
                 () => Job.FromExpression(() => instance.Dispose()));
+        }
+
+        [Fact]
+        public void FromScopedExpression_HandlesGenericMethods()
+        {
+            CommandDispatcher dispatcher = new CommandDispatcher();
+            var job = Job.FromExpression(() => dispatcher.DispatchTyped(123));
+
+            Assert.Equal(typeof(CommandDispatcher), job.Type);
+            Assert.Equal(typeof(CommandDispatcher), job.Method.DeclaringType);
+        }
+
+        [Fact]
+        public void FromScopedExpression_HandlesMethodsDeclaredInBaseClasse()
+        {
+            DerivedInstance instance = new DerivedInstance();
+            var job = Job.FromExpression(() => instance.Method());
+
+            Assert.Equal(typeof(DerivedInstance), job.Type);
+            Assert.Equal(typeof(Instance), job.Method.DeclaringType);
+        }
+
+        [Fact]
+        public void FromScopedExpression_ThrowsWhenExplicitInterfaceImplementationIsPassed()
+        {
+            IService service = new ServiceImpl();
+            Assert.Throws<NotSupportedException>(() => Job.FromExpression(() => service.Method()));
+        }
+
+        public interface IService
+        {
+            void Method();
+        }
+
+        public class ServiceImpl : IService
+        {
+            void IService.Method()
+            {
+            }
         }
 
         [Fact]
@@ -277,6 +325,20 @@ namespace Hangfire.Core.Tests.Common
         {
             Assert.Throws<NotSupportedException>(
                 () => Job.FromExpression(() => PrivateMethod()));
+        }
+
+        [Fact]
+        public void Ctor_ThrowsAnException_WhenMethodParametersContainADelegate()
+        {
+            Assert.Throws<NotSupportedException>(
+                () => Job.FromExpression(() => DelegateMethod(() => Console.WriteLine("Hey delegate!"))));
+        }
+
+        [Fact]
+        public void Ctor_ThrowsAnException_WhenMethodParametersContainAnExpression()
+        {
+            Assert.Throws<NotSupportedException>(
+                () => Job.FromExpression(() => ExpressionMethod(() => Console.WriteLine("Hey expression!"))));
         }
 
         [Fact]
@@ -348,7 +410,7 @@ namespace Hangfire.Core.Tests.Common
             Assert.True(_methodInvoked);
         }
 
-#if NETFULL
+#if !NETCOREAPP1_0
         [Fact, StaticLock]
         public void Perform_PassesCorrectDateTime_IfItWasSerialized_UsingTypeConverter()
         {
@@ -660,6 +722,26 @@ namespace Hangfire.Core.Tests.Common
             await Task.Yield();
         }
 
+        public void DelegateMethod(Action action)
+        {
+        }
+
+        public void ExpressionMethod(Expression<Action> expression)
+        {
+        }
+
+        public interface ICommandDispatcher
+        {
+            void DispatchTyped<TCommand>(TCommand command);
+        }
+
+        public class CommandDispatcher : ICommandDispatcher
+        {
+            public void DispatchTyped<TCommand>(TCommand command)
+            {
+            }
+        }
+
         [TestType]
         public class Instance : IDisposable
         {
@@ -684,12 +766,27 @@ namespace Hangfire.Core.Tests.Common
                 await Task.Yield();
             }
 
-            public async Task<string> FunctionReturningTaskResultingInString()
+            public async Task FunctionReturningValueTask()
             {
                 await Task.Yield();
+            }
+
+            public async Task<string> FunctionReturningTaskResultingInString(bool continueOnCapturedContext)
+            {
+                await Task.Yield();
+                await Task.Delay(15).ConfigureAwait(continueOnCapturedContext);
 
                 return FunctionReturningValue();
             }
+            
+            public ValueTask<string> FunctionReturningValueTaskResultingInString(bool continueOnCapturedContext)
+            {
+                return new ValueTask<string>(FunctionReturningTaskResultingInString(continueOnCapturedContext));
+            }
+        }
+
+        public class DerivedInstance : Instance
+        {
         }
 
         public class BrokenDispose : IDisposable

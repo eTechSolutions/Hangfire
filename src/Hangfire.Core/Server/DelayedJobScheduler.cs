@@ -15,10 +15,13 @@
 // License along with Hangfire. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Concurrent;
 using Hangfire.Annotations;
 using Hangfire.Common;
 using Hangfire.Logging;
+using Hangfire.Profiling;
 using Hangfire.States;
+using Hangfire.Storage;
 
 namespace Hangfire.Server
 {
@@ -67,11 +70,15 @@ namespace Hangfire.Server
         /// The value of this field is <c>TimeSpan.FromSeconds(15)</c>.
         /// </remarks>
         public static readonly TimeSpan DefaultPollingDelay = TimeSpan.FromSeconds(15);
-
-        private static readonly ILog Logger = LogProvider.For<DelayedJobScheduler>();
         private static readonly TimeSpan DefaultLockTimeout = TimeSpan.FromMinutes(1);
+        private static readonly int BatchSize = 1000;
+        private static readonly int MaxStateChangeAttempts = 5;
+
+        private readonly ILog _logger = LogProvider.For<DelayedJobScheduler>();
+        private readonly ConcurrentDictionary<Type, bool> _isBatchingAvailableCache = new ConcurrentDictionary<Type, bool>();
 
         private readonly IBackgroundJobStateChanger _stateChanger;
+        private readonly IProfiler _profiler;
         private readonly TimeSpan _pollingDelay;
 
         /// <summary>
@@ -108,6 +115,7 @@ namespace Hangfire.Server
 
             _stateChanger = stateChanger;
             _pollingDelay = pollingDelay;
+            _profiler = new SlowLogProfiler(_logger);
         }
 
         /// <inheritdoc />
@@ -115,22 +123,17 @@ namespace Hangfire.Server
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var jobsEnqueued = 0;
+            int jobsProcessed;
 
-            while (EnqueueNextScheduledJob(context))
+            do
             {
-                jobsEnqueued++;
+                jobsProcessed = EnqueueNextScheduledJobs(context);
 
-                if (context.IsShutdownRequested)
+                if (jobsProcessed != 0)
                 {
-                    break;
+                    _logger.Debug($"{jobsProcessed} scheduled job(s) processed by scheduler.");
                 }
-            }
-
-            if (jobsEnqueued != 0)
-            {
-                Logger.Info($"{jobsEnqueued} scheduled job(s) enqueued.");
-            }
+            } while (jobsProcessed > 0 && !context.IsStopping);
 
             context.Wait(_pollingDelay);
         }
@@ -141,42 +144,161 @@ namespace Hangfire.Server
             return GetType().Name;
         }
 
-        private bool EnqueueNextScheduledJob(BackgroundProcessContext context)
+        private int EnqueueNextScheduledJobs(BackgroundProcessContext context)
         {
-            using (var connection = context.Storage.GetConnection())
-            using (connection.AcquireDistributedLock("locks:schedulepoller", DefaultLockTimeout))
+            return UseConnectionDistributedLock(context.Storage, connection =>
             {
-                var timestamp = JobHelper.ToTimestamp(DateTime.UtcNow);
+                var jobsProcessed = 0;
 
-                // TODO: it is very slow. Add batching.
-                var jobId = connection.GetFirstByLowestScoreFromSet("schedule", 0, timestamp);
-
-                if (jobId == null)
+                if (IsBatchingAvailable(connection))
                 {
-                    // No more scheduled jobs pending.
-                    return false;
-                }
-                
-                var appliedState = _stateChanger.ChangeState(new StateChangeContext(
-                    context.Storage,
-                    connection,
-                    jobId,
-                    new EnqueuedState { Reason = $"Triggered by {ToString()}" }, 
-                    ScheduledState.StateName));
+                    var timestamp = JobHelper.ToTimestamp(DateTime.UtcNow);
+                    var jobIds = ((JobStorageConnection)connection).GetFirstByLowestScoreFromSet("schedule", 0, timestamp, BatchSize);
 
-                if (appliedState == null)
-                {
-                    // When a background job with the given id does not exist, we should
-                    // remove its id from a schedule manually. This may happen when someone
-                    // modifies a storage bypassing Hangfire API.
-                    using (var transaction = connection.CreateWriteTransaction())
+                    if (jobIds != null)
                     {
-                        transaction.RemoveFromSet("schedule", jobId);
-                        transaction.Commit();
+                        foreach (var jobId in jobIds)
+                        {
+                            if (context.IsStopping) break;
+
+                            EnqueueBackgroundJob(context, connection, jobId);
+                            jobsProcessed++;
+                        }
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < BatchSize; i++)
+                    {
+                        if (context.IsStopping) break;
+
+                        var timestamp = JobHelper.ToTimestamp(DateTime.UtcNow);
+
+                        var jobId = connection.GetFirstByLowestScoreFromSet("schedule", 0, timestamp);
+                        if (jobId == null) break;
+
+                        EnqueueBackgroundJob(context, connection, jobId);
+                        jobsProcessed++;
                     }
                 }
 
-                return true;
+                return jobsProcessed;
+            });
+        }
+
+        private void EnqueueBackgroundJob(BackgroundProcessContext context, IStorageConnection connection, string jobId)
+        {
+            Exception exception = null;
+
+            for (var retryAttempt = 0; retryAttempt < MaxStateChangeAttempts; retryAttempt++)
+            {
+                try
+                {
+                    var appliedState = _stateChanger.ChangeState(new StateChangeContext(
+                        context.Storage,
+                        connection,
+                        jobId,
+                        new EnqueuedState { Reason = $"Triggered by {ToString()}" },
+                        new [] { ScheduledState.StateName },
+                        disableFilters: false,
+                        context.StoppingToken,
+                        _profiler));
+
+                    if (appliedState == null && connection.GetJobData(jobId) == null)
+                    {
+                        // When a background job with the given id does not exist, we should
+                        // remove its id from a schedule manually. This may happen when someone
+                        // modifies a storage bypassing Hangfire API.
+                        using (var transaction = connection.CreateWriteTransaction())
+                        {
+                            transaction.RemoveFromSet("schedule", jobId);
+                            transaction.Commit();
+                        }
+                    }
+
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    _logger.DebugException(
+                        $"State change attempt {retryAttempt + 1} of {MaxStateChangeAttempts} failed due to an error, see inner exception for details", 
+                        ex);
+                    
+                    exception = ex;
+                }
+
+                context.StoppingToken.Wait(TimeSpan.FromSeconds(retryAttempt));
+                context.StoppingToken.ThrowIfCancellationRequested();
+            }
+
+            _logger.ErrorException(
+                $"{MaxStateChangeAttempts} state change attempt(s) failed due to an exception, moving job to the FailedState",
+                exception);
+            
+            // When exception occurs, it's essential to remove a background job identifier from the schedule,
+            // because otherwise delayed job scheduler will fetch such a failing job identifier again and again
+            // and will be unable to make any progress. Any successful state change will cause that identifier
+            // to be removed from the schedule.
+            _stateChanger.ChangeState(new StateChangeContext(
+                context.Storage,
+                connection,
+                jobId,
+                new FailedState(exception)
+                {
+                    Reason = $"Failed to change state to the '{EnqueuedState.StateName}' one due to an exception after {MaxStateChangeAttempts} retry attempts"
+                },
+                new[] { ScheduledState.StateName },
+                disableFilters: true,
+                context.StoppingToken,
+                _profiler));
+        }
+
+        private bool IsBatchingAvailable(IStorageConnection connection)
+        {
+            return _isBatchingAvailableCache.GetOrAdd(
+                connection.GetType(),
+                type =>
+                {
+                    if (connection is JobStorageConnection storageConnection)
+                    {
+                        try
+                        {
+                            storageConnection.GetFirstByLowestScoreFromSet(null, 0, 0, 1);
+                        }
+                        catch (ArgumentNullException ex) when (ex.ParamName == "key")
+                        {
+                            return true;
+                        }
+                        catch (Exception)
+                        {
+                            //
+                        }
+                    }
+
+                    return false;
+                });
+        }
+
+        private T UseConnectionDistributedLock<T>(JobStorage storage, Func<IStorageConnection, T> action)
+        {
+            var resource = "locks:schedulepoller";
+            try
+            {
+                using (var connection = storage.GetConnection())
+                using (connection.AcquireDistributedLock(resource, DefaultLockTimeout))
+                {
+                    return action(connection);
+                }
+            }
+            catch (DistributedLockTimeoutException e) when (e.Resource.EndsWith(resource))
+            {
+                // DistributedLockTimeoutException here doesn't mean that delayed jobs weren't enqueued.
+                // It just means another Hangfire server did this work.
+                _logger.DebugException(
+                    $@"An exception was thrown during acquiring distributed lock on the {resource} resource within {DefaultLockTimeout.TotalSeconds} seconds. The scheduled jobs have not been handled this time.
+It will be retried in {_pollingDelay.TotalSeconds} seconds", 
+                    e);
+                return default(T);
             }
         }
     }

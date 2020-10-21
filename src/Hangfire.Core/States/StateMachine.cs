@@ -1,5 +1,5 @@
 // This file is part of Hangfire.
-// Copyright © 2013-2014 Sergey Odinokov.
+// Copyright Â© 2013-2014 Sergey Odinokov.
 // 
 // Hangfire is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as 
@@ -17,9 +17,11 @@
 using System;
 using Hangfire.Annotations;
 using Hangfire.Common;
+using Hangfire.Profiling;
 
 namespace Hangfire.States
 {
+    // TODO: Merge this class with BackgroundJobStateChanger in 2.0.0
     public class StateMachine : IStateMachine
     {
         private readonly IJobFilterProvider _filterProvider;
@@ -31,12 +33,12 @@ namespace Hangfire.States
         }
 
         internal StateMachine(
-            [NotNull] IJobFilterProvider filterProvider, 
+            [NotNull] IJobFilterProvider filterProvider,
             [NotNull] IStateMachine innerStateMachine)
         {
             if (filterProvider == null) throw new ArgumentNullException(nameof(filterProvider));
             if (innerStateMachine == null) throw new ArgumentNullException(nameof(innerStateMachine));
-            
+
             _filterProvider = filterProvider;
             _innerStateMachine = innerStateMachine;
         }
@@ -52,7 +54,10 @@ namespace Hangfire.States
 
             foreach (var filter in electFilters)
             {
-                filter.OnStateElection(electContext);
+                electContext.Profiler.InvokeMeasured(
+                    Tuple.Create(filter, electContext),
+                    InvokeOnStateElection,
+                    $"OnStateElection for {electContext.BackgroundJob.Id}");
             }
 
             foreach (var state in electContext.TraversedStates)
@@ -68,15 +73,60 @@ namespace Hangfire.States
 
             foreach (var filter in applyFilters)
             {
-                filter.OnStateUnapplied(context, context.Transaction);
+                context.Profiler.InvokeMeasured(
+                    Tuple.Create(filter, context),
+                    InvokeOnStateUnapplied,
+                    $"OnStateUnapplied for {context.BackgroundJob.Id}");
             }
 
             foreach (var filter in applyFilters)
             {
-                filter.OnStateApplied(context, context.Transaction);
+                context.Profiler.InvokeMeasured(
+                    Tuple.Create(filter, context),
+                    InvokeOnStateApplied,
+                    $"OnStateApplied for {context.BackgroundJob.Id}");
             }
 
             return _innerStateMachine.ApplyState(context);
+        }
+
+        private static void InvokeOnStateElection(Tuple<IElectStateFilter, ElectStateContext> x)
+        {
+            try
+            {
+                x.Item1.OnStateElection(x.Item2);
+            }
+            catch (Exception ex)
+            {
+                ex.PreserveOriginalStackTrace();
+                throw;
+            }
+        }
+
+        private static void InvokeOnStateApplied(Tuple<IApplyStateFilter, ApplyStateContext> x)
+        {
+            try
+            {
+                x.Item1.OnStateApplied(x.Item2, x.Item2.Transaction);
+            }
+            catch (Exception ex)
+            {
+                ex.PreserveOriginalStackTrace();
+                throw;
+            }
+        }
+
+        private static void InvokeOnStateUnapplied(Tuple<IApplyStateFilter, ApplyStateContext> x)
+        {
+            try
+            {
+                x.Item1.OnStateUnapplied(x.Item2, x.Item2.Transaction);
+            }
+            catch (Exception ex)
+            {
+                ex.PreserveOriginalStackTrace();
+                throw;
+            }
         }
 
         private JobFilterInfo GetFilters(Job job)

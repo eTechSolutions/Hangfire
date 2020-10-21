@@ -1,5 +1,5 @@
 // This file is part of Hangfire.
-// Copyright © 2013-2014 Sergey Odinokov.
+// Copyright Â© 2013-2014 Sergey Odinokov.
 // 
 // Hangfire is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as 
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Hangfire.Annotations;
+using Hangfire.Profiling;
 using Hangfire.Storage;
 
 namespace Hangfire.States
@@ -44,24 +45,40 @@ namespace Hangfire.States
         }
 
         public StateChangeContext(
+            [NotNull] JobStorage storage,
+            [NotNull] IStorageConnection connection,
+            [NotNull] string backgroundJobId,
+            [NotNull] IState newState,
+            [CanBeNull] IEnumerable<string> expectedStates,
+            CancellationToken cancellationToken)
+        : this(storage, connection, backgroundJobId, newState, expectedStates, false, cancellationToken, EmptyProfiler.Instance)
+        {
+        }
+
+        internal StateChangeContext(
             [NotNull] JobStorage storage, 
             [NotNull] IStorageConnection connection,
             [NotNull] string backgroundJobId, 
             [NotNull] IState newState, 
-            [CanBeNull] IEnumerable<string> expectedStates, 
-            CancellationToken cancellationToken)
+            [CanBeNull] IEnumerable<string> expectedStates,
+            bool disableFilters,
+            CancellationToken cancellationToken,
+            [NotNull] IProfiler profiler)
         {
             if (storage == null) throw new ArgumentNullException(nameof(storage));
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (backgroundJobId == null) throw new ArgumentNullException(nameof(backgroundJobId));
             if (newState == null) throw new ArgumentNullException(nameof(newState));
+            if (profiler == null) throw new ArgumentNullException(nameof(profiler));
 
             Storage = storage;
             Connection = connection;
             BackgroundJobId = backgroundJobId;
             NewState = newState;
             ExpectedStates = expectedStates;
+            DisableFilters = disableFilters;
             CancellationToken = cancellationToken;
+            Profiler = profiler;
         }
 
         public JobStorage Storage { get; }
@@ -69,6 +86,8 @@ namespace Hangfire.States
         public string BackgroundJobId { get; }
         public IState NewState { get; }
         public IEnumerable<string> ExpectedStates { get; }
+        public bool DisableFilters { get; }
         public CancellationToken CancellationToken { get; }
+        internal IProfiler Profiler { get; }
     }
 }

@@ -1,9 +1,12 @@
-﻿using System;
-using System.Data.SqlClient;
+﻿extern alias ReferencedDapper;
+
+using System;
+using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Transactions;
-using Dapper;
+using ReferencedDapper::Dapper;
 using Hangfire.Storage;
 using Xunit;
 
@@ -22,19 +25,6 @@ namespace Hangfire.SqlServer.Tests
                 () => new SqlServerDistributedLock(null, "hello", _timeout));
 
             Assert.Equal("storage", exception.ParamName);
-        }
-
-        [Fact]
-        public void Ctor_ThrowsAnException_WhenTimeoutTooLarge()
-        {
-            UseConnection(connection =>
-            {
-                var storage = CreateStorage(connection);
-                var tooLargeTimeout = TimeSpan.FromSeconds(Int32.MaxValue);
-                var exception = Assert.Throws<ArgumentException>(() => new SqlServerDistributedLock(storage, "hello", tooLargeTimeout));
-
-                Assert.Equal("timeout", exception.ParamName);
-            });
         }
 
         [Fact, CleanDatabase]
@@ -132,12 +122,32 @@ namespace Hangfire.SqlServer.Tests
             }
         }
 
-        private SqlServerStorage CreateStorage(SqlConnection connection)
+        [Fact, CleanDatabase(IsolationLevel.Unspecified)]
+        public void InnerDistributedLock_DoesNotConsumeADatabaseConnection()
+        {
+            // Arrange
+            var storage = new SqlServerStorage(ConnectionUtils.GetConnectionString());
+
+            // Act
+            using (var outer = new SqlServerDistributedLock(storage, "hello", TimeSpan.FromMinutes(5)))
+            using (var inner = new SqlServerDistributedLock(storage, "hello", TimeSpan.FromMinutes(5)))
+            {
+                // Assert
+                var field = typeof(SqlServerDistributedLock).GetField("_connection",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.NotNull(field);
+
+                Assert.NotNull(field.GetValue(outer));
+                Assert.Null(field.GetValue(inner));
+            }
+        }
+
+        private static SqlServerStorage CreateStorage(DbConnection connection)
         {
             return new SqlServerStorage(connection);
         }
 
-        private void UseConnection(Action<SqlConnection> action)
+        private static void UseConnection(Action<DbConnection> action)
         {
             using (var connection = ConnectionUtils.CreateConnection())
             {

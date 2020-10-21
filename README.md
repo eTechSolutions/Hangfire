@@ -1,12 +1,14 @@
-Hangfire [![Official Site](https://img.shields.io/badge/site-hangfire.io-blue.svg)](http://hangfire.io) [![Latest version](https://img.shields.io/nuget/v/Hangfire.svg)](https://www.nuget.org/packages?q=hangfire) [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html) 
+Hangfire 
 =========
+
+[![Official Site](https://img.shields.io/badge/site-hangfire.io-blue.svg)](http://hangfire.io) [![Latest version](https://img.shields.io/nuget/v/Hangfire.svg)](https://www.nuget.org/packages?q=hangfire) [![License LGPLv3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.html) [![codecov](https://codecov.io/gh/HangfireIO/Hangfire/branch/master/graph/badge.svg)](https://codecov.io/gh/HangfireIO/Hangfire) [![Coverity Scan Build Status](https://scan.coverity.com/projects/4423/badge.svg)](https://scan.coverity.com/projects/hangfireio-hangfire)
 
 ## Build Status
 
 &nbsp; | `master` | `dev`
 --- | --- | --- 
-**Windows** | [![Windows Build Status](https://img.shields.io/appveyor/ci/odinserj/hangfire-525/master.svg)](https://ci.appveyor.com/project/odinserj/hangfire-525)  | [![Windows Build Status](https://img.shields.io/appveyor/ci/odinserj/hangfire-525/dev.svg)](https://ci.appveyor.com/project/odinserj/hangfire-525) 
-**Linux / OS X** | [![Travis CI Build Status](https://img.shields.io/travis/HangfireIO/Hangfire/master.svg)](https://travis-ci.org/HangfireIO/Hangfire) | [![Linux and OS X Build Status](https://img.shields.io/travis/HangfireIO/Hangfire/dev.svg)](https://travis-ci.org/HangfireIO/Hangfire)
+**Windows** | [![Windows Build Status](https://ci.appveyor.com/api/projects/status/70m632jkycqpnsp9/branch/master?svg=true)](https://ci.appveyor.com/project/odinserj/hangfire-525)  | [![Windows Build Status](https://ci.appveyor.com/api/projects/status/70m632jkycqpnsp9/branch/dev?svg=true)](https://ci.appveyor.com/project/odinserj/hangfire-525) 
+**Linux / OS X** | [![Travis CI Build Status](https://travis-ci.org/HangfireIO/Hangfire.svg?branch=master)](https://travis-ci.org/HangfireIO/Hangfire) | [![Linux and OS X Build Status](https://travis-ci.org/HangfireIO/Hangfire.svg?branch=dev)](https://travis-ci.org/HangfireIO/Hangfire)
 
 ## Overview
 
@@ -56,7 +58,7 @@ Usage
 
 This is an incomplete list of features; to see all of them, check the [official site](http://hangfire.io) and the [documentation](http://docs.hangfire.io).
 
-[**Fire-and-forget tasks**](http://docs.hangfire.io/en/latest/users-guide/background-methods/calling-methods-in-background.html)
+[**Fire-and-forget tasks**](http://docs.hangfire.io/en/latest/background-methods/calling-methods-in-background.html)
 
 Dedicated worker pool threads execute queued background jobs as soon as possible, shortening your request's processing time.
 
@@ -64,7 +66,7 @@ Dedicated worker pool threads execute queued background jobs as soon as possible
 BackgroundJob.Enqueue(() => Console.WriteLine("Simple!"));
 ```
 
-[**Delayed tasks**](http://docs.hangfire.io/en/latest/users-guide/background-methods/calling-methods-with-delay.html)
+[**Delayed tasks**](http://docs.hangfire.io/en/latest/background-methods/calling-methods-with-delay.html)
 
 Scheduled background jobs are executed only after a given amount of time.
 
@@ -72,7 +74,7 @@ Scheduled background jobs are executed only after a given amount of time.
 BackgroundJob.Schedule(() => Console.WriteLine("Reliable!"), TimeSpan.FromDays(7));
 ```
 
-[**Recurring tasks**](http://docs.hangfire.io/en/latest/users-guide/background-methods/performing-recurrent-tasks.html)
+[**Recurring tasks**](http://docs.hangfire.io/en/latest/background-methods/performing-recurrent-tasks.html)
 
 Recurring jobs have never been simpler; just call the following method to perform any kind of recurring task using the [CRON expressions](http://en.wikipedia.org/wiki/Cron#CRON_expression).
 
@@ -116,7 +118,7 @@ Open-source projects develop more smoothly when discussions are public.
 
 If you have any questions, problems related to Hangfire usage or if you want to discuss new features, please visit the [discussion forum](http://discuss.hangfire.io). You can sign in there using your existing Google or GitHub account, so it's very simple to start using it.
 
-If you've discovered a bug, please report it to the [Hangfire GitHub Issues](https://github.com/odinserj/Hangfire/issues?state=open). Detailed reports with stack traces, actual and expected behavours are welcome. 
+If you've discovered a bug, please report it to the [Hangfire GitHub Issues](https://github.com/HangfireIO/Hangfire/issues?state=open). Detailed reports with stack traces, actual and expected behaviours are welcome.
 
 Related Projects
 -----------------
@@ -125,6 +127,15 @@ Please see the [Extensions](http://hangfire.io/extensions.html) page on the offi
 
 Building the sources
 ---------------------
+
+Prerequisites:
+* [Razor Generator](https://marketplace.visualstudio.com/items?itemName=DavidEbbo.RazorGenerator): Required if you intend to edit the cshtml files.
+* Install the MSMQ service (Microsoft Message Queue Server), if not already installed.
+
+Then, create an environment variable with Variable name `Hangfire_SqlServer_ConnectionStringTemplate` and put your connection string in the Variable value field. Example:
+
+* Variable name: `Hangfire_SqlServer_ConnectionStringTemplate`
+* Variable value: `Data Source=.\sqlexpress;Initial Catalog=Hangfire.SqlServer.Tests;Integrated Security=True;`
 
 To build a solution and get assembly files, just run the following command. All build artifacts, including `*.pdb` files, will be placed into the `build` folder. **Before proposing a pull request, please use this command to ensure everything is ok.** Btw, you can execute this command from the Package Manager Console window.
 
@@ -138,7 +149,7 @@ To build NuGet packages as well as an archive file, use the `pack` command as sh
 build pack
 ```
 
-To see the full list of avalable commands, pass the `-docs` switch:
+To see the full list of available commands, pass the `-docs` switch:
 
 ```
 build -docs
@@ -146,10 +157,17 @@ build -docs
 
 Hangfire uses [psake](https://github.com/psake/psake) build automation tool. All psake tasks and functions defined in `psake-build.ps1` (for this project) and `psake-common.ps1` (for other Hangfire projects) files. Thanks to the psake project, they are very simple to use and modify!
 
+Razor templates are compiled upon save with the [Razor Generator Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=DavidEbbo.RazorGenerator).  You will need this installed if you want to modify the Dashboard UI.
+
+Reporting security issues 
+--------------------------
+
+In order to give the community time to respond and upgrade we strongly urge you report all security issues privately. Please email us at [security@hangfire.io](mailto:security@hangfire.io) with details and we will respond ASAP. Security issues always take precedence over bug fixes and feature work. We can and do mark releases as "urgent" if they contain serious security fixes. 
+
 License
 --------
 
-Copyright © 2013-2016 Sergey Odinokov.
+Copyright © 2013-2020 Sergey Odinokov.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

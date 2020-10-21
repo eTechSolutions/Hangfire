@@ -7,9 +7,9 @@
 #   - Section names should be unique on each level.
 
 # Don't edit manually! Use `build.bat version` command instead!
-version: 1.6.3-build-0{build}
+version: 1.7.17-build-0{build}
 
-os: Visual Studio 2015
+os: Visual Studio 2019
 
 #---------------------------------#
 #    environment configuration    #
@@ -18,29 +18,23 @@ os: Visual Studio 2015
 # environment variables
 environment:
   BuildEnvironment: appveyor
-  Hangfire_SqlServer_ConnectionStringTemplate: Server=.\SQL2008R2SP2;Database={0};User Id=sa;Password=Password12!
+  Hangfire_SqlServer_ConnectionStringTemplate: Server=.\SQL2017;Database={0};User Id=sa;Password=Password12!
   COVERALLS_REPO_TOKEN: 
     secure: oE4uB475V9hPzKmm+ZRP+1BacnMFOE98a/2tVeFieYJi5BbYG6X3VM+p6vKIQZdd
+  COVERITY_TOKEN:
+    secure: r3yBqxgALySnCK9W6uiStqoadsqYtrWQolzxGDVKF74=
+  COVERITY_EMAIL:
+    secure: wf51HXCiUYxuTe+eo3uQOxqyptSLrH4IEqq0958Rmx8=
 
 # enable service required for tests
 services:
-  - mssql2008r2sp2
+  - mssql2017
   - msmq
-
-# branches to build
-branches:
-  # whitelist
-  only:
-    - master
-    - dev
 
 pull_requests:
   do_not_increment_build_number: true
 
 shallow_clone: true
-
-cache:
-  - packages
 
 #---------------------------------#
 #       build configuration       #
@@ -48,12 +42,7 @@ cache:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - build.bat pack
-  - dotnet restore
-  - dotnet test tests/Hangfire.Core.Tests
-
-after_build:
-  - packages\coveralls.io.1.3.4\tools\coveralls.net --opencover coverage.xml
+  - build.bat ci
 
 #---------------------------------#
 #       tests configuration       #
@@ -83,7 +72,16 @@ deploy:
       appveyor_repo_tag: true
 
   - provider: NuGet
+    skip_symbols: true
     api_key: 
-      secure: 8BQmcR1hP9MoxvrmXJKMtlRyX6LI36H9ZTU8fSEetvzMGCl1PUlXKZRUGq+GVMja
+      secure: uvwcHGQKqfNR+XJ5RzSA9yTrtMCH5HWbWLeIYVnq+9kQPYmOniTiNINd9zGBhqqi
     on:
       appveyor_repo_tag: true
+
+notifications:
+  - provider: Slack
+    incoming_webhook:
+      secure: bqJhjmwwsSMJ/8imZJBOOtwbsNF51p24M8HZlIx1+asIHHUhXWHrP9vkuOPK3OnqNopmloLOOBoaEpYAkClkDuEC61a5Go5NY9KSSB9UMjk=
+    on_build_success: false
+    on_build_failure: true
+    on_build_status_changed: true

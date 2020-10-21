@@ -16,10 +16,11 @@
 
 using System;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Threading;
+using Hangfire.Common;
 using Hangfire.Logging;
 using Hangfire.Server;
+using Hangfire.Storage;
 
 namespace Hangfire.SqlServer
 {
@@ -27,14 +28,15 @@ namespace Hangfire.SqlServer
     internal class ExpirationManager : IServerComponent
 #pragma warning restore 618
     {
-        private static readonly ILog Logger = LogProvider.For<ExpirationManager>();
-
         private const string DistributedLockKey = "locks:expirationmanager";
         private static readonly TimeSpan DefaultLockTimeout = TimeSpan.FromMinutes(5);
-
-        // The value should be low enough to prevent INDEX SCAN operator,
-        // see https://github.com/HangfireIO/Hangfire/issues/628
-        private const int NumberOfRecordsInSinglePass = 100;
+        
+        // This value should be high enough to optimize the deletion as much, as possible,
+        // reducing the number of queries. But low enough to cause lock escalations (it
+        // appears, when ~5000 locks were taken, but this number is a subject of version).
+        // Note, that lock escalation may also happen during the cascade deletions for
+        // State (3-5 rows/job usually) and JobParameters (2-3 rows/job usually) tables.
+        private const int NumberOfRecordsInSinglePass = 1000;
         
         private static readonly string[] ProcessedTables =
         {
@@ -45,6 +47,7 @@ namespace Hangfire.SqlServer
             "Hash",
         };
 
+        private readonly ILog _logger = LogProvider.For<ExpirationManager>();
         private readonly SqlServerStorage _storage;
         private readonly TimeSpan _checkInterval;
 
@@ -60,31 +63,26 @@ namespace Hangfire.SqlServer
         {
             foreach (var table in ProcessedTables)
             {
-                Logger.Debug($"Removing outdated records from the '{table}' table...");
+                _logger.Debug($"Removing outdated records from the '{table}' table...");
 
-                _storage.UseConnection(connection =>
+                UseConnectionDistributedLock(_storage, connection =>
                 {
-                    SqlServerDistributedLock.Acquire(connection, DistributedLockKey, DefaultLockTimeout);
+                    int affected;
 
-                    try
+                    do
                     {
-                        ExecuteNonQuery(
+                        affected = ExecuteNonQuery(
                             connection,
-                            GetQuery(_storage.SchemaName, table),
-                            cancellationToken,
-                            new SqlParameter("@count", NumberOfRecordsInSinglePass),
-                            new SqlParameter("@now", DateTime.UtcNow));
-                    }
-                    finally
-                    {
-                        SqlServerDistributedLock.Release(connection, DistributedLockKey);
-                    }
+                            GetExpireQuery(_storage.SchemaName, table),
+                            cancellationToken);
+
+                    } while (affected == NumberOfRecordsInSinglePass);
                 });
 
-                Logger.Trace($"Outdated records removed from the '{table}' table.");
+                _logger.Trace($"Outdated records removed from the '{table}' table.");
             }
 
-            cancellationToken.WaitHandle.WaitOne(_checkInterval);
+            cancellationToken.Wait(_checkInterval);
         }
 
         public override string ToString()
@@ -92,40 +90,83 @@ namespace Hangfire.SqlServer
             return GetType().ToString();
         }
 
-        private static string GetQuery(string schemaName, string table)
+        private void UseConnectionDistributedLock(SqlServerStorage storage, Action<DbConnection> action)
         {
-            return
-$@"set transaction isolation level read committed;
-set nocount on;
-while (1 = 1)
-begin
-    delete top (@count) from [{schemaName}].[{table}] with (readpast) where ExpireAt < @now;
-    if @@ROWCOUNT = 0 break;
-end";
+            try
+            {
+                storage.UseConnection(null, connection =>
+                {
+                    SqlServerDistributedLock.Acquire(connection, DistributedLockKey, DefaultLockTimeout);
+
+                    try
+                    {
+                        action(connection);
+                    }
+                    finally
+                    {
+                        SqlServerDistributedLock.Release(connection, DistributedLockKey);
+                    }
+                });
+            }
+            catch (DistributedLockTimeoutException e) when (e.Resource == DistributedLockKey)
+            {
+                // DistributedLockTimeoutException here doesn't mean that outdated records weren't removed.
+                // It just means another Hangfire server did this work.
+                _logger.Log(
+                    LogLevel.Debug,
+                    () => $@"An exception was thrown during acquiring distributed lock on the {DistributedLockKey} resource within {DefaultLockTimeout.TotalSeconds} seconds. Outdated records were not removed.
+It will be retried in {_checkInterval.TotalSeconds} seconds.",
+                    e);
+            }
+        }
+
+        private static string GetExpireQuery(string schemaName, string table)
+        {
+            return $@"
+set deadlock_priority low;
+set transaction isolation level read committed;
+set xact_abort on;
+set lock_timeout 1000;
+delete top (@count) from [{schemaName}].[{table}]
+where ExpireAt < @now
+option (loop join, optimize for (@count = 20000));";
         }
 
         private static int ExecuteNonQuery(
-            DbConnection connection, 
+            DbConnection connection,
             string commandText,
-            CancellationToken cancellationToken,
-            params SqlParameter[] parameters)
+            CancellationToken cancellationToken)
         {
             using (var command = connection.CreateCommand())
             {
                 command.CommandText = commandText;
-                command.Parameters.AddRange(parameters);
                 command.CommandTimeout = 0;
 
-                var registration = cancellationToken.Register(command.Cancel);
-                try
+                var countParameter = command.CreateParameter();
+                countParameter.ParameterName = "@count";
+                countParameter.Value = NumberOfRecordsInSinglePass;
+
+                var nowParameter = command.CreateParameter();
+                nowParameter.ParameterName = "@now";
+                nowParameter.Value = DateTime.UtcNow;
+
+                command.Parameters.Add(countParameter);
+                command.Parameters.Add(nowParameter);
+
+                using (cancellationToken.Register(state => ((DbCommand)state).Cancel(), command))
                 {
-                    return command.ExecuteNonQuery();
-                }
-                finally
-                {
-                    registration.Dispose();
+                    try
+                    {
+                        return command.ExecuteNonQuery();
+                    }
+                    catch (DbException ex) when (cancellationToken.IsCancellationRequested || ex.Message.Contains("Lock request time out period exceeded"))
+                    {
+                        // Exception was triggered due to the Cancel method call, ignoring
+                        return 0;
+                    }
                 }
             }
         }
     }
 }
+

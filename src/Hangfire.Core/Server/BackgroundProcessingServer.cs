@@ -16,14 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-#if NETFULL
-using System.Diagnostics;
-#endif
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire.Annotations;
 using Hangfire.Logging;
+using Hangfire.Processing;
 
 namespace Hangfire.Server
 {
@@ -41,18 +39,24 @@ namespace Hangfire.Server
     /// Generates unique id.
     /// Properties are still bad.
     /// </remarks>
-    public sealed class BackgroundProcessingServer : IBackgroundProcess, IDisposable
+    public sealed class BackgroundProcessingServer : IBackgroundProcessingServer
     {
         public static readonly TimeSpan DefaultShutdownTimeout = TimeSpan.FromSeconds(15);
-        private static readonly ILog Logger = LogProvider.For<BackgroundProcessingServer>();
+        private static int _lastThreadId = 0;
 
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-#pragma warning disable 618
-        private readonly List<IServerProcess> _processes = new List<IServerProcess>();
-#pragma warning restore 618
+        private readonly ILog _logger = LogProvider.GetLogger(typeof(BackgroundProcessingServer));
 
+        private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _stoppedCts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _shutdownCts = new CancellationTokenSource();
+        private CancellationTokenRegistration _shutdownRegistration;
+
+        private readonly IBackgroundServerProcess _process;
         private readonly BackgroundProcessingServerOptions _options;
-        private readonly Task _bootstrapTask;
+        private readonly IBackgroundDispatcher _dispatcher;
+
+        private int _disposed;
+        private bool _awaited;
 
         public BackgroundProcessingServer([NotNull] IEnumerable<IBackgroundProcess> processes)
             : this(JobStorage.Current, processes)
@@ -81,139 +85,182 @@ namespace Hangfire.Server
         {
         }
 
+        public BackgroundProcessingServer(
+            [NotNull] JobStorage storage,
+            [NotNull] IEnumerable<IBackgroundProcess> processes,
+            [NotNull] IDictionary<string, object> properties,
+            [NotNull] BackgroundProcessingServerOptions options)
+            : this(storage, GetProcesses(processes), properties, options)
+        {
+        }
+
+        public BackgroundProcessingServer(
+            [NotNull] JobStorage storage,
+            [NotNull] IEnumerable<IBackgroundProcessDispatcherBuilder> dispatcherBuilders,
+            [NotNull] IDictionary<string, object> properties,
+            [NotNull] BackgroundProcessingServerOptions options)
+            : this(new BackgroundServerProcess(storage, dispatcherBuilders, options, properties), options)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BackgroundProcessingServer"/>
         /// class and immediately starts all the given background processes.
         /// </summary>
-        /// <param name="storage"></param>
-        /// <param name="processes"></param>
-        /// <param name="properties"></param>
-        /// <param name="options"></param>
-        public BackgroundProcessingServer(
-            [NotNull] JobStorage storage, 
-            [NotNull] IEnumerable<IBackgroundProcess> processes,
-            [NotNull] IDictionary<string, object> properties, 
+        internal BackgroundProcessingServer(
+            [NotNull] BackgroundServerProcess process,
             [NotNull] BackgroundProcessingServerOptions options)
         {
-            if (storage == null) throw new ArgumentNullException(nameof(storage));
-            if (processes == null) throw new ArgumentNullException(nameof(processes));
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
-            if (options == null) throw new ArgumentNullException(nameof(options));
+            _process = process ?? throw new ArgumentNullException(nameof(process));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
 
-            _options = options;
+            _dispatcher = CreateDispatcher();
 
-            _processes.AddRange(GetRequiredProcesses());
-            _processes.AddRange(storage.GetComponents());
-            _processes.AddRange(processes);
+#if !NETSTANDARD1_3
+            AppDomain.CurrentDomain.DomainUnload += OnCurrentDomainUnload;
+            AppDomain.CurrentDomain.ProcessExit += OnCurrentDomainUnload;
+#endif
 
-            var context = new BackgroundProcessContext(
-                GetGloballyUniqueServerId(), 
-                storage,
-                properties,
-                _cts.Token);
-
-            _bootstrapTask = WrapProcess(this).CreateTask(context);
+            _shutdownRegistration = AspNetShutdownDetector.GetShutdownToken().Register(OnAspNetShutdown);
         }
 
         public void SendStop()
         {
-            _cts.Cancel();
+            ThrowIfDisposed();
+
+            _stoppingCts.Cancel();
+            _stoppedCts.CancelAfter(_options.StopTimeout);
+            _shutdownCts.CancelAfter(_options.ShutdownTimeout);
+        }
+
+        public bool WaitForShutdown(TimeSpan timeout)
+        {
+            ThrowIfDisposed();
+
+            Volatile.Write(ref _awaited, true);
+            return _dispatcher.Wait(timeout);
+        }
+
+        public async Task WaitForShutdownAsync(CancellationToken cancellationToken)
+        {
+            ThrowIfDisposed();
+
+            Volatile.Write(ref _awaited, true);
+            await _dispatcher.WaitAsync(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
         }
 
         public void Dispose()
         {
-            SendStop();
+            if (Volatile.Read(ref _disposed) == 1) return;
 
-            // TODO: Dispose _cts
+            _shutdownRegistration.Dispose();
 
-            if (!_bootstrapTask.Wait(_options.ShutdownTimeout))
+            if (!_stoppingCts.IsCancellationRequested)
             {
-                Logger.Warn("Processing server takes too long to shutdown. Performing ungraceful shutdown.");
+                SendStop();
             }
-        }
 
-        public override string ToString()
-        {
-            return GetType().Name;
-        }
-
-        void IBackgroundProcess.Execute(BackgroundProcessContext context)
-        {
-            using (var connection = context.Storage.GetConnection())
+            if (!Volatile.Read(ref _awaited))
             {
-                var serverContext = GetServerContext(context.Properties);
-                connection.AnnounceServer(context.ServerId, serverContext);
+                WaitForShutdown(Timeout.InfiniteTimeSpan);
+            }
+
+            if (Interlocked.Exchange(ref _disposed, 1) == 1) return;
+
+#if !NETSTANDARD1_3
+            AppDomain.CurrentDomain.DomainUnload -= OnCurrentDomainUnload;
+            AppDomain.CurrentDomain.ProcessExit -= OnCurrentDomainUnload;
+#endif
+
+            _dispatcher.Dispose();
+            _stoppingCts.Dispose();
+            _stoppedCts.Dispose();
+            _shutdownCts.Dispose();
+        }
+
+        private void OnCurrentDomainUnload(object sender, EventArgs args)
+        {
+            if (Volatile.Read(ref _disposed) == 1) return;
+
+            _logger.Warn("Stopping the server due to DomainUnload or ProcessExit event...");
+
+            _stoppingCts.Cancel();
+            _stoppedCts.Cancel();
+            _shutdownCts.Cancel();
+
+            WaitForShutdown(_options.LastChanceTimeout);
+        }
+
+        private void OnAspNetShutdown()
+        {
+            if (Volatile.Read(ref _disposed) == 1)
+            {
+                // Exit if our server was already disposed, there's no need to
+                // throw ObjectDisposedException when unnecessary.
+                return;
             }
 
             try
             {
-                var tasks = _processes
-                    .Select(WrapProcess)
-                    .Select(process => process.CreateTask(context))
-                    .ToArray();
-
-                Task.WaitAll(tasks);
+                // When ASP.NET shutdown is detected, we only need to send a stop
+                // signal to our background processing servers to allow correctly
+                // await for background processing server shutdown during a direct
+                // or indirect call to IRegisteredObject.Stop method, such as
+                // OWIN's "onAppDisposing" event.
+                SendStop();
             }
-            finally
+            catch (ObjectDisposedException)
             {
-                using (var connection = context.Storage.GetConnection())
+                // There's a benign race condition, when SendStop is called after
+                // processing server was already disposed.
+            }
+        }
+
+        private static IBackgroundProcessDispatcherBuilder[] GetProcesses([NotNull] IEnumerable<IBackgroundProcess> processes)
+        {
+            if (processes == null) throw new ArgumentNullException(nameof(processes));
+            return processes.Select(x => x.UseBackgroundPool(threadCount: 1)).ToArray();
+        }
+
+        private IBackgroundDispatcher CreateDispatcher()
+        {
+            var execution = new BackgroundExecution(
+                _stoppingCts.Token,
+                new BackgroundExecutionOptions
                 {
-                    connection.RemoveServer(context.ServerId);
-                }
-            }
+                    Name = nameof(BackgroundServerProcess),
+                    ErrorThreshold = TimeSpan.Zero,
+                    StillErrorThreshold = TimeSpan.Zero,
+                    RetryDelay = retry => _options.RestartDelay
+                });
+
+            return new BackgroundDispatcher(
+                execution,
+                RunServer,
+                execution,
+                ThreadFactory);
         }
 
-        private IEnumerable<IBackgroundProcess> GetRequiredProcesses()
+        private void RunServer(Guid executionId, object state)
         {
-            yield return new ServerHeartbeat(_options.HeartbeatInterval);
-            yield return new ServerWatchdog(_options.ServerCheckInterval, _options.ServerTimeout);
+            _process.Execute(executionId, (BackgroundExecution)state, _stoppingCts.Token, _stoppedCts.Token, _shutdownCts.Token);
         }
 
-        private string GetGloballyUniqueServerId()
+        private static IEnumerable<Thread> ThreadFactory(ThreadStart threadStart)
         {
-            var serverName = _options.ServerName
-                ?? Environment.GetEnvironmentVariable("COMPUTERNAME")
-                ?? Environment.GetEnvironmentVariable("HOSTNAME");
-
-            var guid = Guid.NewGuid().ToString();
-
-#if NETFULL
-            if (!String.IsNullOrWhiteSpace(serverName))
+            yield return new Thread(threadStart)
             {
-                serverName += ":" + Process.GetCurrentProcess().Id;
-            }
-#endif
-
-            return !String.IsNullOrWhiteSpace(serverName)
-                ? $"{serverName.ToLowerInvariant()}:{guid}"
-                : guid;
+                IsBackground = true,
+                Name = $"{nameof(BackgroundServerProcess)} #{Interlocked.Increment(ref _lastThreadId)}",
+            };
         }
 
-#pragma warning disable 618
-        private static IServerProcess WrapProcess(IServerProcess process)
-#pragma warning restore 618
+        private void ThrowIfDisposed()
         {
-            return new InfiniteLoopProcess(new AutomaticRetryProcess(process));
-        }
-
-        private static ServerContext GetServerContext(IReadOnlyDictionary<string, object> properties)
-        {
-            var serverContext = new ServerContext();
-
-            if (properties.ContainsKey("Queues"))
+            if (Volatile.Read(ref _disposed) == 1)
             {
-                var array = properties["Queues"] as string[];
-                if (array != null)
-                {
-                    serverContext.Queues = array;
-                }
+                throw new ObjectDisposedException(GetType().FullName);
             }
-
-            if (properties.ContainsKey("WorkerCount"))
-            {
-                serverContext.WorkerCount = (int)properties["WorkerCount"];
-            }
-            return serverContext;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Hangfire.Dashboard
 {
     public class UrlHelper
     {
-#if NETFULL
+#if FEATURE_OWIN
         private readonly Microsoft.Owin.OwinContext _owinContext;
 
         [Obsolete("Please use UrlHelper(DashboardContext) instead. Will be removed in 2.0.0.")]
@@ -43,12 +43,14 @@ namespace Hangfire.Dashboard
 
         public string To(string relativePath)
         {
-            return
-#if NETFULL
-                _owinContext?.Request.PathBase.Value ??
+            return _context.Options.PrefixPath +
+                   (
+#if FEATURE_OWIN
+                       _owinContext?.Request.PathBase.Value ??
 #endif
-                _context.Request.PathBase
-                + relativePath;
+                       _context.Request.PathBase
+                       + relativePath
+                   );
         }
 
         public string Home()

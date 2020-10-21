@@ -6,9 +6,7 @@ using Hangfire.Server;
 using Hangfire.States;
 using Hangfire.Storage;
 using Moq;
-#if NETFULL
 using Moq.Sequences;
-#endif
 using Xunit;
 
 // ReSharper disable AssignNullToNotNullAttribute
@@ -99,7 +97,7 @@ namespace Hangfire.Core.Tests.Server
             worker.Execute(_context.Object);
 
             _connection.Verify(
-                x => x.FetchNextJob(_queues, _context.CancellationTokenSource.Token),
+                x => x.FetchNextJob(_queues, _context.StoppingTokenSource.Token),
                 Times.Once);
 
             _fetchedJob.Verify(x => x.RemoveFromQueue());
@@ -112,7 +110,7 @@ namespace Hangfire.Core.Tests.Server
                 .Setup(x => x.ChangeState(It.IsAny<StateChangeContext>()))
                 .Throws<InvalidOperationException>();
 
-            var worker = CreateWorker();
+            var worker = CreateWorker(1);
 
             Assert.Throws<InvalidOperationException>(
                 () => worker.Execute(_context.Object));
@@ -121,7 +119,25 @@ namespace Hangfire.Core.Tests.Server
             _fetchedJob.Verify(x => x.Requeue());
         }
 
-#if NETFULL
+        [Fact]
+        public void Execute_MovesAJobToTheFailedState_WithFiltersDisabled_WhenStateChangerThrowsAnException()
+        {
+            _stateChanger
+                .Setup(x => x.ChangeState(It.Is<StateChangeContext>(y => y.NewState.Name != FailedState.StateName)))
+                .Throws<InvalidOperationException>();
+
+            var worker = CreateWorker(1);
+
+            worker.Execute(_context.Object);
+
+            _stateChanger.Verify(x => x.ChangeState(It.Is<StateChangeContext>(y =>
+                y.NewState.Name == FailedState.StateName &&
+                y.DisableFilters == true)));
+
+            _fetchedJob.Verify(x => x.RemoveFromQueue(), Times.Once);
+            _fetchedJob.Verify(x => x.Requeue(), Times.Never);
+        }
+
         [Fact, Sequence]
         public void Execute_ExecutesDefaultWorkflow_WhenJobIsCorrect()
         {
@@ -146,7 +162,6 @@ namespace Hangfire.Core.Tests.Server
 
             // Assert - see the `SequenceAttribute` class.
         }
-#endif
 
         [Fact]
         public void Execute_SetsCurrentServer_ToProcessingState()
@@ -170,6 +185,17 @@ namespace Hangfire.Core.Tests.Server
                 ctx.NewState is ProcessingState &&
                 ctx.ExpectedStates.ElementAt(0) == EnqueuedState.StateName &&
                 ctx.ExpectedStates.ElementAt(1) == ProcessingState.StateName)));
+        }
+
+        [Fact]
+        public void Execute_DoesNotDisableFilters_DuringNormalOperation()
+        {
+            var worker = CreateWorker();
+
+            worker.Execute(_context.Object);
+
+            _stateChanger.Verify(x => x.ChangeState(It.Is<StateChangeContext>(ctx =>
+                ctx.DisableFilters == false)));
         }
 
         [Fact]
@@ -204,7 +230,7 @@ namespace Hangfire.Core.Tests.Server
         {
             // Arrange
             var cts = new CancellationTokenSource();
-            _context.CancellationTokenSource = cts;
+            _context.StoppedTokenSource = cts;
 
             _performer.Setup(x => x.Perform(It.IsAny<PerformContext>()))
                 .Callback(() => cts.Cancel())
@@ -290,7 +316,8 @@ namespace Hangfire.Core.Tests.Server
             _stateChanger.Verify(x => x.ChangeState(It.Is<StateChangeContext>(ctx =>
                 ctx.BackgroundJobId == JobId &&
                 ctx.NewState is FailedState &&
-                ((FailedState) ctx.NewState).Exception == exception)));
+                ((FailedState) ctx.NewState).Exception == exception &&
+                ctx.DisableFilters == false)));
         }
 
         [Fact]
@@ -310,7 +337,8 @@ namespace Hangfire.Core.Tests.Server
             // Assert
             _stateChanger.Verify(x => x.ChangeState(It.Is<StateChangeContext>(ctx =>
                 ctx.BackgroundJobId == JobId &&
-                ctx.NewState is FailedState)));
+                ctx.NewState is FailedState &&
+                ctx.DisableFilters == false)));
         }
 
         [Fact]
@@ -327,12 +355,13 @@ namespace Hangfire.Core.Tests.Server
 
             // Assert
             _stateChanger.Verify(x => x.ChangeState(It.Is<StateChangeContext>(ctx =>
-                ctx.NewState is FailedState)));
+                ctx.NewState is FailedState &&
+                ctx.DisableFilters == false)));
         }
 
-        private Worker CreateWorker()
+        private Worker CreateWorker(int maxStateChangeAttempts = 10)
         {
-            return new Worker(_queues, _performer.Object, _stateChanger.Object);
+            return new Worker(_queues, _performer.Object, _stateChanger.Object, TimeSpan.FromSeconds(5), maxStateChangeAttempts);
         }
 
         public static void Method() { }
